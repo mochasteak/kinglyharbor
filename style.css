@@ -1,0 +1,54 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100vh;
+    width: 100vw;
+    background-image: url(./img/bg.jpg);
+    background-repeat: none;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    flex-direction: column;
+    font-family: 'Oswald', sans-serif;
+}
+
+.board {
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+}
+
+.info {
+    width: 100vw;
+    height: 40px;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.info p {
+    color: white;
+    font-size: 1.4rem;
+}
+
+.players {
+    display: flex;
+    flex-direction: row;
+}
+
+.header h2{
+    text-align: center;
+    font-size: 3rem;
+}
+
+.player {
+    margin-right: 20px;
+}
+
+.player p {
+    font-size: 1rem;
+}
