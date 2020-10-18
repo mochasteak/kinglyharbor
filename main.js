@@ -12,6 +12,17 @@ class Card {
   }
 }
 
+class Board {
+    this.board = [];
+    // TO DO: Function to move cards from board to discard pile
+}
+
+
+class DiscardPile {
+    this.pile = [];
+    // TO DO: FUnction to move all cards in pile back into the deck
+}
+
 // Create the deck class
 class Deck {
     constructor() {
@@ -86,12 +97,44 @@ class Deck {
         this.deck.push(new Card('Pirate', 'sailor', 5, 2, null, 1));
         this.deck.push(new Card('Pirate', 'sailor', 7, 2, null, 2));
         this.deck.push(new Card('Pirate', 'sailor', 9, 2, null, 3));
+        this.deck.push(new Card('Trader', 'person', 3, 0, 'yellow', 1));
+        this.deck.push(new Card('Trader', 'person', 5, 0, 'yellow', 2));
+        this.deck.push(new Card('Trader', 'person', 3, 0, 'blue', 1));
+        this.deck.push(new Card('Trader', 'person', 5, 0, 'blue', 2));
+        this.deck.push(new Card('Trader', 'person', 3, 0, 'green', 1));
+        this.deck.push(new Card('Trader', 'person', 3, 0, 'green', 1));
+        this.deck.push(new Card('Trader', 'person', 3, 0, 'red', 1));
+        this.deck.push(new Card('Trader', 'person', 3, 0, 'red', 1));
+        this.deck.push(new Card('Trader', 'person', 3, 0, 'black', 1));
+        this.deck.push(new Card('Trader', 'person', 3, 0, 'black', 1));
+        this.deck.push(new Card('Expedition', 'expedition', 2, 0, null, 4, ['cross', 'cross']));
+        this.deck.push(new Card('Expedition', 'expedition', 2, 0, null, 4, ['anchor', 'anchor']));
+        this.deck.push(new Card('Expedition', 'expedition', 2, 0, null, 4, ['house', 'house']));
+        this.deck.push(new Card('Expedition', 'expedition', 3, 0, null, 6, ['cross', 'cross', 'house']));
+        this.deck.push(new Card('Expedition', 'expedition', 3, 0, null, 6, ['anchor', 'anchor', 'house']));
 
 
         return this.deck;
     }
+
+    shuffle() {
+        // Should randomize the order of the items in the list
+
+    }
+
+    drawCard() {
+        // Should move the card at the front of the list to the board
+
+    }
 }
 
+
+
+// Create the deck for the game
 let deck = new Deck();
 deck.createDeck();
 console.log('deck :>> ', deck);
+
+// Create the board and discard pile
+let pile = new DiscardPile();
+let board = new Board();
