@@ -13,13 +13,17 @@ class Card {
 }
 
 class Board {
-    this.board = [];
+    constructor() {
+        this.board = [];
+    }
     // TO DO: Function to move cards from board to discard pile
 }
 
 
 class DiscardPile {
-    this.pile = [];
+    constructor(){
+        this.pile = [];
+    }
     // TO DO: FUnction to move all cards in pile back into the deck
 }
 
