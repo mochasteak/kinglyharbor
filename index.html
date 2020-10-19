@@ -75,7 +75,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="header">
-                    <h2>Select players</h2>
+                    <h2 id="message">Select players</h2>
                 </div>
             </div>
         </div>
@@ -85,17 +85,19 @@
                         <p><span id="cards-remaining"></span> cards left</p>
                         <a href="#" onclick="dealCard()"><img src="./img/coin.jpg" alt="deck"></a>
             </div>       
-            <div class="col-8 board" id="board">
+            <div class="col-9 board" id="board">
             </div>
-            <div class="col-1 discard-pile">
+            <div class="col text-center">
                 <p>Discard pile</p>
-                <h2><span id="discard"></span></h2>
+                <div class="discard-pile pt-5">
+                    <h2 class="align-middle"><span id="discard"></span></h2>
+                </div>
             </div>
                 
             
         </div>
 
-        <div class="row">
+        <div class="row my-3">
             <div class="col-12">
                 <div class="controls">
                     <button class="btn btn-primary" onclick="endTurn()"><span class="icon fas fa-times"></span> End turn</button>

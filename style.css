@@ -41,6 +41,8 @@ body {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    border: 1px solid white;
+    border-radius: 5px;
 
 }
 
@@ -115,10 +117,15 @@ body {
 }
 
 .discard-pile {
-    height: 154px;
     border: 1px solid white;
     border-radius: 5px;
+    height: 154px;
 }
+
+.discard-pile h2 {
+    font-size: 3rem;
+}
+
 
 
 

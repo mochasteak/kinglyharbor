@@ -5,6 +5,8 @@ let discardPile = [];
 let board = [];
 let getCardsRemaining = document.getElementById('cards-remaining');
 let getDiscardCount = document.getElementById('discard');
+let isDeckDisabled = false;
+let getMessage = document.getElementById('message');
 
 // Factory function for cards
 function Card(name, type, coins, swords, color, points, requirements) {
@@ -109,9 +111,10 @@ function createDeck() {
 
 // Shuffle the deck
 function shuffleCards(deck) {
-    let counter = deck.length, temp, i;
+    let counter = deck.length,
+        temp, i;
 
-    while(counter) {
+    while (counter) {
         i = Math.floor(Math.random() * counter--);
         temp = deck[counter];
         deck[counter] = deck[i];
@@ -123,9 +126,9 @@ function shuffleCards(deck) {
 // Render the cards on the board
 function displayBoard() {
     getBoard.innerHTML = '';
-    board.map( card => {
+    board.map(card => {
         getBoard.innerHTML += composeCard(card);
-    }); 
+    });
 }
 
 // Compose each card according to its type
@@ -142,27 +145,56 @@ function composeCard(card) {
 
 }
 
-
 // Deal a card onto the board
 function dealCard() {
-    // If there are no more cards in the deck...
-    if(deck.length <= 0) {
-        shuffleCards(discardPile); // Shuffle the discard pile
-        deck.push(...discardPile); // Copy discard pile cards into deck
-        discardPile = []; // Clear discard pile
-        getDiscardCount.innerHTML = discardPile.length; // Update the discard pile count
-    }
+    // If the deck is not disabled...
+    if (isDeckDisabled) {
 
-    // ...otherwise/then:
-    board.push(deck.pop());
-    displayBoard();
-    updateCardsRemaining();
-    checkBoard();
+        alert('The deck is disabled');
+        return;
+
+    } else {
+
+        // If there are no more cards in the deck...
+        if (deck.length <= 0) {
+            console.log('Pre-shuffle discardPile :>> ', discardPile);
+            shuffleCards(discardPile); // Shuffle the discard pile
+            console.log('Post-shuffle discardPile :>> ', discardPile);
+            deck.push(...discardPile); // Copy discard pile cards into deck
+            discardPile.length = 0; // Clear discard pile
+            console.log('discardPile :>> ', discardPile);
+            console.log('deck :>> ', deck);
+            getDiscardCount.innerHTML = discardPile.length; // Update the discard pile count
+        }
+
+        // ...otherwise/then:
+        board.push(deck.pop());
+        displayBoard();
+        updateCardsRemaining();
+        checkForDuplicates(board);
+
+    }
 }
 
-function checkBoard() {
+function checkForDuplicates(board) {
     // Check to see if there are two ships of the same color
     // If there are, set a prompt, then clear the board
+    let colorsAlreadySeen = [];
+
+    for (let i = 0; i < board.length; i++) {
+        let color = board[i].color;
+        console.log('color :>> ', color);
+        if (colorsAlreadySeen.indexOf(color) !== -1) {
+            isDeckDisabled = true;
+            getMessage.textContent = 'Oh no! Two ships of the same color!'; 
+            console.log('discardPile :>> ', discardPile);
+        }
+        if (color !== null) {
+            colorsAlreadySeen.push(color);
+        }
+        console.log('colorsAlreadySeen :>> ', colorsAlreadySeen);
+    }
+    return false;
 }
 
 function updateCardsRemaining() {
@@ -174,7 +206,8 @@ function updateCardsRemaining() {
 function endTurn() {
     discardPile.push(...board);
     getDiscardCount.innerHTML = discardPile.length;
-    board = [];
+    board.length = 0;
+    isDeckDisabled = false;
     displayBoard();
 }
 
@@ -185,4 +218,3 @@ function endTurn() {
 createDeck();
 shuffleCards(deck);
 updateCardsRemaining();
-
