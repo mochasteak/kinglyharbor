@@ -80,17 +80,19 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-12">
-                <div class="main d-flex">
-                    <div class="deck">
+        <div class="row main">
+            <div class="col deck">
                         <p><span id="cards-remaining"></span> cards left</p>
                         <a href="#" onclick="dealCard()"><img src="./img/coin.jpg" alt="deck"></a>
-                    </div>
-                    <div class="board" id="board">
-                    </div>
-                </div>
+            </div>       
+            <div class="col-8 board" id="board">
             </div>
+            <div class="col-1 discard-pile">
+                <p>Discard pile</p>
+                <h2><span id="discard"></span></h2>
+            </div>
+                
+            
         </div>
 
         <div class="row">

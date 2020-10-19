@@ -37,11 +37,10 @@ body {
     font-size: 1rem;
 }
 
-
-
 .board {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
 
 }
 
@@ -113,6 +112,12 @@ body {
 
 .icon {
     margin-right: 10px;
+}
+
+.discard-pile {
+    height: 154px;
+    border: 1px solid white;
+    border-radius: 5px;
 }
 
 

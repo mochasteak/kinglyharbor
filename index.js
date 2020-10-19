@@ -4,6 +4,7 @@ let deck = [];
 let discardPile = [];
 let board = [];
 let getCardsRemaining = document.getElementById('cards-remaining');
+let getDiscardCount = document.getElementById('discard');
 
 // Factory function for cards
 function Card(name, type, coins, swords, color, points, requirements) {
@@ -123,29 +124,45 @@ function shuffleCards(deck) {
 function displayBoard() {
     getBoard.innerHTML = '';
     board.map( card => {
+        getBoard.innerHTML += composeCard(card);
+    }); 
+}
 
-        let swordsText = '';
-
-        if(card.type = 'ship') {
-            swordsText = `<p><img src="./img/swords.png" width="20px"> ${card.swords}</p>`;
-        }
-
-        getBoard.innerHTML += `
+// Compose each card according to its type
+function composeCard(card) {
+    return `
         <div class="card border-${card.color}">
             <h3>${card.name}</h3>
             <p><i class="fas fa-${card.type} lead-icon"></i></p>
             <p><img src="./img/coin.png" width="20px"> ${card.coins}</p>
             <p><img src="./img/shield.png" width="20px"> ${card.points}</p>
-            ${swordsText}
+            <p><img src="./img/swords.png" width="20px"> ${card.swords}</p>
+
         </div>`;
-    }); 
+
 }
+
 
 // Deal a card onto the board
 function dealCard() {
+    // If there are no more cards in the deck...
+    if(deck.length <= 0) {
+        shuffleCards(discardPile); // Shuffle the discard pile
+        deck.push(...discardPile); // Copy discard pile cards into deck
+        discardPile = []; // Clear discard pile
+        getDiscardCount.innerHTML = discardPile.length; // Update the discard pile count
+    }
+
+    // ...otherwise/then:
     board.push(deck.pop());
     displayBoard();
     updateCardsRemaining();
+    checkBoard();
+}
+
+function checkBoard() {
+    // Check to see if there are two ships of the same color
+    // If there are, set a prompt, then clear the board
 }
 
 function updateCardsRemaining() {
@@ -156,9 +173,8 @@ function updateCardsRemaining() {
 // Move the cards from the board to the discard pile
 function endTurn() {
     discardPile.push(...board);
+    getDiscardCount.innerHTML = discardPile.length;
     board = [];
-    console.log('discardPile :>> ', discardPile);
-    console.log('board :>> ', board);
     displayBoard();
 }
 
