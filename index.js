@@ -235,7 +235,16 @@ function checkIfAffordable(card) {
 
 // Move a specified card into player's board
 function purchaseCard(cardId) {
-    // TO DO: Subtract the right number of cards from player bank into discard pile
+
+    // Get the number of coins for the card with this cardId
+    let cardCoins = board.find(x => x.id === cardId).coins;
+    console.log('cardCoins :>> ', cardCoins);
+
+    // Remove that many cards from playerCoins
+    for (let i = 0; i < cardCoins; i++) {
+        discardPile.push(playerCoins.pop());
+        console.log('Moving a card from playerCoins to discardPile');
+    }
 
     purchasedCard = board.splice(board.findIndex(card => card.id === cardId), 1);
     let cardsToDiscard = purchaseCard.coins;
