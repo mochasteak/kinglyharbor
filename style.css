@@ -40,6 +40,29 @@ body {
     font-size: 1rem;
 }
 
+.expedition {
+    border: 1px solid white;
+    border-radius: 5px;
+    height: 9rem;
+    width: 6rem;
+    text-align: center;
+}
+
+.expedition i {
+    font-size: 1.5rem;
+    margin: 5px 0;
+}
+
+.expedition p {
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+}
+
+.expedition-lead-icon {
+    font-size: 2rem!important;
+    margin-bottom: 10px!important;
+}
+
 .board {
     display: flex;
     flex-direction: row;

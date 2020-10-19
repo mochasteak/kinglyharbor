@@ -10,7 +10,7 @@ let isDeckDisabled = false;
 let getMessage = document.getElementById('message');
 let playerBank = [];
 let playerBoard = [];
-let playerCoins = [1,2];
+let playerCoins = [1, 2];
 let getPlayerCoins = document.getElementById('player-coins');
 let playerMoves = 1;
 let getPlayerCoinImage = document.getElementById('player-coin-image');
@@ -162,16 +162,52 @@ function displayPlayerBoard() {
 
 }
 
+function getIcons(text) {
+    switch (text) {
+        case 'Frigate':
+        case 'Galleon':
+        case 'Skiff':
+        case 'Pinnace':
+        case 'Flute':
+            return 'fas fa-ship';
+        case 'tax':
+            return 'fas fa-balance-scale';
+        case 'Expedition':
+            return 'fas fa-map-signs';
+        case 'Trader':
+            return 'fas fa-exchange-alt';
+        case 'Governor':
+            return 'fas fa-landmark';
+        case 'Jester':
+            return 'far fa-smile-wink';
+        case 'Admiral':
+            return 'fas fa-boat';
+        case 'Sailor':
+        case 'Pirate':
+            return 'fas fa-skull-crossbones';
+        case 'Priest':
+            return 'fas fa-cross';
+        case 'Captain':
+            return 'fas fa-anchor';
+        case 'Settler':
+            return 'fas fa-home';
+        case 'Madameoiselle':
+            return 'fas fa-female';
+        case 'Jack of all Trades':
+            return 'fas fa-asterisk';
+    }
+}
+
 // Compose each card according to its type
 function composeCard(card) {
     return `
         <div class="card border-${card.color}">
             <h3>${card.name}</h3>
-            <p><i class="fas fa-${card.type} lead-icon"></i></p>
+            <p><i class="${getIcons(card.name)} lead-icon"></i></p>
             <p><img src="./img/coin.png" width="20px"> ${card.coins}</p>
             <p><img src="./img/shield.png" width="20px"> ${card.points}</p>
             <p><img src="./img/swords.png" width="20px"> ${card.swords}</p>
-            <button class="btn btn-primary btn-small m-2" onclick="purchaseCard(${card.id})"  ${checkIfAffordable(card) ? '' : 'disabled'}>Purchase</button>
+            <button class="btn btn-primary btn-small m-2" onclick="purchaseCard(${card.id})"  ${checkIfAffordable(card) ? '' : 'disabled'}>${(card.type == 'ship') ? 'Get coins' : 'Purchase' }</button>
         </div>`;
 
 }
@@ -179,7 +215,7 @@ function composeCard(card) {
 // Check if the purchase button should be displayed
 // Should happen every time a card is dealt
 function checkIfAffordable(card) {
-    console.log(card);
+    console.log('Checking affordability of: ', card);
     if (card.type == ('tax' || 'expedition')) {
         console.log('Affordable: false');
         return false;
@@ -191,6 +227,7 @@ function checkIfAffordable(card) {
             console.log('Affordable: true');
             return true;
         }
+        console.log('Affordable: true');
         return false;
     }
 }
@@ -198,7 +235,11 @@ function checkIfAffordable(card) {
 // Move a specified card into player's board
 function purchaseCard(cardId) {
     // TO DO: Subtract the right number of cards from player bank into discard pile
+
     purchasedCard = board.splice(board.findIndex(card => card.id === cardId), 1);
+    let cardsToDiscard = purchaseCard.coins;
+    console.log("Cards to discard: " + cardsToDiscard);
+
     playerBoard.push(purchasedCard[0]);
     console.log('playerBoard :>> ', playerBoard);
     console.log('board :>> ', board);
@@ -246,8 +287,10 @@ function checkForDuplicates(board) {
 
     for (let i = 0; i < board.length; i++) {
         let color = board[i].color;
+        let cardType = board[i].type;
         console.log('color :>> ', color);
-        if (colorsAlreadySeen.indexOf(color) !== -1) {
+        console.log('cardType :>> ', cardType);
+        if (cardType === 'ship' && colorsAlreadySeen.indexOf(color) !== -1) {
             isDeckDisabled = true;
             console.log('discardPile :>> ', discardPile);
             $('#two-ships-modal').modal();
