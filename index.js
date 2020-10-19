@@ -10,15 +10,18 @@ let isDeckDisabled = false;
 let getMessage = document.getElementById('message');
 let playerBank = [];
 let playerBoard = [];
-let playerCoins = [];
+let playerCoins = [1,2];
 let getPlayerCoins = document.getElementById('player-coins');
-let boardCardIndex = 0;
 let playerMoves = 1;
 let getPlayerCoinImage = document.getElementById('player-coin-image');
 
 // Factory function for cards
+let currentCardId = 0;
+
 function Card(name, type, coins, swords, color, points, requirements) {
+
     return {
+        id: currentCardId++,
         name,
         type,
         coins,
@@ -136,8 +139,6 @@ function displayGameBoard() {
     getBoard.innerHTML = '';
     board.map(card => {
         getBoard.innerHTML += composeCard(card);
-        console.log('boardCardIndex :>> ', boardCardIndex);
-        boardCardIndex++;
     });
 }
 
@@ -170,16 +171,34 @@ function composeCard(card) {
             <p><img src="./img/coin.png" width="20px"> ${card.coins}</p>
             <p><img src="./img/shield.png" width="20px"> ${card.points}</p>
             <p><img src="./img/swords.png" width="20px"> ${card.swords}</p>
-            <button class="btn btn-primary btn-small mt-2" onclick="purchaseCard()" data-cardIndex="${boardCardIndex}">Purchase</button>
-
+            <button class="btn btn-primary btn-small m-2" onclick="purchaseCard(${card.id})"  ${checkIfAffordable(card) ? '' : 'disabled'}>Purchase</button>
         </div>`;
 
 }
 
+// Check if the purchase button should be displayed
+// Should happen every time a card is dealt
+function checkIfAffordable(card) {
+    console.log(card);
+    if (card.type == ('tax' || 'expedition')) {
+        console.log('Affordable: false');
+        return false;
+    } else if (card.type == 'ship') {
+        console.log('Affordable: true');
+        return true;
+    } else {
+        if (card.coins <= playerCoins.length) {
+            console.log('Affordable: true');
+            return true;
+        }
+        return false;
+    }
+}
+
 // Move a specified card into player's board
-function purchaseCard(cardIndex) {
+function purchaseCard(cardId) {
     // TO DO: Subtract the right number of cards from player bank into discard pile
-    purchasedCard = board.splice(cardIndex, 1);
+    purchasedCard = board.splice(board.findIndex(card => card.id === cardId), 1);
     playerBoard.push(purchasedCard[0]);
     console.log('playerBoard :>> ', playerBoard);
     console.log('board :>> ', board);
@@ -220,9 +239,9 @@ function dealCard() {
     }
 }
 
+// Check to see if there are two ships of the same color
 function checkForDuplicates(board) {
-    // Check to see if there are two ships of the same color
-    // If there are, set a prompt, then clear the board
+
     let colorsAlreadySeen = [];
 
     for (let i = 0; i < board.length; i++) {
@@ -236,17 +255,20 @@ function checkForDuplicates(board) {
         if (color !== null) {
             colorsAlreadySeen.push(color);
         }
+
         console.log('colorsAlreadySeen :>> ', colorsAlreadySeen);
     }
     return false;
 }
 
-function checkIfDefeatable(card){
+function checkIfDefeatable(card) {
+
     console.log('checkIfDefeatable: card :>> ', card);
     return true;
 }
 
 function updateCardsRemaining() {
+
     getCardsRemaining.innerHTML = deck.length;
 }
 
@@ -257,7 +279,6 @@ function endTurn() {
     getDiscardCount.innerHTML = discardPile.length;
     board.length = 0;
     isDeckDisabled = false;
-    boardCardIndex = 0;
     displayGameBoard();
 }
 
