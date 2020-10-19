@@ -7,6 +7,7 @@ let board = [];
 let getCardsRemaining = document.getElementById('cards-remaining');
 let getDiscardCount = document.getElementById('discard');
 let isDeckDisabled = false;
+let colorsAlreadySeen = [];
 let getMessage = document.getElementById('message');
 let playerBank = [];
 let playerBoard = [];
@@ -159,9 +160,9 @@ function displayPlayerBoard() {
     playerBoard.map(card => {
         getPlayerBoard.innerHTML += composeCard(card);
     });
-
 }
 
+// Helper to provide correct icon, given a card name
 function getIcons(text) {
     switch (text) {
         case 'Frigate':
@@ -277,25 +278,26 @@ function dealCard() {
         updateCardsRemaining();
         checkIfDefeatable(board[board.length - 1]);
         checkForDuplicates(board);
+        calcPlayerMoves();
     }
 }
 
 // Check to see if there are two ships of the same color
 function checkForDuplicates(board) {
 
-    let colorsAlreadySeen = [];
+    colorsAlreadySeen = [];
 
     for (let i = 0; i < board.length; i++) {
         let color = board[i].color;
         let cardType = board[i].type;
         console.log('color :>> ', color);
         console.log('cardType :>> ', cardType);
+
         if (cardType === 'ship' && colorsAlreadySeen.indexOf(color) !== -1) {
             isDeckDisabled = true;
             console.log('discardPile :>> ', discardPile);
             $('#two-ships-modal').modal();
-        }
-        if (color !== null) {
+        } else if (cardType == 'ship') {
             colorsAlreadySeen.push(color);
         }
 
@@ -305,14 +307,33 @@ function checkForDuplicates(board) {
 }
 
 function checkIfDefeatable(card) {
-
     console.log('checkIfDefeatable: card :>> ', card);
     return true;
 }
 
 function updateCardsRemaining() {
-
     getCardsRemaining.innerHTML = deck.length;
+}
+
+function calcPlayerMoves() {
+    
+    // If 4 or 5 different colored ships on the board, increase moves
+    switch (colorsAlreadySeen.length) {
+        case 4:
+            playerMoves++;
+            break;
+        case 5:
+            playerMoves = playerMoves + 2;
+            break;
+    }
+    // If playerBoard contains Governor card, moves+1
+    for (let card in playerBoard) {
+        if(card.name === 'Governor') {
+            playerMoves++;
+            console.log('Found a Governor, incrementing playerMoves');
+        }
+    }
+    console.log('playerMoves :>> ', playerMoves);
 }
 
 // End a turn
