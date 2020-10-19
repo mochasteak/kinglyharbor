@@ -7,6 +7,8 @@ let getCardsRemaining = document.getElementById('cards-remaining');
 let getDiscardCount = document.getElementById('discard');
 let isDeckDisabled = false;
 let getMessage = document.getElementById('message');
+let playerBank = [];
+let playerBoard = [];
 
 // Factory function for cards
 function Card(name, type, coins, swords, color, points, requirements) {
@@ -140,8 +142,18 @@ function composeCard(card) {
             <p><img src="./img/coin.png" width="20px"> ${card.coins}</p>
             <p><img src="./img/shield.png" width="20px"> ${card.points}</p>
             <p><img src="./img/swords.png" width="20px"> ${card.swords}</p>
+            <button class="btn btn-primary btn-small" onclick="purchaseCard()">Purchase</button>
 
         </div>`;
+
+}
+
+// Move a specified card into player's board
+function purchaseCard(cardIndex) {
+    // TO DO: Subtract the right number of cards from player bank into discard pile
+    playerBoard.push(board.splice(cardIndex, 1);
+    console.log('playerBoard :>> ', playerBoard);
+    console.log('board :>> ', board);
 
 }
 
@@ -171,8 +183,8 @@ function dealCard() {
         board.push(deck.pop());
         displayBoard();
         updateCardsRemaining();
+        checkIfDefeatable(board[board.length - 1]);
         checkForDuplicates(board);
-
     }
 }
 
@@ -186,7 +198,6 @@ function checkForDuplicates(board) {
         console.log('color :>> ', color);
         if (colorsAlreadySeen.indexOf(color) !== -1) {
             isDeckDisabled = true;
-            getMessage.textContent = 'Oh no! Two ships of the same color!'; 
             console.log('discardPile :>> ', discardPile);
             $('#two-ships-modal').modal();
         }
@@ -196,6 +207,11 @@ function checkForDuplicates(board) {
         console.log('colorsAlreadySeen :>> ', colorsAlreadySeen);
     }
     return false;
+}
+
+function checkIfDefeatable(card){
+    console.log('checkIfDefeatable: card :>> ', card);
+    return true;
 }
 
 function updateCardsRemaining() {
