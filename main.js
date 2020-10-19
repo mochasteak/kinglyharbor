@@ -1,3 +1,4 @@
+let getBoard = document.getElementById('board');
 
 // Create the card class
 class Card {
@@ -17,7 +18,14 @@ class Board {
         this.board = [];
     }
     // TO DO: Function to move cards from board to discard pile
-}
+
+    // Display the items on the board
+    display() {
+        for(let card of board) {
+            getBoard.innerHTML += `<div class="board-card">${card.name}</div>`;
+        }
+    }
+} 
 
 
 class DiscardPile {
@@ -117,28 +125,51 @@ class Deck {
         this.deck.push(new Card('Expedition', 'expedition', 3, 0, null, 6, ['cross', 'cross', 'house']));
         this.deck.push(new Card('Expedition', 'expedition', 3, 0, null, 6, ['anchor', 'anchor', 'house']));
 
-
         return this.deck;
     }
 
     shuffle() {
         // Should randomize the order of the items in the list
+        let counter = this.deck.length, temp, i;
 
+        while(counter) {
+            i = Math.floor(Math.random() * counter--);
+            temp = this.deck[counter];
+            this.deck[counter] = this.deck[i];
+            this.deck[i] = temp;
+        }
+        return this.deck;
     }
 
     drawCard() {
-        // Should move the card at the front of the list to the board
-
+        // Remove one card from the deck
+        let hand = [];
+        hand.push(this.deck.pop());
+        return hand;
     }
 }
 
 
-
-// Create the deck for the game
+// Create and shuffle the deck for the game
 let deck = new Deck();
-deck.createDeck();
 console.log('deck :>> ', deck);
+
+deck.createDeck();
+console.log('Original deck :>> ', deck);
+
+deck.shuffle();
+console.log('Shuffled deck :>> ', deck);
 
 // Create the board and discard pile
 let pile = new DiscardPile();
 let board = new Board();
+
+console.log('hand :>> ', deck.drawCard());
+console.log('deck :>> ', deck);
+
+// Draw a card into the board
+board.push(deck.drawCard());
+console.log('board :>> ', board);
+
+// Display cards in the board
+board.display();
