@@ -1,5 +1,6 @@
 // Set up variables
 let getBoard = document.getElementById('board');
+let getPlayerBoard = document.getElementById('player-cards');
 let deck = [];
 let discardPile = [];
 let board = [];
@@ -9,6 +10,11 @@ let isDeckDisabled = false;
 let getMessage = document.getElementById('message');
 let playerBank = [];
 let playerBoard = [];
+let playerCoins = [];
+let getPlayerCoins = document.getElementById('player-coins');
+let boardCardIndex = 0;
+let playerMoves = 1;
+let getPlayerCoinImage = document.getElementById('player-coin-image');
 
 // Factory function for cards
 function Card(name, type, coins, swords, color, points, requirements) {
@@ -125,12 +131,34 @@ function shuffleCards(deck) {
     return deck;
 }
 
-// Render the cards on the board
-function displayBoard() {
+// Render the cards on the game board
+function displayGameBoard() {
     getBoard.innerHTML = '';
     board.map(card => {
         getBoard.innerHTML += composeCard(card);
+        console.log('boardCardIndex :>> ', boardCardIndex);
+        boardCardIndex++;
     });
+}
+
+// Display the player's board
+function displayPlayerBoard() {
+    getPlayerCoins.innerHTML = playerCoins.length;
+    console.log('playerCoins length: >>', playerCoins.length);
+
+    // Show/hide coin image depending on num of coins
+    if (playerCoins.length <= 0) {
+        getPlayerCoinImage.classList.add('hidden');
+    } else {
+        getPlayerCoinImage.classList.remove('hidden');
+    }
+
+    // Render each card in playerBoard using composeCard
+    getPlayerBoard.innerHTML = '';
+    playerBoard.map(card => {
+        getPlayerBoard.innerHTML += composeCard(card);
+    });
+
 }
 
 // Compose each card according to its type
@@ -142,7 +170,7 @@ function composeCard(card) {
             <p><img src="./img/coin.png" width="20px"> ${card.coins}</p>
             <p><img src="./img/shield.png" width="20px"> ${card.points}</p>
             <p><img src="./img/swords.png" width="20px"> ${card.swords}</p>
-            <button class="btn btn-primary btn-small" onclick="purchaseCard()">Purchase</button>
+            <button class="btn btn-primary btn-small mt-2" onclick="purchaseCard()" data-cardIndex="${boardCardIndex}">Purchase</button>
 
         </div>`;
 
@@ -151,9 +179,12 @@ function composeCard(card) {
 // Move a specified card into player's board
 function purchaseCard(cardIndex) {
     // TO DO: Subtract the right number of cards from player bank into discard pile
-    playerBoard.push(board.splice(cardIndex, 1);
+    purchasedCard = board.splice(cardIndex, 1);
+    playerBoard.push(purchasedCard[0]);
     console.log('playerBoard :>> ', playerBoard);
     console.log('board :>> ', board);
+    displayGameBoard();
+    displayPlayerBoard();
 
 }
 
@@ -181,7 +212,8 @@ function dealCard() {
 
         // ...otherwise/then:
         board.push(deck.pop());
-        displayBoard();
+        displayGameBoard();
+        displayPlayerBoard();
         updateCardsRemaining();
         checkIfDefeatable(board[board.length - 1]);
         checkForDuplicates(board);
@@ -225,7 +257,8 @@ function endTurn() {
     getDiscardCount.innerHTML = discardPile.length;
     board.length = 0;
     isDeckDisabled = false;
-    displayBoard();
+    boardCardIndex = 0;
+    displayGameBoard();
 }
 
 
@@ -235,3 +268,4 @@ function endTurn() {
 createDeck();
 shuffleCards(deck);
 updateCardsRemaining();
+displayPlayerBoard();
