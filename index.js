@@ -188,6 +188,7 @@ function checkForDuplicates(board) {
             isDeckDisabled = true;
             getMessage.textContent = 'Oh no! Two ships of the same color!'; 
             console.log('discardPile :>> ', discardPile);
+            $('#two-ships-modal').modal();
         }
         if (color !== null) {
             colorsAlreadySeen.push(color);
