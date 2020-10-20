@@ -11,9 +11,10 @@ let colorsAlreadySeen = [];
 let getMessage = document.getElementById('message');
 let playerBank = [];
 let playerBoard = [];
-let playerCoins = [1, 2];
+let playerCoins = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 let getPlayerCoins = document.getElementById('player-coins');
 let playerMoves = 1;
+let playerSwords;
 let getPlayerCoinImage = document.getElementById('player-coin-image');
 let getPlayerMoves = document.getElementById('player-moves');
 
@@ -36,6 +37,7 @@ function Card(name, type, coins, swords, color, points, requirements) {
 
 // Add all game cards into deck
 function createDeck() {
+    /*
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
@@ -46,6 +48,7 @@ function createDeck() {
     deck.push(new Card('Frigate', 'ship', 3, 6, 'red', 0));
     deck.push(new Card('Frigate', 'ship', 4, 99, 'red', 0));
     deck.push(new Card('Frigate', 'ship', 4, 99, 'red', 0));
+
     deck.push(new Card('Galleon', 'ship', 1, 2, 'black', 0));
     deck.push(new Card('Galleon', 'ship', 1, 2, 'black', 0));
     deck.push(new Card('Galleon', 'ship', 1, 2, 'black', 0));
@@ -56,6 +59,7 @@ function createDeck() {
     deck.push(new Card('Galleon', 'ship', 3, 7, 'black', 0));
     deck.push(new Card('Galleon', 'ship', 4, 99, 'black', 0));
     deck.push(new Card('Galleon', 'ship', 4, 99, 'black', 0));
+
     deck.push(new Card('Skiff', 'ship', 1, 1, 'green', 0));
     deck.push(new Card('Skiff', 'ship', 1, 1, 'green', 0));
     deck.push(new Card('Skiff', 'ship', 1, 1, 'green', 0));
@@ -66,6 +70,7 @@ function createDeck() {
     deck.push(new Card('Skiff', 'ship', 3, 5, 'green', 0));
     deck.push(new Card('Skiff', 'ship', 3, 5, 'green', 0));
     deck.push(new Card('Skiff', 'ship', 3, 5, 'green', 0));
+
     deck.push(new Card('Flute', 'ship', 1, 1, 'blue', 0));
     deck.push(new Card('Flute', 'ship', 1, 1, 'blue', 0));
     deck.push(new Card('Flute', 'ship', 1, 1, 'blue', 0));
@@ -76,6 +81,7 @@ function createDeck() {
     deck.push(new Card('Flute', 'ship', 3, 5, 'blue', 0));
     deck.push(new Card('Flute', 'ship', 3, 5, 'blue', 0));
     deck.push(new Card('Flute', 'ship', 3, 5, 'blue', 0));
+
     deck.push(new Card('Pinnace', 'ship', 1, 1, 'yellow', 0));
     deck.push(new Card('Pinnace', 'ship', 1, 1, 'yellow', 0));
     deck.push(new Card('Pinnace', 'ship', 1, 1, 'yellow', 0));
@@ -86,10 +92,12 @@ function createDeck() {
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
+
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
+
     deck.push(new Card('Sailor', 'sailor', 3, 1, null, 1));
     deck.push(new Card('Sailor', 'sailor', 3, 1, null, 1));
     deck.push(new Card('Sailor', 'sailor', 3, 1, null, 1));
@@ -98,10 +106,13 @@ function createDeck() {
     deck.push(new Card('Sailor', 'sailor', 3, 1, null, 1));
     deck.push(new Card('Sailor', 'sailor', 3, 1, null, 1));
     deck.push(new Card('Sailor', 'sailor', 5, 1, null, 2));
+    deck.push(new Card('Sailor', 'sailor', 5, 1, null, 2));
     deck.push(new Card('Sailor', 'sailor', 7, 1, null, 3));
+
     deck.push(new Card('Pirate', 'sailor', 5, 2, null, 1));
     deck.push(new Card('Pirate', 'sailor', 7, 2, null, 2));
     deck.push(new Card('Pirate', 'sailor', 9, 2, null, 3));
+
     deck.push(new Card('Trader', 'person', 3, 0, 'yellow', 1));
     deck.push(new Card('Trader', 'person', 5, 0, 'yellow', 2));
     deck.push(new Card('Trader', 'person', 3, 0, 'blue', 1));
@@ -112,11 +123,58 @@ function createDeck() {
     deck.push(new Card('Trader', 'person', 3, 0, 'red', 1));
     deck.push(new Card('Trader', 'person', 3, 0, 'black', 1));
     deck.push(new Card('Trader', 'person', 3, 0, 'black', 1));
-    deck.push(new Card('Expedition', 'expedition', 2, 0, null, 4, ['cross', 'cross']));
-    deck.push(new Card('Expedition', 'expedition', 2, 0, null, 4, ['anchor', 'anchor']));
-    deck.push(new Card('Expedition', 'expedition', 2, 0, null, 4, ['house', 'house']));
-    deck.push(new Card('Expedition', 'expedition', 3, 0, null, 6, ['cross', 'cross', 'house']));
-    deck.push(new Card('Expedition', 'expedition', 3, 0, null, 6, ['anchor', 'anchor', 'house']));
+*/
+    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
+    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
+    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
+    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
+
+    deck.push(new Card('Admiral', 'person', 5, 0, null, 1));
+    deck.push(new Card('Admiral', 'person', 7, 0, null, 2));
+    deck.push(new Card('Admiral', 'person', 7, 0, null, 2));
+    deck.push(new Card('Admiral', 'person', 7, 0, null, 2));
+    deck.push(new Card('Admiral', 'person', 9, 0, null, 3));
+    deck.push(new Card('Admiral', 'person', 9, 0, null, 3));
+
+    deck.push(new Card('Madamoiselle', 'person', 9, 0, null, 3));
+    deck.push(new Card('Madamoiselle', 'person', 9, 0, null, 3));
+    deck.push(new Card('Madamoiselle', 'person', 7, 0, null, 2));
+    deck.push(new Card('Madamoiselle', 'person', 7, 0, null, 2));
+    
+    deck.push(new Card('Jack of all Trades', 'person', 4, 0, null, 1));
+    deck.push(new Card('Jack of all Trades', 'person', 4, 0, null, 1));
+    deck.push(new Card('Jack of all Trades', 'person', 4, 0, null, 1));
+
+    deck.push(new Card('Priest', 'person', 4, 0, null, 1));
+    deck.push(new Card('Priest', 'person', 4, 0, null, 1));
+    deck.push(new Card('Priest', 'person', 4, 0, null, 1));
+    deck.push(new Card('Priest', 'person', 4, 0, null, 1));
+    deck.push(new Card('Priest', 'person', 4, 0, null, 1));
+
+    deck.push(new Card('Captain', 'person', 4, 0, null, 1));
+    deck.push(new Card('Captain', 'person', 4, 0, null, 1));
+    deck.push(new Card('Captain', 'person', 4, 0, null, 1));
+    deck.push(new Card('Captain', 'person', 4, 0, null, 1));
+    deck.push(new Card('Captain', 'person', 4, 0, null, 1));
+
+    deck.push(new Card('Settler', 'person', 4, 0, null, 1));
+    deck.push(new Card('Settler', 'person', 4, 0, null, 1));
+    deck.push(new Card('Settler', 'person', 4, 0, null, 1));
+    deck.push(new Card('Settler', 'person', 4, 0, null, 1));
+    deck.push(new Card('Settler', 'person', 4, 0, null, 1));
+
+    deck.push(new Card('Jester', 'person', 5, 0, null, 1));
+    deck.push(new Card('Jester', 'person', 7, 0, null, 2));
+    deck.push(new Card('Jester', 'person', 7, 0, null, 2));
+    deck.push(new Card('Jester', 'person', 7, 0, null, 2));
+    deck.push(new Card('Jester', 'person', 9, 0, null, 3));
+
+    deck.push(new Card('Expedition', 'expedition', 2, 0, null, 4, ['Priest', 'Priest']));
+    deck.push(new Card('Expedition', 'expedition', 2, 0, null, 4, ['Captain', 'Captain']));
+    deck.push(new Card('Expedition', 'expedition', 2, 0, null, 4, ['Settler', 'Settler']));
+    deck.push(new Card('Expedition', 'expedition', 3, 0, null, 6, ['Priest', 'Priest', 'Settler']));
+    deck.push(new Card('Expedition', 'expedition', 3, 0, null, 6, ['Captain', 'Captain', 'Settler']));
+    deck.push(new Card('Expedition', 'expedition', 3, 0, null, 5, ['Captain', 'Priest', 'Settler']));
 
     console.log('Just created deck: ', deck);
 
@@ -174,7 +232,7 @@ function getIcons(text) {
         case 'Pinnace':
         case 'Flute':
             return 'fas fa-ship';
-        case 'tax':
+        case 'Tax increase':
             return 'fas fa-balance-scale';
         case 'Expedition':
             return 'fas fa-map-signs';
@@ -218,12 +276,16 @@ function composeCard(card) {
 
 // Check if the purchase button should be displayed
 // Should happen every time a card is dealt
-function checkIfAffordable(card) {
+function checkIfAffordable(card) { 
+    
+    if(isDeckDisabled) {
+        return;
+    }
     console.log('Checking affordability of: ', card);
-    if (card.type == ('tax' || 'expedition')) {
+    if (card.type === ('tax' || 'expedition')) {
         console.log('Affordable: false');
         return false;
-    } else if (card.type == 'ship') {
+    } else if (card.type === 'ship' && !isDeckDisabled) {
         console.log('Affordable: true');
         return true;
     } else {
@@ -238,6 +300,7 @@ function checkIfAffordable(card) {
 
 // Move a specified card into player's board
 function purchaseCard(cardId) {
+    console.log('Purchase button clicked');
 
     // Get the number of coins for the card with this cardId
     let cardCoins = board.find(x => x.id === cardId).coins;
@@ -249,13 +312,14 @@ function purchaseCard(cardId) {
         console.log('Moving a card from playerCoins to discardPile');
     }
 
-    purchasedCard = board.splice(board.findIndex(card => card.id === cardId), 1);
-    let cardsToDiscard = purchaseCard.coins;
-    console.log("Cards to discard: " + cardsToDiscard);
+    let purchasedCard = board.splice(board.findIndex(card => card.id === cardId), 1);
 
     playerBoard.push(purchasedCard[0]);
+    playerMoves--;
     console.log('playerBoard :>> ', playerBoard);
     console.log('board :>> ', board);
+    calcPlayerMoves();
+    checkOutOfMoves();
     displayGameBoard();
     displayPlayerBoard();
 
@@ -284,13 +348,33 @@ function dealCard() {
         }
 
         // ...otherwise/then:
+        calcPlayerMoves();
         board.push(deck.pop());
         displayGameBoard();
         displayPlayerBoard();
         updateCardsRemaining();
-        checkIfDefeatable(board[board.length - 1]);
+
+        if(board[board.length - 1].type === 'ship' ){
+            checkIfDefeatable(board[board.length - 1]);
+        }
+        
         checkForDuplicates(board);
-        calcPlayerMoves();
+        calcPlayerSwords();
+    }
+}
+
+function checkOutOfMoves() {
+    console.log('checkOutOfMoves invoked');
+
+    if (playerMoves <= 0) {
+        isDeckDisabled = true;
+        // Set all the buttons to disabled
+        let cardButtons = document.querySelectorAll('.board .card button');
+        console.log('cardButtons :>> ', cardButtons);
+        for (let button in cardButtons) {
+            button.disabled = true;
+            console.log('Setting button to hidden');
+        }
     }
 }
 
@@ -320,15 +404,40 @@ function checkForDuplicates(board) {
 
 function checkIfDefeatable(card) {
     console.log('checkIfDefeatable: card :>> ', card);
-    return true;
+
+    // Set a variable for the total number of player swords
+    calcPlayerSwords();
+
+    // Compare player swords to ship swords
+
+    // If have enough swords, offer the modal
+    //return true;
+}
+
+function defeatShip(card) {
+    discardPile.push(board.pop());
+}
+
+function declineDefeatOption(card) {
+    // push the card onto the board
 }
 
 function updateCardsRemaining() {
     getCardsRemaining.innerHTML = deck.length;
 }
 
+function calcPlayerSwords() {
+    // loop through all the cards in player's board, count up the num swords
+    for (let entry of Object.entries(playerBoard)) {
+        console.log('entry :>> ', entry);
+    }
+    // Don't forget to invoke
+}
+
 function calcPlayerMoves() {
     
+    console.log('calcPlayerMoves invoked');
+
     // If 4 or 5 different colored ships on the board, increase moves
     switch (colorsAlreadySeen.length) {
         case 4:
@@ -338,9 +447,12 @@ function calcPlayerMoves() {
             playerMoves = playerMoves + 2;
             break;
     }
+    //  ===== NOT WORKING =====
     // If playerBoard contains Governor card, moves+1
-    for (let card in playerBoard) {
-        if(card.name === 'Governor') {
+    for (i = 0; i < playerBoard.length ; i++) {
+    
+        console.log('Checking if card is a Governor: ', playerBoard[i]);
+        if(playerBoard[i].name === 'Governor') {
             playerMoves++;
             console.log('Found a Governor, incrementing playerMoves');
         }
@@ -349,8 +461,7 @@ function calcPlayerMoves() {
     console.log('playerMoves :>> ', playerMoves);
 }
 
-// End a turn
-// Move the cards from the board to the discard pile
+// End a turn - Move the cards from the board to the discard pile
 function endTurn() {
     discardPile.push(...board);
     getDiscardCount.innerHTML = discardPile.length;
