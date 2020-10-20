@@ -75,6 +75,13 @@ body {
 }
 
 .card {
+    width: 10rem;
+    color: #333;
+    height: 14rem;
+    text-align: center;
+}
+
+.board-card {
     height: 14rem;
     width: 8rem;
     border: 2px solid white;
@@ -86,12 +93,12 @@ body {
     margin: 5px;
 }
 
-.card h3 {
+.board-card h3 {
     font-weight: 200;
     font-size: 1.4rem;
 }
 
-.card p {
+.board-card p {
     margin-bottom: 0;
 }
 

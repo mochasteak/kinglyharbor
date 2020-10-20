@@ -7,6 +7,7 @@ let getPlayerBoard = document.getElementById('player-cards');
 let deck = [];
 let discardPile = [];
 let board = [];
+let expeditions = [];
 let getCardsRemaining = document.getElementById('cards-remaining');
 let getDiscardCount = document.getElementById('discard');
 let isDeckDisabled = false;
@@ -206,13 +207,13 @@ function displayGameBoard() {
         getBoard.innerHTML += composeCard(card);
     });
     getPlayerMoves.innerHTML = playerMoves;
-    console.log('playerMoves :>> ', playerMoves);
+    // console.log('playerMoves :>> ', playerMoves);
 }
 
 // Display the player's board
 function displayPlayerBoard() {
     getPlayerCoins.innerHTML = playerCoins.length;
-    console.log('playerCoins length: >>', playerCoins.length);
+    // console.log('playerCoins length: >>', playerCoins.length);
 
     // Show/hide coin image depending on num of coins
     if (playerCoins.length <= 0) {
@@ -268,7 +269,7 @@ function getIcons(text) {
 // Compose each card according to its type
 function composeCard(card) {
     return `
-        <div class="card border-${card.color}">
+        <div class="board-card border-${card.color}">
             <h3>${card.name}</h3>
             <p><i class="${getIcons(card.name)} lead-icon"></i></p>
             <p><img src="./img/coin.png" width="20px"> ${card.coins}</p>
@@ -286,19 +287,19 @@ function checkIfAffordable(card) {
     if (isDeckDisabled) {
         return;
     }
-    console.log('Checking affordability of: ', card);
+    //console.log('Checking affordability of: ', card);
     if (card.type === ('tax' || 'expedition')) {
-        console.log('Affordable: false');
+        //console.log('Affordable: false');
         return false;
     } else if (card.type === 'ship' && !isDeckDisabled) {
-        console.log('Affordable: true');
+        //console.log('Affordable: true');
         return true;
     } else {
         if (card.coins <= playerCoins.length) {
-            console.log('Affordable: true');
+            //console.log('Affordable: true');
             return true;
         }
-        console.log('Affordable: true');
+        //console.log('Affordable: true');
         return false;
     }
 }
@@ -371,6 +372,7 @@ function dealCard() {
         }
 
         // ...otherwise/then:
+        console.log('Dealing a card');
         calcPlayerMoves();
         calcPlayerSwords();
         board.push(deck.pop());
@@ -378,9 +380,21 @@ function dealCard() {
         displayGameBoard();
         displayPlayerBoard();
 
-        if (board[board.length - 1].type === 'ship') {
+        let dealtCard = board[board.length-1];
+
+        if (dealtCard.type === 'expedition') {
+            // Move it to expedition array
+            console.log('Moving expedition to array');
+            expeditions.push(board.pop());
+            // Trigger expedition modal
+            $('#expedition-modal').modal();
+            displayGameBoard();
+
+        }
+
+        if (dealtCard.type === 'ship') {
+            console.log('dealCard: breaking out. checkIfDefeatable');
             checkIfDefeatable(board[board.length - 1]);
-            console.log('Breaking out of dealCard loop');
             return;
         }
 
@@ -407,13 +421,15 @@ function checkOutOfMoves() {
 // Check to see if there are two ships of the same color
 function checkForDuplicates(board) {
 
+    console.log('checkForDuplicates invoked');
+
     colorsAlreadySeen = [];
 
     for (let i = 0; i < board.length; i++) {
         let color = board[i].color;
         let cardType = board[i].type;
-        console.log('color :>> ', color);
-        console.log('cardType :>> ', cardType);
+        // console.log('color :>> ', color);
+        // console.log('cardType :>> ', cardType);
 
         if (cardType === 'ship' && colorsAlreadySeen.indexOf(color) !== -1) {
             isDeckDisabled = true;
@@ -422,27 +438,27 @@ function checkForDuplicates(board) {
         } else if (cardType == 'ship') {
             colorsAlreadySeen.push(color);
         }
-
-        console.log('colorsAlreadySeen :>> ', colorsAlreadySeen);
     }
+    console.log('colorsAlreadySeen :>> ', colorsAlreadySeen);
+
     return false;
 }
 
 function checkIfDefeatable(card) {
     console.log('checkIfDefeatable: card :>> ', card);
 
-    // Refresh player swords
-    calcPlayerSwords();
-
     // If player has enough swords, trigger modal
     if (playerSwords >= card.swords) {
+        console.log('Triggering defeat-ship modal');
         $('#defeat-ship-modal').modal(); // Trigger modal
         return;
     }
+    checkForDuplicates(board);
 }
 
 function defeatShip(card) {
     discardPile.push(board.pop());
+    getDiscardCount.innerHTML = discardPile.length;
     displayGameBoard();
 }
 

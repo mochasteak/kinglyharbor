@@ -14,6 +14,26 @@
 
 <body>
 
+    <!-- Expedition modal -->
+    <div class="modal fade" id="expedition-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">A new expedition!</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    You've found a new expedition. This will be added to the expeditions board and can be purchased on
+                    your turn if you have the correct resources.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Got it</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Two ships modal -->
     <div class="modal fade" id="two-ships-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -31,7 +51,8 @@
                     end of this turn.
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="endTurn()" data-dismiss="modal">End turn</button>
+                    <button type="button" class="btn btn-primary" onclick="endTurn()" data-dismiss="modal">End
+                        turn</button>
                 </div>
             </div>
         </div>
@@ -52,8 +73,10 @@
                     deep, or keep it on the board?
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="declineDefeatOption()">Keep it</button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="defeatShip()">Defeat it!</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                        onclick="declineDefeatOption()">Keep it</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="defeatShip()">Defeat
+                        it!</button>
                 </div>
             </div>
         </div>
@@ -74,14 +97,14 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="clearMoves()" data-dismiss="modal">End my turn</button>
+                    <button type="button" class="btn btn-primary" onclick="clearMoves()" data-dismiss="modal">End my
+                        turn</button>
                 </div>
             </div>
         </div>
     </div>
 
-
-
+    <!-- Game display -->
     <div class="game container">
         <div class="row justify-content-between">
             <div class="col-12">
@@ -132,15 +155,20 @@
                             </div>
                         </div>
                     </div>
-                    <div class="prompt col text-center">
-                        <p>This will tell you what to do</p>
-                    </div>
-                    <div class="expeditions col text-right">
-                        <div class="expedition">
-                            <i class="fas fa-map-signs expedition-lead-icon"></i>
-                            <p><img src="./img/coin.png" width="20px"> 3</p>
-                            <p><img src="./img/shield.png" width="20px"> 4</p>
-                            <i class="fas fa-map-signs"></i><i class="fas fa-map-signs"></i>
+
+                    <div class="expeditions col">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="card-title">Expedition</div>
+                                <div class="card-text">
+                                    <p><img src="./img/coin.png" width="20px"> 3</p>
+                                    <p><img src="./img/shield.png" width="20px"> 4</p>
+                                    <i class="fas fa-map-signs"></i><i class="fas fa-map-signs"></i>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <button class="btn btn-sm btn-primary"></button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -160,6 +188,8 @@
                 <h3><span id="cards-remaining"></span> cards</h3>
                 <a href="#" onclick="dealCard()"><img src="./img/coin.jpg" alt="deck"></a>
             </div>
+
+            <!-- Game Board -->
             <div class="col-9">
                 <h3>Moves available: <span id="player-moves"></span></h3>
                 <div class="board" id="board">
@@ -192,8 +222,8 @@
             </div>
             <div class="col-9 player-board">
                 <h3>Your cards</h3>
-                    <div class="player-cards d-flex flex-row" id="player-cards">
-                    </div>
+                <div class="player-cards d-flex flex-row" id="player-cards">
+                </div>
             </div>
             <div class="col">
 
