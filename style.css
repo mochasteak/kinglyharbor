@@ -69,6 +69,8 @@ body {
     flex-wrap: wrap;
     border: 1px solid white;
     border-radius: 5px;
+    min-height: 16rem;
+    padding: 10px;
 
 }
 
@@ -91,6 +93,15 @@ body {
 
 .card p {
     margin-bottom: 0;
+}
+
+button:disabled {
+    background-color: grey!important;
+    border-color: grey!important;
+}
+
+button {
+    padding: 4px 10px!important;
 }
 
 .lead-icon {

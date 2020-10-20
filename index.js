@@ -15,6 +15,7 @@ let playerCoins = [1, 2];
 let getPlayerCoins = document.getElementById('player-coins');
 let playerMoves = 1;
 let getPlayerCoinImage = document.getElementById('player-coin-image');
+let getPlayerMoves = document.getElementById('player-moves');
 
 // Factory function for cards
 let currentCardId = 0;
@@ -141,6 +142,8 @@ function displayGameBoard() {
     board.map(card => {
         getBoard.innerHTML += composeCard(card);
     });
+    getPlayerMoves.innerHTML = playerMoves;
+    console.log('playerMoves :>> ', playerMoves);
 }
 
 // Display the player's board
@@ -342,6 +345,7 @@ function calcPlayerMoves() {
             console.log('Found a Governor, incrementing playerMoves');
         }
     }
+    getPlayerMoves.innerHTML = playerMoves;
     console.log('playerMoves :>> ', playerMoves);
 }
 
@@ -351,6 +355,7 @@ function endTurn() {
     discardPile.push(...board);
     getDiscardCount.innerHTML = discardPile.length;
     board.length = 0;
+    playerMoves = 1;
     isDeckDisabled = false;
     displayGameBoard();
 }
@@ -362,4 +367,5 @@ function endTurn() {
 createDeck();
 shuffleCards(deck);
 updateCardsRemaining();
+displayGameBoard();
 displayPlayerBoard();
