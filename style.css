@@ -75,10 +75,39 @@ body {
 }
 
 .card {
-    width: 10rem;
+    width: 9rem;
     color: #333;
     height: 14rem;
     text-align: center;
+}
+
+.card p {
+    margin-bottom: 0.4rem!important;
+    color: #333;
+}
+
+.card-body {
+    padding: 5px;
+}
+
+.expedition-label {
+    margin-top: 10px;
+    font-size: 0.9rem!important;
+    color: #666!important;
+}
+
+.expedition-coins {
+    background-image: url(./img/coin.png);
+    background-size: 40px 40px;
+    background-repeat: no-repeat;
+    background-position: center top;
+}
+
+.expedition-points {
+    background-image: url(./img/shield.png);
+    background-size: 40px 40px;
+    background-repeat: no-repeat;
+    background-position: center top;
 }
 
 .board-card {
