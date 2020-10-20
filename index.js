@@ -1,3 +1,6 @@
+// Constants
+const PLAYER_DEFAULT_MOVES = 4;
+
 // Set up variables
 let getBoard = document.getElementById('board');
 let getPlayerBoard = document.getElementById('player-cards');
@@ -11,12 +14,14 @@ let colorsAlreadySeen = [];
 let getMessage = document.getElementById('message');
 let playerBank = [];
 let playerBoard = [];
-let playerCoins = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+let playerCoins = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 let getPlayerCoins = document.getElementById('player-coins');
-let playerMoves = 1;
-let playerSwords;
+let playerMoves = PLAYER_DEFAULT_MOVES;
+let playerSwords = 0;
 let getPlayerCoinImage = document.getElementById('player-coin-image');
 let getPlayerMoves = document.getElementById('player-moves');
+
+
 
 // Factory function for cards
 let currentCardId = 0;
@@ -37,7 +42,7 @@ function Card(name, type, coins, swords, color, points, requirements) {
 
 // Add all game cards into deck
 function createDeck() {
-    /*
+
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
@@ -123,7 +128,7 @@ function createDeck() {
     deck.push(new Card('Trader', 'person', 3, 0, 'red', 1));
     deck.push(new Card('Trader', 'person', 3, 0, 'black', 1));
     deck.push(new Card('Trader', 'person', 3, 0, 'black', 1));
-*/
+
     deck.push(new Card('Governor', 'person', 8, 0, null, 0));
     deck.push(new Card('Governor', 'person', 8, 0, null, 0));
     deck.push(new Card('Governor', 'person', 8, 0, null, 0));
@@ -140,7 +145,7 @@ function createDeck() {
     deck.push(new Card('Madamoiselle', 'person', 9, 0, null, 3));
     deck.push(new Card('Madamoiselle', 'person', 7, 0, null, 2));
     deck.push(new Card('Madamoiselle', 'person', 7, 0, null, 2));
-    
+
     deck.push(new Card('Jack of all Trades', 'person', 4, 0, null, 1));
     deck.push(new Card('Jack of all Trades', 'person', 4, 0, null, 1));
     deck.push(new Card('Jack of all Trades', 'person', 4, 0, null, 1));
@@ -276,9 +281,9 @@ function composeCard(card) {
 
 // Check if the purchase button should be displayed
 // Should happen every time a card is dealt
-function checkIfAffordable(card) { 
-    
-    if(isDeckDisabled) {
+function checkIfAffordable(card) {
+
+    if (isDeckDisabled) {
         return;
     }
     console.log('Checking affordability of: ', card);
@@ -302,24 +307,42 @@ function checkIfAffordable(card) {
 function purchaseCard(cardId) {
     console.log('Purchase button clicked');
 
+    let purchasedCard = board.splice(board.findIndex(card => card.id === cardId), 1);
+    console.log('purchasedCard :>> ', purchasedCard);
+
     // Get the number of coins for the card with this cardId
-    let cardCoins = board.find(x => x.id === cardId).coins;
+    let cardCoins = purchasedCard[0].coins;
     console.log('cardCoins :>> ', cardCoins);
 
-    // Remove that many cards from playerCoins
-    for (let i = 0; i < cardCoins; i++) {
-        discardPile.push(playerCoins.pop());
-        console.log('Moving a card from playerCoins to discardPile');
+    // If card is a ship...
+    if (purchasedCard[0].type === 'ship') {
+
+        // ...add the right number of cards to playerCoins
+        for (let index = 0; index < cardCoins; index++) {
+            playerCoins.push(deck.pop());
+            console.log('adding a card to playerCoins');
+        }
+        // Move the card to the discard pile
+        discardPile.push(purchasedCard[0]);
+
+    } else {
+
+        // Remove the card cost from playerCoins
+        for (let i = 0; i < cardCoins; i++) {
+            discardPile.push(playerCoins.pop());
+            console.log('Moving a card from playerCoins to discardPile');
+        }
+        // Add card to discard pile
+        playerBoard.push(purchasedCard[0]);
+
     }
-
-    let purchasedCard = board.splice(board.findIndex(card => card.id === cardId), 1);
-
-    playerBoard.push(purchasedCard[0]);
+    
     playerMoves--;
     console.log('playerBoard :>> ', playerBoard);
     console.log('board :>> ', board);
     calcPlayerMoves();
     checkOutOfMoves();
+    calcPlayerSwords();
     displayGameBoard();
     displayPlayerBoard();
 
@@ -349,17 +372,20 @@ function dealCard() {
 
         // ...otherwise/then:
         calcPlayerMoves();
+        calcPlayerSwords();
         board.push(deck.pop());
+        updateCardsRemaining();
         displayGameBoard();
         displayPlayerBoard();
-        updateCardsRemaining();
 
-        if(board[board.length - 1].type === 'ship' ){
+        if (board[board.length - 1].type === 'ship') {
             checkIfDefeatable(board[board.length - 1]);
+            console.log('Breaking out of dealCard loop');
+            return;
         }
-        
+
         checkForDuplicates(board);
-        calcPlayerSwords();
+        
     }
 }
 
@@ -405,21 +431,23 @@ function checkForDuplicates(board) {
 function checkIfDefeatable(card) {
     console.log('checkIfDefeatable: card :>> ', card);
 
-    // Set a variable for the total number of player swords
+    // Refresh player swords
     calcPlayerSwords();
 
-    // Compare player swords to ship swords
-
-    // If have enough swords, offer the modal
-    //return true;
+    // If player has enough swords, trigger modal
+    if (playerSwords >= card.swords) {
+        $('#defeat-ship-modal').modal(); // Trigger modal
+        return;
+    }
 }
 
 function defeatShip(card) {
     discardPile.push(board.pop());
+    displayGameBoard();
 }
 
 function declineDefeatOption(card) {
-    // push the card onto the board
+    checkForDuplicates(board);
 }
 
 function updateCardsRemaining() {
@@ -427,15 +455,37 @@ function updateCardsRemaining() {
 }
 
 function calcPlayerSwords() {
-    // loop through all the cards in player's board, count up the num swords
+    console.log('caclPlayerSwords invoked');
+    playerSwords = 0;
+    // loop through cards in player's board, count num swords
     for (let entry of Object.entries(playerBoard)) {
         console.log('entry :>> ', entry);
+        playerSwords += entry[1].swords;
+        console.log('playerSwords :>> ', playerSwords);
     }
     // Don't forget to invoke
 }
 
+function calculateAbilities() {
+    // TO DO: For each card in the playerBoard, check if...
+
+    // TO DO: It's a Governor: add one extra turn (move this from other function)
+
+    // TO DO: It's a Madamoiselle: discount all prices by one
+
+    // TO DO: It's a Jester: give a coin if two ships are found
+
+    // TO DO: It's an Admiral: Give two coins if there are five cards on the board when it's your turn
+
+    // TO DO: It's a trader: Give an additional coin for ships of that color
+
+    // TO DO: Don't forget to invoke
+}
+
+
+
 function calcPlayerMoves() {
-    
+
     console.log('calcPlayerMoves invoked');
 
     // If 4 or 5 different colored ships on the board, increase moves
@@ -447,12 +497,11 @@ function calcPlayerMoves() {
             playerMoves = playerMoves + 2;
             break;
     }
-    //  ===== NOT WORKING =====
+
     // If playerBoard contains Governor card, moves+1
-    for (i = 0; i < playerBoard.length ; i++) {
-    
+    for (i = 0; i < playerBoard.length; i++) {
         console.log('Checking if card is a Governor: ', playerBoard[i]);
-        if(playerBoard[i].name === 'Governor') {
+        if (playerBoard[i].name === 'Governor') {
             playerMoves++;
             console.log('Found a Governor, incrementing playerMoves');
         }
@@ -461,12 +510,26 @@ function calcPlayerMoves() {
     console.log('playerMoves :>> ', playerMoves);
 }
 
+function clearMoves() {
+    playerMoves = 0;
+    endTurn();
+}
+
 // End a turn - Move the cards from the board to the discard pile
 function endTurn() {
+
+    // If there are moves left, trigger warning
+    if (playerMoves > 0 && !isDeckDisabled) {
+        $('#moves-left-modal').modal();
+        return;
+    }
+
+    // End turn
     discardPile.push(...board);
     getDiscardCount.innerHTML = discardPile.length;
     board.length = 0;
-    playerMoves = 1;
+    playerMoves = PLAYER_DEFAULT_MOVES;
+    playerSwords = 0;
     isDeckDisabled = false;
     displayGameBoard();
 }
