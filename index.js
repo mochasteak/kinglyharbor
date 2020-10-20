@@ -289,7 +289,7 @@ function composeCard(card) {
             <p><img src="./img/coin.png" width="20px"> ${card.coins}</p>
             <p><img src="./img/shield.png" width="20px"> ${card.points}</p>
             <p><img src="./img/swords.png" width="20px"> ${card.swords}</p>
-            <button class="btn btn-primary btn-small m-2" onclick="purchaseCard(${card.id})"  ${checkIfAffordable(card) ? '' : 'disabled'}>${(card.type == 'ship') ? 'Get coins' : 'Purchase' }</button>
+            <button class="btn btn-primary btn-small m-2" onclick="purchaseCard(${card.id})"  ${checkIfAffordable(card) ? '' : 'disabled'}>${(card.type == 'ship') ? 'Take coins' : 'Purchase' }</button>
         </div>`;
 
 }
@@ -353,7 +353,7 @@ function purchaseCard(cardId) {
 
     // Get the number of coins for the card with this cardId
     let cardCoins = purchasedCard[0].coins;
-    console.log('cardCoins :>> ', cardCoins);
+    // console.log('cardCoins :>> ', cardCoins);
 
     // If card is a ship...
     if (purchasedCard[0].type === 'ship') {
@@ -379,12 +379,12 @@ function purchaseCard(cardId) {
     }
     
     playerMoves--;
-    console.log('playerBoard :>> ', playerBoard);
-    console.log('board :>> ', board);
     calcPlayerMoves();
+    console.log('Reducing player moves by one to: ' + playerMoves);
     checkOutOfMoves();
     calcPlayerSwords();
     displayBoards();
+    calcAbilities();
 }
 
 // Deal a card onto the board
@@ -404,16 +404,17 @@ function dealCard() {
             console.log('Post-shuffle discardPile :>> ', discardPile);
             deck.push(...discardPile); // Copy discard pile cards into deck
             discardPile.length = 0; // Clear discard pile
-            console.log('discardPile :>> ', discardPile);
-            console.log('deck :>> ', deck);
+            // console.log('discardPile :>> ', discardPile);
+            // console.log('deck :>> ', deck);
             getDiscardCount.innerHTML = discardPile.length; // Update the discard pile count
         }
 
         // ...otherwise/then:
         console.log('Dealing a card');
-        calcPlayerMoves();
-        calcPlayerSwords();
         board.push(deck.pop());
+
+        calcPlayerSwords();
+        calcAbilities();
         updateCardsRemaining();
         displayBoards();
 
@@ -436,6 +437,7 @@ function dealCard() {
         }
 
         checkForDuplicates(board);
+        calcPlayerMoves();
         
     }
 }
@@ -447,10 +449,10 @@ function checkOutOfMoves() {
         isDeckDisabled = true;
         // Set all the buttons to disabled
         let cardButtons = document.querySelectorAll('.board .card button');
-        console.log('cardButtons :>> ', cardButtons);
+        // console.log('cardButtons :>> ', cardButtons);
         for (let button in cardButtons) {
             button.disabled = true;
-            console.log('Setting button to hidden');
+           // console.log('Setting button to hidden');
         }
     }
 }
@@ -470,7 +472,7 @@ function checkForDuplicates(board) {
 
         if (cardType === 'ship' && colorsAlreadySeen.indexOf(color) !== -1) {
             isDeckDisabled = true;
-            console.log('discardPile :>> ', discardPile);
+            // console.log('discardPile :>> ', discardPile);
             $('#two-ships-modal').modal();
         } else if (cardType == 'ship') {
             colorsAlreadySeen.push(color);
@@ -491,6 +493,7 @@ function checkIfDefeatable(card) {
         return;
     }
     checkForDuplicates(board);
+    calcPlayerMoves();
 }
 
 function defeatShip(card) {
@@ -501,6 +504,7 @@ function defeatShip(card) {
 
 function declineDefeatOption() {
     checkForDuplicates(board);
+    calcPlayerMoves();
 }
 
 function updateCardsRemaining() {
@@ -519,8 +523,14 @@ function calcPlayerSwords() {
     // Don't forget to invoke
 }
 
-function calculateAbilities() {
+function calcAbilities() {
+    console.log('calculateAbilities invoked');
     // TO DO: For each card in the playerBoard, check if...
+
+    // Create an array of player card types
+    const playerCardTypes = Object.values(playerBoard);
+    console.log('playerCardTypes :>> ', playerCardTypes);
+    console.log(Object.values(playerBoard));
 
     // TO DO: It's a Governor: add one extra turn (move this from other function)
 
@@ -535,8 +545,6 @@ function calculateAbilities() {
     // TO DO: Don't forget to invoke
 }
 
-
-
 function calcPlayerMoves() {
 
     console.log('calcPlayerMoves invoked');
@@ -545,9 +553,11 @@ function calcPlayerMoves() {
     switch (colorsAlreadySeen.length) {
         case 4:
             playerMoves++;
+            console.log('incrementing playerMoves to: ' + playerMoves);
             break;
         case 5:
-            playerMoves = playerMoves + 2;
+            playerMoves += 2;
+            console.log('incrementing playerMoves to: ' + playerMoves);
             break;
     }
 
@@ -556,7 +566,8 @@ function calcPlayerMoves() {
         console.log('Checking if card is a Governor: ', playerBoard[i]);
         if (playerBoard[i].name === 'Governor') {
             playerMoves++;
-            console.log('Found a Governor, incrementing playerMoves');
+            console.log('Found a Governor, incrementing playerMoves to: ' + playerMoves);
+            alert('The Governor you just bought has given you an additional move this turn!');
         }
     }
     getPlayerMoves.innerHTML = playerMoves;
