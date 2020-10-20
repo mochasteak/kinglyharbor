@@ -1,5 +1,5 @@
 // Constants
-const PLAYER_DEFAULT_MOVES = 4;
+const PLAYER_DEFAULT_MOVES = 1;
 
 // Set up variables
 let getBoard = document.getElementById('board');
@@ -13,9 +13,10 @@ let getDiscardCount = document.getElementById('discard');
 let isDeckDisabled = false;
 let colorsAlreadySeen = [];
 let getMessage = document.getElementById('message');
+let getExpeditions = document.getElementById('expeditions');
 let playerBank = [];
 let playerBoard = [];
-let playerCoins = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+let playerCoins = [];
 let getPlayerCoins = document.getElementById('player-coins');
 let playerMoves = PLAYER_DEFAULT_MOVES;
 let playerSwords = 0;
@@ -200,6 +201,12 @@ function shuffleCards(deck) {
     return deck;
 }
 
+function displayBoards() {
+    displayGameBoard();
+    displayPlayerBoard();
+    displayExpeditions();
+}
+
 // Render the cards on the game board
 function displayGameBoard() {
     getBoard.innerHTML = '';
@@ -208,6 +215,13 @@ function displayGameBoard() {
     });
     getPlayerMoves.innerHTML = playerMoves;
     // console.log('playerMoves :>> ', playerMoves);
+}
+
+function displayExpeditions() {
+    getExpeditions.innerHTML = '';
+    expeditions.map(card => {
+        getExpeditions.innerHTML += composeExpeditionCard(card);
+    });
 }
 
 // Display the player's board
@@ -280,6 +294,32 @@ function composeCard(card) {
 
 }
 
+function composeExpeditionCard(card) {
+    return `
+    <div class="card">
+    <div class="card-body">
+        <div class="card-text">
+            <div class="row">
+                <div class="col expedition-points">
+                    <p>${card.points}</p>
+                </div>
+                <div class="col expedition-coins">
+                    <p>${card.coins}</p>
+                </div>
+            </div>
+            <p class="text-left expedition-label">Requires:</p>
+            <div class="expedition-items mt-2">
+                <i class="${getIcons(card.requirements[0])} fa-lg"></i><i class="${getIcons(card.requirements[1])} fa-lg"></i><i class="${getIcons(card.requirements[2]) || ''} fa-lg"></i>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <button class="btn btn-sm btn-primary">Purchase</button>
+    </div>
+</div>
+    `;
+}
+
 // Check if the purchase button should be displayed
 // Should happen every time a card is dealt
 function checkIfAffordable(card) {
@@ -344,9 +384,7 @@ function purchaseCard(cardId) {
     calcPlayerMoves();
     checkOutOfMoves();
     calcPlayerSwords();
-    displayGameBoard();
-    displayPlayerBoard();
-
+    displayBoards();
 }
 
 // Deal a card onto the board
@@ -377,8 +415,7 @@ function dealCard() {
         calcPlayerSwords();
         board.push(deck.pop());
         updateCardsRemaining();
-        displayGameBoard();
-        displayPlayerBoard();
+        displayBoards();
 
         let dealtCard = board[board.length-1];
 
@@ -388,7 +425,7 @@ function dealCard() {
             expeditions.push(board.pop());
             // Trigger expedition modal
             $('#expedition-modal').modal();
-            displayGameBoard();
+            displayBoards();
 
         }
 
@@ -462,7 +499,7 @@ function defeatShip(card) {
     displayGameBoard();
 }
 
-function declineDefeatOption(card) {
+function declineDefeatOption() {
     checkForDuplicates(board);
 }
 
@@ -547,7 +584,7 @@ function endTurn() {
     playerMoves = PLAYER_DEFAULT_MOVES;
     playerSwords = 0;
     isDeckDisabled = false;
-    displayGameBoard();
+    displayBoards();
 }
 
 
@@ -557,5 +594,4 @@ function endTurn() {
 createDeck();
 shuffleCards(deck);
 updateCardsRemaining();
-displayGameBoard();
-displayPlayerBoard();
+displayBoards();
