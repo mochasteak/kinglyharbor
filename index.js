@@ -1,6 +1,6 @@
 // Constants
 const PLAYER_DEFAULT_MOVES = 1;
-const CARDS_TO_START = 10;
+const CARDS_TO_START = 20;
 
 // Set up variables
 let deck = [];
@@ -50,7 +50,7 @@ function Card(name, type, coins, swords, color, points, requirements) {
 // Add all game cards into deck
 function createDeck() {
 
-    /*
+/*
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
@@ -105,12 +105,12 @@ function createDeck() {
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
+
+    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
+    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
+    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
+    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
 */
-    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
-    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
-    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
-    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
-
     deck.push(new Card('Sailor', 'sailor', 3, 1, null, 1));
     deck.push(new Card('Sailor', 'sailor', 3, 1, null, 1));
     deck.push(new Card('Sailor', 'sailor', 3, 1, null, 1));
@@ -327,7 +327,6 @@ function composeExpeditionCard(card) {
 }
 
 // Check if the purchase button should be displayed
-// Should happen every time a card is dealt
 function checkIfAffordable(card) {
 
     if (isDeckDisabled) {
@@ -565,7 +564,6 @@ function calcPlayerSwords() {
         playerSwords += entry[1].swords;
         console.log('playerSwords :>> ', playerSwords);
     }
-    // Don't forget to invoke
 }
 
 /*
@@ -592,9 +590,8 @@ function playerHasCard(cardName) {
 }
 */
 
-// Apply the special bonuses depending on card types
-function calcAbilities() {
-    console.log('calculateAbilities invoked');
+const getPlayerCards = () => {
+    console.log('getPlayerCards invoked');
 
     let playerCardTypes = [];
 
@@ -605,47 +602,62 @@ function calcAbilities() {
 
     const countOccurrences = arr => arr.reduce((prev, curr) => (prev[curr] = ++prev[curr] || 1, prev), {});
 
-    let playerCards;
+    console.log('output of getPlayerCards', countOccurrences(playerCardTypes));
+    return countOccurrences(playerCardTypes);
+}
 
-    playerCards = countOccurrences(playerCardTypes);
 
-    if ('Jester' in playerCards){
-        console.log('Found ' + playerCards.Jester + ' Jester cards');
+// Apply the special bonuses depending on card types
+function calcAbilities() {
+    console.log(' === calcAbilities invoked ===');
+
+    if ('Jester' in getPlayerCards()){
+        console.log('Found ' + getPlayerCards().Jester + ' Jester cards');
         // TO DO: It's a Jester: give a coin if two ships are found
     } 
 
-    if ('Pirate' in playerCards){
-        console.log('Found ' + playerCards.Pirate + ' pirate cards');
+    if ('Pirate' in getPlayerCards()){
+        console.log('Found ' + getPlayerCards().Pirate + ' pirate cards');
         // TO DO: It's a Jester: give a coin if two ships are found
     }
-    if ('Admiral' in playerCards){
-        console.log('Found ' + playerCards.Admiral + ' Admiral cards');
+    if ('Admiral' in getPlayerCards()){
+        //console.log('Found ' + getPlayerCards().Admiral + ' Admiral cards');
+        //console.log('Cards on board: ', board.length);
+        //console.log('admiralBonusGiven :>> ', !admiralBonusGiven);
         // Give two coins if there are five cards on the board when it's your turn
-        if(!admiralBonusGiven && board.length >= 5) {
-            let admiralBonus = playercards.Admiral * 2;
+        if(!admiralBonusGiven && board.length >= 5 && playerMoves > 0) {
+            //console.log('Admiral bonus function invoked');
+
+            let admiralBonus = getPlayerCards().Admiral * 2;
+
+            //console.log('admiralBonus :>> ', admiralBonus);
+
             for (let i = 0; i < admiralBonus; i++) {
                 playerCoins.push(deck.pop());
                 console.log('Adding a coin to player due to Admiral bonus. Iteration: ' + i);
             }
+            admiralBonusGiven = true;
+            //console.log('AdmiralBonusGiven set to true');
         }
-        admiralBonusGiven = true;
+        displayBoards();
     }
 
-    if ('Governor' in playerCards){
-        console.log('calcAbilities: Adding ' + playerCards.Governor + ' to playerMoves');
+    if ('Governor' in getPlayerCards()){
+        console.log('calcAbilities: Adding ' + getPlayerCards().Governor + ' to playerMoves');
         if(isNewTurn) {
-            playerMoves += playerCards.Governor;
+            playerMoves += getPlayerCards().Governor;
             calcPlayerMoves();
         }
     }
 
-    if ('Trader' in playerCards){
-        console.log('Found ' + playerCards.Trader + ' trader cards');
+    if ('Trader' in getPlayerCards()){
+        console.log('Found ' + getPlayerCards().Trader + ' trader cards');
+
     }
         // TO DO: It's a trader: Give an additional coin for ships of that color 
 
-    if ('Madamoiselle' in playerCards){
-        console.log('Found ' + playerCards.Madamoiselle + ' Madamoiselle cards');
+    if ('Madamoiselle' in getPlayerCards()){
+        console.log('Found ' + getPlayerCards().Madamoiselle + ' Madamoiselle cards');
         // TO DO: It's a Madamoiselle: discount all prices by one 
     }
         
