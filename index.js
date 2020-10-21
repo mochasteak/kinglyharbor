@@ -345,10 +345,11 @@ function checkIfAffordable(card) {
     }
 }
 
-// Move a specified card into player's board
+// Buying a card
 function purchaseCard(cardId) {
     console.log('Purchase button clicked');
 
+    // Move the card out of the game board
     let purchasedCard = board.splice(board.findIndex(card => card.id === cardId), 1);
     console.log('purchasedCard :>> ', purchasedCard);
 
@@ -374,6 +375,13 @@ function purchaseCard(cardId) {
             discardPile.push(playerCoins.pop());
             console.log('Moving a card from playerCoins to discardPile');
         }
+
+        // Apply the move bonus if it is a Governor
+        if(purchasedCard[0].name = 'Governor') {
+            playerMoves++;
+            alert('The Governor you just purhcased has given you an extra turn');
+        }
+
         // Add card to discard pile
         playerBoard.push(purchasedCard[0]);
 
@@ -431,6 +439,13 @@ function dealCard() {
 
         }
 
+        if (dealtCard.type === 'tax') {
+            console.log('Found a tax');
+            console.log('dealtCard :>> ', dealtCard);
+            collectTaxes();
+            $('#expedition-modal').modal();
+        }
+
         if (dealtCard.type === 'ship') {
             console.log('dealCard: breaking out. checkIfDefeatable');
             checkIfDefeatable(board[board.length - 1]);
@@ -440,6 +455,15 @@ function dealCard() {
         checkForDuplicates(board);
         calcPlayerMoves();
         
+    }
+}
+
+function collectTaxes() {
+    if (playerCoins >= 12) {
+        //take half the coins
+        for (let i = 0; i < (Math.floor(playerCoins.length / 2)); i++) {
+            discardPile.push(playerCoins.pop());
+        }
     }
 }
 
@@ -588,14 +612,14 @@ function calcPlayerMoves() {
     }
 
     // If playerBoard contains Governor card, moves+1
-    for (i = 0; i < playerBoard.length; i++) {
+    /*for (i = 0; i < playerBoard.length; i++) {
         console.log('Checking if card is a Governor: ', playerBoard[i]);
         if (playerBoard[i].name === 'Governor') {
             playerMoves++;
             console.log('Found a Governor, incrementing playerMoves to: ' + playerMoves);
             alert('The Governor you just bought has given you an additional move this turn!');
         }
-    }
+    }*/
     getPlayerMoves.innerHTML = playerMoves;
     console.log('playerMoves :>> ', playerMoves);
 }
