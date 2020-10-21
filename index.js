@@ -1,5 +1,6 @@
 // Constants
 const PLAYER_DEFAULT_MOVES = 1;
+const CARDS_TO_START = 10;
 
 // Set up variables
 let getBoard = document.getElementById('board');
@@ -528,12 +529,37 @@ function calcAbilities() {
     // TO DO: For each card in the playerBoard, check if...
 
     // Create an array of player card types
-    const playerCardTypes = Object.values(playerBoard);
+    let playerCardTypes = [];
+
+    for (let card of playerBoard) {
+        playerCardTypes.push(card.name);
+    }
+
     console.log('playerCardTypes :>> ', playerCardTypes);
-    console.log(Object.values(playerBoard));
 
-    // TO DO: It's a Governor: add one extra turn (move this from other function)
+    const countOccurrences = arr => arr.reduce((prev, curr) => (prev[curr] = ++prev[curr] || 1, prev), {});
 
+    const playerCards = countOccurrences(playerCardTypes);
+    console.log('playerCards :>> ', playerCards);
+
+    if('Sailor' in playerCards){
+        console.log('Found ' + playerCards.Sailor + ' sailor cards');
+    }
+    if('Pirate' in playerCards){
+        console.log('Found ' + playerCards.Pirate + ' pirate cards');
+    }
+    if('Admiral' in playerCards){
+        console.log('Found ' + playerCards.Admiral + ' Admiral cards');
+    }
+    if('Governor' in playerCards){
+        console.log('Found ' + playerCards.Governor + ' Governor cards');
+    }
+    if('Trader' in playerCards){
+        console.log('Found ' + playerCards.Governor + ' trader cards');
+    }
+
+
+        
     // TO DO: It's a Madamoiselle: discount all prices by one
 
     // TO DO: It's a Jester: give a coin if two ships are found
@@ -598,11 +624,19 @@ function endTurn() {
     displayBoards();
 }
 
+function dealToStart() {
+    for (let i = 0; i < CARDS_TO_START; i++) {
+        playerCoins.push(deck.pop());
+    }
+    
+}
+
 
 // Game flow
 
 // Start the game by creating, shuffling a deck
 createDeck();
 shuffleCards(deck);
+dealToStart();
 updateCardsRemaining();
 displayBoards();
