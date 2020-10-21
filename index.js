@@ -18,6 +18,7 @@ let fourColorBonusUsed = false;
 let isNewTurn = true;
 let admiralBonusGiven = false;
 
+// Getters
 let getBoard = document.getElementById('board');
 let getPlayerBoard = document.getElementById('player-cards');
 let getCardsRemaining = document.getElementById('cards-remaining');
@@ -28,6 +29,7 @@ let getPlayerCoins = document.getElementById('player-coins');
 let getPlayerCoinImage = document.getElementById('player-coin-image');
 let getPlayerMoves = document.getElementById('player-moves');
 let getShipColors = document.getElementById('ship-colors');
+let getAdmiralBonus = document.getElementById('admiral-bonus');
 
 
 // Factory function for cards
@@ -50,7 +52,6 @@ function Card(name, type, coins, swords, color, points, requirements) {
 // Add all game cards into deck
 function createDeck() {
 
-/*
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
@@ -110,7 +111,7 @@ function createDeck() {
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
-*/
+
     deck.push(new Card('Sailor', 'sailor', 3, 1, null, 1));
     deck.push(new Card('Sailor', 'sailor', 3, 1, null, 1));
     deck.push(new Card('Sailor', 'sailor', 3, 1, null, 1));
@@ -383,6 +384,7 @@ function purchaseCard(cardId) {
         // Apply the move bonus if it is a Governor
         if(purchasedCard[0].name === 'Governor') {
             playerMoves++;
+            isNewTurn = false;
             alert('The Governor you just purhcased has given you an extra turn');
         }
 
@@ -392,8 +394,8 @@ function purchaseCard(cardId) {
     }
     
     playerMoves--;
-    calcPlayerMoves();
     console.log('Reducing player moves by one to: ' + playerMoves);
+    calcPlayerMoves();
     calcPlayerSwords();
     displayBoards();
     calcAbilities();
@@ -466,7 +468,7 @@ function dealCard() {
 function collectTaxes() {
     console.log('collectTaxes invoked');
     console.log('Num of coins: ',playerCoins.length);
-    console.log('Tax: ', Math.floor(playerCoins.length / 2) );
+    console.log('Tax: ', Math.ceil(playerCoins.length / 2) );
 
     if (playerCoins.length >= 12) {
         //take half the coins
@@ -495,7 +497,16 @@ function checkOutOfMoves() {
 }
 
 function twoShips() {
-    // Give any player with a Jester a coin for each Jester
+    // Give any player with a Jester two coins for each Jester
+    if (getPlayerCards().Jester) {
+
+        let jesterBonus = getPlayerCards().Jester * 2;
+
+        for (let i = 0; i < jesterBonus; i++) {
+            playerCoins.push(deck.pop());
+            console.log('Adding a coin to player due to Jester bonus. Iteration: ' + i);
+        }
+    }
     endTurn();
 }
 
@@ -604,22 +615,14 @@ const getPlayerCards = () => {
 
     console.log('output of getPlayerCards', countOccurrences(playerCardTypes));
     return countOccurrences(playerCardTypes);
-}
+};
 
 
 // Apply the special bonuses depending on card types
 function calcAbilities() {
     console.log(' === calcAbilities invoked ===');
 
-    if ('Jester' in getPlayerCards()){
-        console.log('Found ' + getPlayerCards().Jester + ' Jester cards');
-        // TO DO: It's a Jester: give a coin if two ships are found
-    } 
 
-    if ('Pirate' in getPlayerCards()){
-        console.log('Found ' + getPlayerCards().Pirate + ' pirate cards');
-        // TO DO: It's a Jester: give a coin if two ships are found
-    }
     if ('Admiral' in getPlayerCards()){
         //console.log('Found ' + getPlayerCards().Admiral + ' Admiral cards');
         //console.log('Cards on board: ', board.length);
@@ -637,7 +640,8 @@ function calcAbilities() {
                 console.log('Adding a coin to player due to Admiral bonus. Iteration: ' + i);
             }
             admiralBonusGiven = true;
-            //console.log('AdmiralBonusGiven set to true');
+            getAdmiralBonus.innerText = admiralBonus;
+            $('#admiral-bonus-modal').modal();
         }
         displayBoards();
     }
@@ -678,6 +682,7 @@ function calcPlayerMoves() {
         case 4:
             if(!fourColorBonusUsed){
                 playerMoves ++;
+                console.log('Adding 1 to playerMoves: >>', playerMoves);
                 fourColorBonusUsed = true;
                 getShipColors.innerHTML = '<em>4</em>';
                 $('#additional-move-modal').modal();
@@ -685,19 +690,8 @@ function calcPlayerMoves() {
             } else {
                 break;
             }
-            console.log('incrementing playerMoves to: ' + playerMoves);
-            break;
     }
 
-    // If playerBoard contains Governor card, moves+1
-    /*for (i = 0; i < playerBoard.length; i++) {
-        console.log('Checking if card is a Governor: ', playerBoard[i]);
-        if (playerBoard[i].name === 'Governor') {
-            playerMoves++;
-            console.log('Found a Governor, incrementing playerMoves to: ' + playerMoves);
-            alert('The Governor you just bought has given you an additional move this turn!');
-        }
-    }*/
     getPlayerMoves.innerHTML = playerMoves;
     console.log('playerMoves :>> ', playerMoves);
 }
@@ -736,10 +730,7 @@ function dealToStart() {
     
 }
 
-
-// Game flow
-
-// Start the game by creating, shuffling a deck
+// Start the game
 createDeck();
 shuffleCards(deck);
 dealToStart();
