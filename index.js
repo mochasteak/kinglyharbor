@@ -3,27 +3,30 @@ const PLAYER_DEFAULT_MOVES = 1;
 const CARDS_TO_START = 10;
 
 // Set up variables
-let getBoard = document.getElementById('board');
-let getPlayerBoard = document.getElementById('player-cards');
 let deck = [];
 let discardPile = [];
 let board = [];
 let expeditions = [];
-let getCardsRemaining = document.getElementById('cards-remaining');
-let getDiscardCount = document.getElementById('discard');
-let isDeckDisabled = false;
 let colorsAlreadySeen = [];
-let getMessage = document.getElementById('message');
-let getExpeditions = document.getElementById('expeditions');
 let playerBank = [];
 let playerBoard = [];
 let playerCoins = [];
-let getPlayerCoins = document.getElementById('player-coins');
 let playerMoves = PLAYER_DEFAULT_MOVES;
 let playerSwords = 0;
+let isDeckDisabled = false;
+let fourColorBonusUsed = false;
+let isNewTurn = true;
+
+let getBoard = document.getElementById('board');
+let getPlayerBoard = document.getElementById('player-cards');
+let getCardsRemaining = document.getElementById('cards-remaining');
+let getDiscardCount = document.getElementById('discard');
+let getMessage = document.getElementById('message');
+let getExpeditions = document.getElementById('expeditions');
+let getPlayerCoins = document.getElementById('player-coins');
 let getPlayerCoinImage = document.getElementById('player-coin-image');
 let getPlayerMoves = document.getElementById('player-moves');
-
+let getShipColors = document.getElementById('ship-colors');
 
 
 // Factory function for cards
@@ -45,7 +48,7 @@ function Card(name, type, coins, swords, color, points, requirements) {
 
 // Add all game cards into deck
 function createDeck() {
-
+/*
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
@@ -89,7 +92,7 @@ function createDeck() {
     deck.push(new Card('Flute', 'ship', 3, 5, 'blue', 0));
     deck.push(new Card('Flute', 'ship', 3, 5, 'blue', 0));
     deck.push(new Card('Flute', 'ship', 3, 5, 'blue', 0));
-
+*/
     deck.push(new Card('Pinnace', 'ship', 1, 1, 'yellow', 0));
     deck.push(new Card('Pinnace', 'ship', 1, 1, 'yellow', 0));
     deck.push(new Card('Pinnace', 'ship', 1, 1, 'yellow', 0));
@@ -377,8 +380,8 @@ function purchaseCard(cardId) {
         }
 
         // Apply the move bonus if it is a Governor
-        if(purchasedCard[0].name = 'Governor') {
-            playerMoves++;
+        if(purchasedCard[0].name === 'Governor') {
+            // playerMoves++;
             alert('The Governor you just purhcased has given you an extra turn');
         }
 
@@ -390,10 +393,10 @@ function purchaseCard(cardId) {
     playerMoves--;
     calcPlayerMoves();
     console.log('Reducing player moves by one to: ' + playerMoves);
-    checkOutOfMoves();
     calcPlayerSwords();
     displayBoards();
     calcAbilities();
+    checkOutOfMoves();
 }
 
 // Deal a card onto the board
@@ -425,6 +428,7 @@ function dealCard() {
         calcPlayerSwords();
         calcAbilities();
         updateCardsRemaining();
+        isNewTurn = false;
         displayBoards();
 
         let dealtCard = board[board.length-1];
@@ -443,7 +447,7 @@ function dealCard() {
             console.log('Found a tax');
             console.log('dealtCard :>> ', dealtCard);
             collectTaxes();
-            $('#expedition-modal').modal();
+            $('#tax-modal').modal();
         }
 
         if (dealtCard.type === 'ship') {
@@ -459,12 +463,19 @@ function dealCard() {
 }
 
 function collectTaxes() {
-    if (playerCoins >= 12) {
+    console.log('collectTaxes invoked');
+    console.log('Num of coins: ',playerCoins.length);
+    console.log('Tax: ', Math.floor(playerCoins.length / 2) );
+
+    if (playerCoins.length >= 12) {
         //take half the coins
-        for (let i = 0; i < (Math.floor(playerCoins.length / 2)); i++) {
+        for (let i = 0; i <= Math.floor(playerCoins.length / 2) + 1 ; i++) {
             discardPile.push(playerCoins.pop());
+            console.log('paying 1 coin in tax');
         }
     }
+    displayBoards();
+    // TO DO: Give a bonus depending on what type of tax it is
 }
 
 function checkOutOfMoves() {
@@ -576,13 +587,15 @@ function calcAbilities() {
         console.log('Found ' + playerCards.Admiral + ' Admiral cards');
     }
     if('Governor' in playerCards){
-        console.log('Found ' + playerCards.Governor + ' Governor cards');
+        console.log('calcAbilities: Adding ' + playerCards.Governor + ' to playerMoves');
+        if(isNewTurn) {
+            playerMoves += playerCards.Governor;
+            calcPlayerMoves();
+        }
     }
     if('Trader' in playerCards){
         console.log('Found ' + playerCards.Governor + ' trader cards');
     }
-
-
         
     // TO DO: It's a Madamoiselle: discount all prices by one
 
@@ -601,12 +614,22 @@ function calcPlayerMoves() {
 
     // If 4 or 5 different colored ships on the board, increase moves
     switch (colorsAlreadySeen.length) {
-        case 4:
+        case 5:
             playerMoves++;
             console.log('incrementing playerMoves to: ' + playerMoves);
+            getShipColors.innerHTML = '<em>5</em>';
+            $('#additional-move-modal').modal();
             break;
-        case 5:
-            playerMoves += 2;
+        case 4:
+            if(!fourColorBonusUsed){
+                playerMoves ++;
+                fourColorBonusUsed = true;
+                getShipColors.innerHTML = '<em>4</em>';
+                $('#additional-move-modal').modal();
+                break;
+            } else {
+                break;
+            }
             console.log('incrementing playerMoves to: ' + playerMoves);
             break;
     }
@@ -639,12 +662,14 @@ function endTurn() {
     }
 
     // End turn
-    discardPile.push(...board);
-    getDiscardCount.innerHTML = discardPile.length;
-    board.length = 0;
+    discardPile.push(...board); // Push cards to the discard pile
+    getDiscardCount.innerHTML = discardPile.length; // Update discard pile counter
+    board.length = 0; // Clear the board
     playerMoves = PLAYER_DEFAULT_MOVES;
     playerSwords = 0;
+    fourColorBonusUsed = false;
     isDeckDisabled = false;
+    isNewTurn = true;
     displayBoards();
 }
 
