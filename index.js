@@ -1,6 +1,6 @@
 // Constants
 const PLAYER_DEFAULT_MOVES = 3;
-const CARDS_TO_START = 33;
+const CARDS_TO_START = 11;
 
 // Set up variables
 let deck = [];
@@ -15,6 +15,7 @@ let playerMoves = PLAYER_DEFAULT_MOVES;
 let playerSwords = 0;
 let isDeckDisabled = false;
 let fourColorBonusUsed = false;
+let fiveColorBonusUsed = false;
 let isNewTurn = true;
 let admiralBonusGiven = false;
 
@@ -30,6 +31,9 @@ const getPlayerCoinImage = document.getElementById('player-coin-image');
 const getPlayerMoves = document.getElementById('player-moves');
 const getShipColors = document.getElementById('ship-colors');
 const getAdmiralBonus = document.getElementById('admiral-bonus');
+const getDefeatShip = document.getElementById('defeat-ship');
+const getTaxModal = document.getElementById('tax-card');
+const getTaxDescription = document.getElementById('tax-description');
 
 
 // Factory function for cards
@@ -51,7 +55,7 @@ function Card(name, type, coins, swords, color, points, requirements) {
 
 // Add all game cards into deck
 function createDeck() {
-/*
+
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
@@ -126,7 +130,7 @@ function createDeck() {
     deck.push(new Card('Pirate', 'person', 5, 2, null, 1));
     deck.push(new Card('Pirate', 'person', 7, 2, null, 2));
     deck.push(new Card('Pirate', 'person', 9, 2, null, 3));
-*/
+
     deck.push(new Card('Trader', 'person', 3, 0, 'yellow', 1));
     deck.push(new Card('Trader', 'person', 5, 0, 'yellow', 2));
     deck.push(new Card('Trader', 'person', 3, 0, 'blue', 1));
@@ -308,8 +312,9 @@ const madamoiselleDiscount = (card) => {
 // Compose each card according to its type
 function composeCard(card) {
 
+    if(card.type !== 'tax') {
 
-    return `
+        return `
         <div class="board-card border-${card.color}">
             <h3>${card.name}</h3>
             <p><i class="${getIcons(card.name)} lead-icon"></i></p>
@@ -318,6 +323,26 @@ function composeCard(card) {
             <p><img src="./img/swords.png" width="20px"> ${card.swords}</p>
             <button class="btn btn-primary btn-small m-2" onclick="purchaseCard(${card.id})"  ${checkIfAffordable(card) ? '' : 'disabled'}>${(card.type == 'ship') ? 'Take coins' : 'Purchase' }</button>
         </div>`;
+
+    } else if (card.type === 'tax') {
+
+        if(card.requirements === 'min points') {
+            getTaxDescription.innerText = 'the least points';
+        } else {
+            getTaxDescription.innerText = 'the most swords';
+        }
+
+        return `
+        <div class="board-card border-${card.color}">
+            <h3>${card.name}</h3>
+            <p><i class="${getIcons(card.name)} lead-icon"></i></p>
+            <p><img src="./img/${card.requirements === 'min points' ? 'shield' : 'swords'}.png" width="40px"></p>
+            <p>${card.requirements}</p>
+        </div>`;
+    }
+
+
+
 
 }
 
@@ -466,7 +491,7 @@ function dealCard() {
             getDiscardCount.innerHTML = discardPile.length; // Update the discard pile count
         }
 
-        // ...otherwise/then:
+        // ...if there ARE cards in the deck:
         console.log('Dealing a card');
         board.push(deck.pop());
 
@@ -492,6 +517,8 @@ function dealCard() {
             console.log('Found a tax');
             console.log('dealtCard :>> ', dealtCard);
             collectTaxes();
+            discardPile.push(board.pop());
+            getTaxModal.innerHTML = composeCard(dealtCard);
             $('#tax-modal').modal();
         }
 
@@ -589,6 +616,7 @@ function checkIfDefeatable(card) {
 
     // If player has enough swords, trigger modal
     if (playerSwords >= card.swords) {
+        getDefeatShip.innerHTML = composeCard(card);
         console.log('Triggering defeat-ship modal');
         $('#defeat-ship-modal').modal(); // Trigger modal
         return;
@@ -708,14 +736,25 @@ function calcPlayerMoves() {
 
     console.log('calcPlayerMoves invoked');
 
+    /*
+    if(isDeckDisabled) {
+        return;
+    } */
+
     // If 4 or 5 different colored ships on the board, increase moves
     switch (colorsAlreadySeen.length) {
         case 5:
-            playerMoves++;
-            console.log('incrementing playerMoves to: ' + playerMoves);
-            getShipColors.innerHTML = '<em>5</em>';
-            $('#additional-move-modal').modal();
-            break;
+            if(!fiveColorBonusUsed) {
+                playerMoves++;
+                console.log('incrementing playerMoves to: ' + playerMoves);
+                fiveColorBonusUsed = true;
+                getShipColors.innerHTML = '<em>5</em>';
+                $('#additional-move-modal').modal();
+                break;
+            } else {
+                break;
+            }
+
         case 4:
             if (!fourColorBonusUsed) {
                 playerMoves++;
@@ -749,12 +788,13 @@ function endTurn() {
     }
 
     // End turn
-    discardPile.push(...board); // Push cards to the discard pile
-    getDiscardCount.innerHTML = discardPile.length; // Update discard pile counter
+    discardPile.push(...board); 
+    getDiscardCount.innerHTML = discardPile.length;
     board.length = 0; // Clear the board
     playerMoves = PLAYER_DEFAULT_MOVES;
     playerSwords = 0;
     fourColorBonusUsed = false;
+    fiveColorBonusUsed = false;
     admiralBonusGiven = false;
     isDeckDisabled = false;
     isNewTurn = true;
@@ -764,15 +804,15 @@ function endTurn() {
 function dealToStart() {
     for (let i = 0; i < CARDS_TO_START; i++) {
 
-        // DELETE THIS AFTER TESTING MADAMOISELLE
+        /* KEEP MADAMEOISELLE CARDS OUT OF PLAYER COINS
         let tempCard = deck.pop();
         if(tempCard.name === 'Madamoiselle') {
             deck.unshift(tempCard)
         } else {
             playerCoins.push(tempCard);
-        }
+        } */
 
-        //playerCoins.push(deck.pop());
+        playerCoins.push(deck.pop());
     }
 
 }
