@@ -51,81 +51,81 @@ function Card(name, type, coins, swords, color, points, requirements) {
 
 // Add all game cards into deck
 function createDeck() {
-
-    deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
-    deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
-    deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
-    deck.push(new Card('Frigate', 'ship', 2, 3, 'red', 0));
-    deck.push(new Card('Frigate', 'ship', 2, 3, 'red', 0));
-    deck.push(new Card('Frigate', 'ship', 2, 3, 'red', 0));
-    deck.push(new Card('Frigate', 'ship', 3, 6, 'red', 0));
-    deck.push(new Card('Frigate', 'ship', 3, 6, 'red', 0));
-    deck.push(new Card('Frigate', 'ship', 4, 99, 'red', 0));
-    deck.push(new Card('Frigate', 'ship', 4, 99, 'red', 0));
-
-    deck.push(new Card('Galleon', 'ship', 1, 2, 'black', 0));
-    deck.push(new Card('Galleon', 'ship', 1, 2, 'black', 0));
-    deck.push(new Card('Galleon', 'ship', 1, 2, 'black', 0));
-    deck.push(new Card('Galleon', 'ship', 2, 4, 'black', 0));
-    deck.push(new Card('Galleon', 'ship', 2, 4, 'black', 0));
-    deck.push(new Card('Galleon', 'ship', 2, 4, 'black', 0));
-    deck.push(new Card('Galleon', 'ship', 3, 7, 'black', 0));
-    deck.push(new Card('Galleon', 'ship', 3, 7, 'black', 0));
-    deck.push(new Card('Galleon', 'ship', 4, 99, 'black', 0));
-    deck.push(new Card('Galleon', 'ship', 4, 99, 'black', 0));
-
-    deck.push(new Card('Skiff', 'ship', 1, 1, 'green', 0));
-    deck.push(new Card('Skiff', 'ship', 1, 1, 'green', 0));
-    deck.push(new Card('Skiff', 'ship', 1, 1, 'green', 0));
-    deck.push(new Card('Skiff', 'ship', 1, 1, 'green', 0));
-    deck.push(new Card('Skiff', 'ship', 2, 3, 'green', 0));
-    deck.push(new Card('Skiff', 'ship', 2, 3, 'green', 0));
-    deck.push(new Card('Skiff', 'ship', 2, 3, 'green', 0));
-    deck.push(new Card('Skiff', 'ship', 3, 5, 'green', 0));
-    deck.push(new Card('Skiff', 'ship', 3, 5, 'green', 0));
-    deck.push(new Card('Skiff', 'ship', 3, 5, 'green', 0));
-
-    deck.push(new Card('Flute', 'ship', 1, 1, 'blue', 0));
-    deck.push(new Card('Flute', 'ship', 1, 1, 'blue', 0));
-    deck.push(new Card('Flute', 'ship', 1, 1, 'blue', 0));
-    deck.push(new Card('Flute', 'ship', 1, 1, 'blue', 0));
-    deck.push(new Card('Flute', 'ship', 2, 2, 'blue', 0));
-    deck.push(new Card('Flute', 'ship', 2, 2, 'blue', 0));
-    deck.push(new Card('Flute', 'ship', 2, 2, 'blue', 0));
-    deck.push(new Card('Flute', 'ship', 3, 5, 'blue', 0));
-    deck.push(new Card('Flute', 'ship', 3, 5, 'blue', 0));
-    deck.push(new Card('Flute', 'ship', 3, 5, 'blue', 0));
-
-    deck.push(new Card('Pinnace', 'ship', 1, 1, 'yellow', 0));
-    deck.push(new Card('Pinnace', 'ship', 1, 1, 'yellow', 0));
-    deck.push(new Card('Pinnace', 'ship', 1, 1, 'yellow', 0));
-    deck.push(new Card('Pinnace', 'ship', 1, 1, 'yellow', 0));
-    deck.push(new Card('Pinnace', 'ship', 2, 2, 'yellow', 0));
-    deck.push(new Card('Pinnace', 'ship', 2, 2, 'yellow', 0));
-    deck.push(new Card('Pinnace', 'ship', 2, 2, 'yellow', 0));
-    deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
-    deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
-    deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
 /*
+    deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
+    deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
+    deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
+    deck.push(new Card('Frigate', 'ship', 2, 3, 'red', 0));
+    deck.push(new Card('Frigate', 'ship', 2, 3, 'red', 0));
+    deck.push(new Card('Frigate', 'ship', 2, 3, 'red', 0));
+    deck.push(new Card('Frigate', 'ship', 3, 6, 'red', 0));
+    deck.push(new Card('Frigate', 'ship', 3, 6, 'red', 0));
+    deck.push(new Card('Frigate', 'ship', 4, 99, 'red', 0));
+    deck.push(new Card('Frigate', 'ship', 4, 99, 'red', 0));
+
+    deck.push(new Card('Galleon', 'ship', 1, 2, 'black', 0));
+    deck.push(new Card('Galleon', 'ship', 1, 2, 'black', 0));
+    deck.push(new Card('Galleon', 'ship', 1, 2, 'black', 0));
+    deck.push(new Card('Galleon', 'ship', 2, 4, 'black', 0));
+    deck.push(new Card('Galleon', 'ship', 2, 4, 'black', 0));
+    deck.push(new Card('Galleon', 'ship', 2, 4, 'black', 0));
+    deck.push(new Card('Galleon', 'ship', 3, 7, 'black', 0));
+    deck.push(new Card('Galleon', 'ship', 3, 7, 'black', 0));
+    deck.push(new Card('Galleon', 'ship', 4, 99, 'black', 0));
+    deck.push(new Card('Galleon', 'ship', 4, 99, 'black', 0));
+
+    deck.push(new Card('Skiff', 'ship', 1, 1, 'green', 0));
+    deck.push(new Card('Skiff', 'ship', 1, 1, 'green', 0));
+    deck.push(new Card('Skiff', 'ship', 1, 1, 'green', 0));
+    deck.push(new Card('Skiff', 'ship', 1, 1, 'green', 0));
+    deck.push(new Card('Skiff', 'ship', 2, 3, 'green', 0));
+    deck.push(new Card('Skiff', 'ship', 2, 3, 'green', 0));
+    deck.push(new Card('Skiff', 'ship', 2, 3, 'green', 0));
+    deck.push(new Card('Skiff', 'ship', 3, 5, 'green', 0));
+    deck.push(new Card('Skiff', 'ship', 3, 5, 'green', 0));
+    deck.push(new Card('Skiff', 'ship', 3, 5, 'green', 0));
+
+    deck.push(new Card('Flute', 'ship', 1, 1, 'blue', 0));
+    deck.push(new Card('Flute', 'ship', 1, 1, 'blue', 0));
+    deck.push(new Card('Flute', 'ship', 1, 1, 'blue', 0));
+    deck.push(new Card('Flute', 'ship', 1, 1, 'blue', 0));
+    deck.push(new Card('Flute', 'ship', 2, 2, 'blue', 0));
+    deck.push(new Card('Flute', 'ship', 2, 2, 'blue', 0));
+    deck.push(new Card('Flute', 'ship', 2, 2, 'blue', 0));
+    deck.push(new Card('Flute', 'ship', 3, 5, 'blue', 0));
+    deck.push(new Card('Flute', 'ship', 3, 5, 'blue', 0));
+    deck.push(new Card('Flute', 'ship', 3, 5, 'blue', 0));
+
+    deck.push(new Card('Pinnace', 'ship', 1, 1, 'yellow', 0));
+    deck.push(new Card('Pinnace', 'ship', 1, 1, 'yellow', 0));
+    deck.push(new Card('Pinnace', 'ship', 1, 1, 'yellow', 0));
+    deck.push(new Card('Pinnace', 'ship', 1, 1, 'yellow', 0));
+    deck.push(new Card('Pinnace', 'ship', 2, 2, 'yellow', 0));
+    deck.push(new Card('Pinnace', 'ship', 2, 2, 'yellow', 0));
+    deck.push(new Card('Pinnace', 'ship', 2, 2, 'yellow', 0));
+    deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
+    deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
+    deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
+
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
 
-    deck.push(new Card('Sailor', 'sailor', 3, 1, null, 1));
-    deck.push(new Card('Sailor', 'sailor', 3, 1, null, 1));
-    deck.push(new Card('Sailor', 'sailor', 3, 1, null, 1));
-    deck.push(new Card('Sailor', 'sailor', 3, 1, null, 1));
-    deck.push(new Card('Sailor', 'sailor', 3, 1, null, 1));
-    deck.push(new Card('Sailor', 'sailor', 3, 1, null, 1));
-    deck.push(new Card('Sailor', 'sailor', 3, 1, null, 1));
-    deck.push(new Card('Sailor', 'sailor', 5, 1, null, 2));
-    deck.push(new Card('Sailor', 'sailor', 5, 1, null, 2));
-    deck.push(new Card('Sailor', 'sailor', 7, 1, null, 3));
+    deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
+    deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
+    deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
+    deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
+    deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
+    deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
+    deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
+    deck.push(new Card('Sailor', 'person', 5, 1, null, 2));
+    deck.push(new Card('Sailor', 'person', 5, 1, null, 2));
+    deck.push(new Card('Sailor', 'person', 7, 1, null, 3));
 
-    deck.push(new Card('Pirate', 'sailor', 5, 2, null, 1));
-    deck.push(new Card('Pirate', 'sailor', 7, 2, null, 2));
-    deck.push(new Card('Pirate', 'sailor', 9, 2, null, 3));
+    deck.push(new Card('Pirate', 'person', 5, 2, null, 1));
+    deck.push(new Card('Pirate', 'person', 7, 2, null, 2));
+    deck.push(new Card('Pirate', 'person', 9, 2, null, 3));
 */
     deck.push(new Card('Trader', 'person', 3, 0, 'yellow', 1));
     deck.push(new Card('Trader', 'person', 5, 0, 'yellow', 2));
@@ -137,7 +137,7 @@ function createDeck() {
     deck.push(new Card('Trader', 'person', 3, 0, 'red', 1));
     deck.push(new Card('Trader', 'person', 3, 0, 'black', 1));
     deck.push(new Card('Trader', 'person', 3, 0, 'black', 1));
-/*
+
     deck.push(new Card('Governor', 'person', 8, 0, null, 0));
     deck.push(new Card('Governor', 'person', 8, 0, null, 0));
     deck.push(new Card('Governor', 'person', 8, 0, null, 0));
@@ -189,7 +189,7 @@ function createDeck() {
     deck.push(new Card('Expedition', 'expedition', 3, 0, null, 6, ['Priest', 'Priest', 'Settler']));
     deck.push(new Card('Expedition', 'expedition', 3, 0, null, 6, ['Captain', 'Captain', 'Settler']));
     deck.push(new Card('Expedition', 'expedition', 3, 0, null, 5, ['Captain', 'Priest', 'Settler']));
-*/
+
     console.log('Just created deck: ', deck);
 
 }
@@ -289,11 +289,29 @@ function getIcons(text) {
 
 // Compose each card according to its type
 function composeCard(card) {
+
+    // If the card is a person, and there is a Madamoiselle, decrease price 1 per Madamoiselle
+    let madamoiselleDiscount = 0;
+
+    if (card.type === 'person' && 'Madamoiselle' in getPlayerCards()) {
+        console.log('Card is a person AND found a Madame in playerBoard');
+
+        // Check the number of Madamoiselle cards
+        for(let i = 0; i < playerBoard.length; i++) {
+            if(playerBoard[i].name === 'Madamoiselle') {
+                madamoiselleDiscount++;
+                console.log(`Adding 1 to Madame discount`);
+                console.log('madamoiselleDiscount :>> ', madamoiselleDiscount);
+            }
+        }
+    }
+
+
     return `
         <div class="board-card border-${card.color}">
             <h3>${card.name}</h3>
             <p><i class="${getIcons(card.name)} lead-icon"></i></p>
-            <p><img src="./img/coin.png" width="20px"> ${card.coins}</p>
+            <p><img src="./img/coin.png" width="20px"> ${card.coins - madamoiselleDiscount >=0 ? card.coins - madamoiselleDiscount : 0}</p>
             <p><img src="./img/shield.png" width="20px"> ${card.points}</p>
             <p><img src="./img/swords.png" width="20px"> ${card.swords}</p>
             <button class="btn btn-primary btn-small m-2" onclick="purchaseCard(${card.id})"  ${checkIfAffordable(card) ? '' : 'disabled'}>${(card.type == 'ship') ? 'Take coins' : 'Purchase' }</button>
@@ -682,13 +700,6 @@ function calcAbilities() {
             calcPlayerMoves();
         }
     }
-
-
-    if ('Madamoiselle' in getPlayerCards()) {
-        console.log('Found ' + getPlayerCards().Madamoiselle + ' Madamoiselle cards');
-        // TO DO: It's a Madamoiselle: discount all prices by one 
-    }
-
 }
 
 function calcPlayerMoves() {
