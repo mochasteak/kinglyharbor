@@ -1,6 +1,6 @@
 // Constants
-const PLAYER_DEFAULT_MOVES = 1;
-const CARDS_TO_START = 20;
+const PLAYER_DEFAULT_MOVES = 3;
+const CARDS_TO_START = 33;
 
 // Set up variables
 let deck = [];
@@ -287,11 +287,9 @@ function getIcons(text) {
     }
 }
 
-// Compose each card according to its type
-function composeCard(card) {
+const madamoiselleDiscount = (card) => {
 
-    // If the card is a person, and there is a Madamoiselle, decrease price 1 per Madamoiselle
-    let madamoiselleDiscount = 0;
+    let discount = 0;
 
     if (card.type === 'person' && 'Madamoiselle' in getPlayerCards()) {
         console.log('Card is a person AND found a Madame in playerBoard');
@@ -299,19 +297,23 @@ function composeCard(card) {
         // Check the number of Madamoiselle cards
         for(let i = 0; i < playerBoard.length; i++) {
             if(playerBoard[i].name === 'Madamoiselle') {
-                madamoiselleDiscount++;
-                console.log(`Adding 1 to Madame discount`);
-                console.log('madamoiselleDiscount :>> ', madamoiselleDiscount);
+                discount++;
             }
         }
     }
+    console.log('Madamoiselle discount :>> ', discount);
+    return discount;
+};
+
+// Compose each card according to its type
+function composeCard(card) {
 
 
     return `
         <div class="board-card border-${card.color}">
             <h3>${card.name}</h3>
             <p><i class="${getIcons(card.name)} lead-icon"></i></p>
-            <p><img src="./img/coin.png" width="20px"> ${card.coins - madamoiselleDiscount >=0 ? card.coins - madamoiselleDiscount : 0}</p>
+            <p><img src="./img/coin.png" width="20px"> ${(card.coins - madamoiselleDiscount(card) >= 0) ? card.coins - madamoiselleDiscount(card) : 0 }</p>
             <p><img src="./img/shield.png" width="20px"> ${card.points}</p>
             <p><img src="./img/swords.png" width="20px"> ${card.swords}</p>
             <button class="btn btn-primary btn-small m-2" onclick="purchaseCard(${card.id})"  ${checkIfAffordable(card) ? '' : 'disabled'}>${(card.type == 'ship') ? 'Take coins' : 'Purchase' }</button>
@@ -351,19 +353,19 @@ function checkIfAffordable(card) {
     if (isDeckDisabled) {
         return;
     }
-    //console.log('Checking affordability of: ', card);
+    // Taxes and expeditions cannot be bought
     if (card.type === ('tax' || 'expedition')) {
-        //console.log('Affordable: false');
         return false;
+
+    // Ships are always 'purchaseable'
     } else if (card.type === 'ship' && !isDeckDisabled) {
-        //console.log('Affordable: true');
         return true;
+
+    // For all 'person' cards, calculate affordability (incl discounts)
     } else {
-        if (card.coins <= playerCoins.length) {
-            //console.log('Affordable: true');
+        if (card.coins - madamoiselleDiscount(card) <= playerCoins.length) {
             return true;
         }
-        //console.log('Affordable: true');
         return false;
     }
 }
@@ -761,9 +763,22 @@ function endTurn() {
 
 function dealToStart() {
     for (let i = 0; i < CARDS_TO_START; i++) {
-        playerCoins.push(deck.pop());
+
+        // DELETE THIS AFTER TESTING MADAMOISELLE
+        let tempCard = deck.pop();
+        if(tempCard.name === 'Madamoiselle') {
+            deck.unshift(tempCard)
+        } else {
+            playerCoins.push(tempCard);
+        }
+
+        //playerCoins.push(deck.pop());
     }
 
+}
+
+function showPlayerCoins() {
+    console.log('playerCoins: >> ', playerCoins);
 }
 
 // Start the game
