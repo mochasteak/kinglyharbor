@@ -19,17 +19,17 @@ let isNewTurn = true;
 let admiralBonusGiven = false;
 
 // Getters
-let getBoard = document.getElementById('board');
-let getPlayerBoard = document.getElementById('player-cards');
-let getCardsRemaining = document.getElementById('cards-remaining');
-let getDiscardCount = document.getElementById('discard');
-let getMessage = document.getElementById('message');
-let getExpeditions = document.getElementById('expeditions');
-let getPlayerCoins = document.getElementById('player-coins');
-let getPlayerCoinImage = document.getElementById('player-coin-image');
-let getPlayerMoves = document.getElementById('player-moves');
-let getShipColors = document.getElementById('ship-colors');
-let getAdmiralBonus = document.getElementById('admiral-bonus');
+const getBoard = document.getElementById('board');
+const getPlayerBoard = document.getElementById('player-cards');
+const getCardsRemaining = document.getElementById('cards-remaining');
+const getDiscardCount = document.getElementById('discard');
+const getMessage = document.getElementById('message');
+const getExpeditions = document.getElementById('expeditions');
+const getPlayerCoins = document.getElementById('player-coins');
+const getPlayerCoinImage = document.getElementById('player-coin-image');
+const getPlayerMoves = document.getElementById('player-moves');
+const getShipColors = document.getElementById('ship-colors');
+const getAdmiralBonus = document.getElementById('admiral-bonus');
 
 
 // Factory function for cards
@@ -106,7 +106,7 @@ function createDeck() {
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
-
+/*
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
@@ -126,7 +126,7 @@ function createDeck() {
     deck.push(new Card('Pirate', 'sailor', 5, 2, null, 1));
     deck.push(new Card('Pirate', 'sailor', 7, 2, null, 2));
     deck.push(new Card('Pirate', 'sailor', 9, 2, null, 3));
-
+*/
     deck.push(new Card('Trader', 'person', 3, 0, 'yellow', 1));
     deck.push(new Card('Trader', 'person', 5, 0, 'yellow', 2));
     deck.push(new Card('Trader', 'person', 3, 0, 'blue', 1));
@@ -137,7 +137,7 @@ function createDeck() {
     deck.push(new Card('Trader', 'person', 3, 0, 'red', 1));
     deck.push(new Card('Trader', 'person', 3, 0, 'black', 1));
     deck.push(new Card('Trader', 'person', 3, 0, 'black', 1));
-
+/*
     deck.push(new Card('Governor', 'person', 8, 0, null, 0));
     deck.push(new Card('Governor', 'person', 8, 0, null, 0));
     deck.push(new Card('Governor', 'person', 8, 0, null, 0));
@@ -189,7 +189,7 @@ function createDeck() {
     deck.push(new Card('Expedition', 'expedition', 3, 0, null, 6, ['Priest', 'Priest', 'Settler']));
     deck.push(new Card('Expedition', 'expedition', 3, 0, null, 6, ['Captain', 'Captain', 'Settler']));
     deck.push(new Card('Expedition', 'expedition', 3, 0, null, 5, ['Captain', 'Priest', 'Settler']));
-
+*/
     console.log('Just created deck: ', deck);
 
 }
@@ -365,8 +365,30 @@ function purchaseCard(cardId) {
     // If card is a ship...
     if (purchasedCard[0].type === 'ship') {
 
+        let traderBonus = 0;
+
+        // Check if there is a trader with the same color as the ship in player's board
+        if ('Trader' in getPlayerCards()) {
+            console.log('Found a Trader in playerBoard');
+
+            // If there is, set up variable to store bonus 
+            let shipColor = purchasedCard[0].color;
+            console.log('shipColor :>> ', shipColor);
+            console.log('numTraders :>> ', getPlayerCards().Trader);
+
+            // Check the number and color of Trader cards
+            for(let i = 0; i < playerBoard.length; i++) {
+                if(playerBoard[i].name === 'Trader' && playerBoard[i].color === shipColor) {
+                    console.log(`Found a ${shipColor} trader!`);
+                    traderBonus++;
+                    console.log(`Adding 1 to traderBonus`);
+                    console.log('traderBonus :>> ', traderBonus);
+                }
+            }
+        }
+
         // ...add the right number of cards to playerCoins
-        for (let index = 0; index < cardCoins; index++) {
+        for (let index = 0; index < cardCoins + traderBonus; index++) {
             playerCoins.push(deck.pop());
             console.log('adding a card to playerCoins');
         }
@@ -382,7 +404,7 @@ function purchaseCard(cardId) {
         }
 
         // Apply the move bonus if it is a Governor
-        if(purchasedCard[0].name === 'Governor') {
+        if (purchasedCard[0].name === 'Governor') {
             playerMoves++;
             isNewTurn = false;
             alert('The Governor you just purhcased has given you an extra turn');
@@ -392,7 +414,7 @@ function purchaseCard(cardId) {
         playerBoard.push(purchasedCard[0]);
 
     }
-    
+
     playerMoves--;
     console.log('Reducing player moves by one to: ' + playerMoves);
     calcPlayerMoves();
@@ -434,7 +456,7 @@ function dealCard() {
         isNewTurn = false;
         displayBoards();
 
-        let dealtCard = board[board.length-1];
+        let dealtCard = board[board.length - 1];
 
         if (dealtCard.type === 'expedition') {
             // Move it to expedition array
@@ -461,18 +483,18 @@ function dealCard() {
 
         checkForDuplicates(board);
         calcPlayerMoves();
-        
+
     }
 }
 
 function collectTaxes() {
     console.log('collectTaxes invoked');
-    console.log('Num of coins: ',playerCoins.length);
-    console.log('Tax: ', Math.ceil(playerCoins.length / 2) );
+    console.log('Num of coins: ', playerCoins.length);
+    console.log('Tax: ', Math.ceil(playerCoins.length / 2));
 
     if (playerCoins.length >= 12) {
         //take half the coins
-        for (let i = 0; i <= Math.floor(playerCoins.length / 2) + 1 ; i++) {
+        for (let i = 0; i <= Math.floor(playerCoins.length / 2) + 1; i++) {
             discardPile.push(playerCoins.pop());
             console.log('paying 1 coin in tax');
         }
@@ -491,7 +513,7 @@ function checkOutOfMoves() {
         // console.log('cardButtons :>> ', cardButtons);
         for (let button in cardButtons) {
             button.disabled = true;
-           // console.log('Setting button to hidden');
+            // console.log('Setting button to hidden');
         }
     }
 }
@@ -526,9 +548,13 @@ function checkForDuplicates(board) {
         // If there ARE two ships of the same color, trigger the modal
         if (cardType === 'ship' && colorsAlreadySeen.indexOf(color) !== -1) {
             isDeckDisabled = true;
-            $('#two-ships-modal').modal({keyboard:false});
-        
-        // If there ARE NOT two ships of the same color, add the color to the list
+            playerMoves = 0;
+            displayBoards();
+            $('#two-ships-modal').modal({
+                keyboard: false
+            });
+
+            // If there ARE NOT two ships of the same color, add the color to the list
         } else if (cardType == 'ship') {
             colorsAlreadySeen.push(color);
         }
@@ -601,6 +627,11 @@ function playerHasCard(cardName) {
 }
 */
 
+// Helper function to create an array of items and their frequency
+const countOccurrences = arr => arr.reduce((prev, curr) => (prev[curr] = ++prev[curr] || 1, prev), {});
+
+
+// Returns an array of player cards and number of them
 const getPlayerCards = () => {
     console.log('getPlayerCards invoked');
 
@@ -610,8 +641,6 @@ const getPlayerCards = () => {
         playerCardTypes.push(card.name);
     }
     console.log('playerCardTypes :>> ', playerCardTypes);
-
-    const countOccurrences = arr => arr.reduce((prev, curr) => (prev[curr] = ++prev[curr] || 1, prev), {});
 
     console.log('output of getPlayerCards', countOccurrences(playerCardTypes));
     return countOccurrences(playerCardTypes);
@@ -623,12 +652,12 @@ function calcAbilities() {
     console.log(' === calcAbilities invoked ===');
 
 
-    if ('Admiral' in getPlayerCards()){
+    if ('Admiral' in getPlayerCards()) {
         //console.log('Found ' + getPlayerCards().Admiral + ' Admiral cards');
         //console.log('Cards on board: ', board.length);
         //console.log('admiralBonusGiven :>> ', !admiralBonusGiven);
         // Give two coins if there are five cards on the board when it's your turn
-        if(!admiralBonusGiven && board.length >= 5 && playerMoves > 0) {
+        if (!admiralBonusGiven && board.length >= 5 && playerMoves > 0) {
             //console.log('Admiral bonus function invoked');
 
             let admiralBonus = getPlayerCards().Admiral * 2;
@@ -646,25 +675,20 @@ function calcAbilities() {
         displayBoards();
     }
 
-    if ('Governor' in getPlayerCards()){
+    if ('Governor' in getPlayerCards()) {
         console.log('calcAbilities: Adding ' + getPlayerCards().Governor + ' to playerMoves');
-        if(isNewTurn) {
+        if (isNewTurn) {
             playerMoves += getPlayerCards().Governor;
             calcPlayerMoves();
         }
     }
 
-    if ('Trader' in getPlayerCards()){
-        console.log('Found ' + getPlayerCards().Trader + ' trader cards');
 
-    }
-        // TO DO: It's a trader: Give an additional coin for ships of that color 
-
-    if ('Madamoiselle' in getPlayerCards()){
+    if ('Madamoiselle' in getPlayerCards()) {
         console.log('Found ' + getPlayerCards().Madamoiselle + ' Madamoiselle cards');
         // TO DO: It's a Madamoiselle: discount all prices by one 
     }
-        
+
 }
 
 function calcPlayerMoves() {
@@ -680,8 +704,8 @@ function calcPlayerMoves() {
             $('#additional-move-modal').modal();
             break;
         case 4:
-            if(!fourColorBonusUsed){
-                playerMoves ++;
+            if (!fourColorBonusUsed) {
+                playerMoves++;
                 console.log('Adding 1 to playerMoves: >>', playerMoves);
                 fourColorBonusUsed = true;
                 getShipColors.innerHTML = '<em>4</em>';
@@ -698,6 +722,7 @@ function calcPlayerMoves() {
 
 function clearMoves() {
     playerMoves = 0;
+    displayBoards();
     endTurn();
 }
 
@@ -727,7 +752,7 @@ function dealToStart() {
     for (let i = 0; i < CARDS_TO_START; i++) {
         playerCoins.push(deck.pop());
     }
-    
+
 }
 
 // Start the game
