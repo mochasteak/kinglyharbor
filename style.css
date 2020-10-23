@@ -270,6 +270,20 @@ button {
     padding: 10px;
 }
 
+#choose-players, #name-players {
+    width: 100%;
+}
+
+.btn-player {
+    min-width: 6rem;
+    margin: 10px;
+}
+
+.form-group input {
+    width: 10rem;
+    padding: 0 10px;
+}
+
 
 
 
