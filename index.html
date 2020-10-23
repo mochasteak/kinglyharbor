@@ -26,7 +26,8 @@
                 </div>
                 <div class="modal-body" id="tax-modal-body">
                     <div id="tax-card" class="d-flex justify-content-center"></div>
-                    <p>You've hit a tax. All players with 12 cards or more will lose half their cards. The player(s) with <em><span id="tax-description"></span></em> get an additional coin.</p>
+                    <p>You've hit a tax. All players with 12 cards or more will lose half their cards. The player(s)
+                        with <em><span id="tax-description"></span></em> get an additional coin.</p>
                     <p id="tax-winner"></p>
                 </div>
                 <div class="modal-footer">
@@ -59,7 +60,7 @@
 
     <!-- Additional move modal -->
     <div class="modal fade" id="additional-move-modal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">You gained a move!</h5>
@@ -78,7 +79,27 @@
         </div>
     </div>
 
-    <!-- Admiral bonus  modal -->
+    <!-- Governor purchased -->
+    <div class="modal fade" id="governor-purchased-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">You gained a move!</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>The Governor you just purchased has given you an additional move</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Got it</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admiral bonus modal -->
     <div class="modal fade" id="admiral-bonus-modal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -89,10 +110,33 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    You've earned <span id="admiral-bonus"></span>  additional coins from the Admirals in your crew. Hoo-arrh!
+                    You've earned <span id="admiral-bonus"></span> additional coins from the Admirals in your crew.
+                    Hoo-arrh!
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-dismiss="modal">Got it</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deck disabled modal -->
+    <div class="modal fade" id="deck-disabled-modal" tabindex="-1" role="dialog"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Deck is disabled</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    You can't make any more moves. Time to pass the turn to someone else Greedy McGreedyPants.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="endTurn()" data-dismiss="modal">End
+                        turn</button>
                 </div>
             </div>
         </div>

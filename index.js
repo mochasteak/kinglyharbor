@@ -1,6 +1,6 @@
 // Constants
-const PLAYER_DEFAULT_MOVES = 3;
-const CARDS_TO_START = 11;
+const PLAYER_DEFAULT_MOVES = 1;
+const CARDS_TO_START = 3;
 
 // Set up variables
 let deck = [];
@@ -310,19 +310,21 @@ const madamoiselleDiscount = (card) => {
 };
 
 // Compose each card according to its type
-function composeCard(card) {
+function composeCard(card, board = 'game') {
+
+    let cardHtml = '';
 
     if(card.type !== 'tax') {
 
-        return `
-        <div class="board-card border-${card.color}">
-            <h3>${card.name}</h3>
-            <p><i class="${getIcons(card.name)} lead-icon"></i></p>
-            <p><img src="./img/coin.png" width="20px"> ${(card.coins - madamoiselleDiscount(card) >= 0) ? card.coins - madamoiselleDiscount(card) : 0 }</p>
-            <p><img src="./img/shield.png" width="20px"> ${card.points}</p>
-            <p><img src="./img/swords.png" width="20px"> ${card.swords}</p>
-            <button class="btn btn-primary btn-small m-2" onclick="purchaseCard(${card.id})"  ${checkIfAffordable(card) ? '' : 'disabled'}>${(card.type == 'ship') ? 'Take coins' : 'Purchase' }</button>
-        </div>`;
+        cardHtml = `
+            <div class="board-card border-${card.color}">
+                <h3>${card.name}</h3>
+                <p><i class="${getIcons(card.name)} lead-icon"></i></p>
+                <p><img src="./img/coin.png" width="20px"> ${(card.coins - madamoiselleDiscount(card) >= 0) ? card.coins - madamoiselleDiscount(card) : 0 }</p>
+                <p><img src="./img/shield.png" width="20px"> ${card.points}</p>
+                <p><img src="./img/swords.png" width="20px"> ${card.swords}</p>
+                ${board === 'game' ? `<button class="btn btn-primary btn-small m-2" onclick="purchaseCard(${card.id})"  ${checkIfAffordable(card) ? '' : 'disabled'}>${(card.type == 'ship') ? 'Take coins' : 'Purchase' }</button>` : ''}
+            </div>`;
 
     } else if (card.type === 'tax') {
 
@@ -332,17 +334,16 @@ function composeCard(card) {
             getTaxDescription.innerText = 'the most swords';
         }
 
-        return `
-        <div class="board-card border-${card.color}">
-            <h3>${card.name}</h3>
-            <p><i class="${getIcons(card.name)} lead-icon"></i></p>
-            <p><img src="./img/${card.requirements === 'min points' ? 'shield' : 'swords'}.png" width="40px"></p>
-            <p>${card.requirements}</p>
-        </div>`;
+        cardHtml = `
+            <div class="board-card border-${card.color}">
+                <h3>${card.name}</h3>
+                <p><i class="${getIcons(card.name)} lead-icon"></i></p>
+                <p><img src="./img/${card.requirements === 'min points' ? 'shield' : 'swords'}.png" width="40px"></p>
+                <p>${card.requirements}</p>
+            </div>`;
     }
 
-
-
+    return cardHtml;
 
 }
 
@@ -452,7 +453,7 @@ function purchaseCard(cardId) {
         if (purchasedCard[0].name === 'Governor') {
             playerMoves++;
             isNewTurn = false;
-            alert('The Governor you just purhcased has given you an extra turn');
+            $('#governor-purchased-modal').modal();
         }
 
         // Add card to discard pile
@@ -474,7 +475,7 @@ function dealCard() {
     // If the deck is not disabled...
     if (isDeckDisabled) {
 
-        alert('The deck is disabled');
+        $('#deck-disabled-modal').modal();
         return;
 
     } else {
@@ -518,7 +519,8 @@ function dealCard() {
             console.log('dealtCard :>> ', dealtCard);
             collectTaxes();
             discardPile.push(board.pop());
-            getTaxModal.innerHTML = composeCard(dealtCard);
+            displayBoards();
+            getTaxModal.innerHTML = composeCard(dealtCard, 'modal');
             $('#tax-modal').modal();
         }
 
@@ -616,7 +618,7 @@ function checkIfDefeatable(card) {
 
     // If player has enough swords, trigger modal
     if (playerSwords >= card.swords) {
-        getDefeatShip.innerHTML = composeCard(card);
+        getDefeatShip.innerHTML = composeCard(card, 'modal');
         console.log('Triggering defeat-ship modal');
         $('#defeat-ship-modal').modal(); // Trigger modal
         return;
