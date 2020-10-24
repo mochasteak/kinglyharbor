@@ -25,30 +25,19 @@
             <div class="col-6 mx-auto">
                 <div id="choose-players" class="card mt-5">
                     <div class="card-body py-3">
-                        <h5 class="card-title">How many players?</h5>
-                        <button href="#" class="btn btn-player btn-primary my-2" onClick="playersChosen(2)">2</button>
-                        <button href="#" class="btn btn-player btn-primary my-2" onClick="playersChosen(3)">3</button>
-                        <button href="#" class="btn btn-player btn-primary my-2" onClick="playersChosen(4)">4</button>
-                        <button href="#" class="btn btn-player btn-primary my-2" onClick="playersChosen(5)">5</button>
+                        <h3 class="card-title">How many players?</h3>
+                        <button class="btn btn-player btn-primary my-2" onClick="playersChosen(2)">2</button>
+                        <button class="btn btn-player btn-primary my-2" onClick="playersChosen(3)">3</button>
+                        <button class="btn btn-player btn-primary my-2" onClick="playersChosen(4)">4</button>
+                        <button class="btn btn-player btn-primary my-2" onClick="playersChosen(5)">5</button>
                     </div>
                 </div>
 
-                <div id="name-players" class="card mt-5">
+                <div id="name-players" class="card mt-5 hidden">
                     <div class="card-body py-3">
-                        <h5 class="card-title my-3">Enter player names</h5>
+                        <h3 class="card-title my-3">Enter player names</h3>
 
-                        <form action="" class="mt-4" data-toggle="validator" role="form">
-                            <div class="form-group">
-                                <input type="text" maxlength="12" class="form-control mx-auto" id="player-name-1"
-                                    placeholder="Player 1 name" required>
-                            </div>
-
-                            <div class="form-group">
-                                <input type="text" maxlength="12" class="form-control mx-auto" id="player-name-2"
-                                    placeholder="Player 2 name" required>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary my-4">Start game</button>
+                        <form id="name-players-form" class="mt-4" data-toggle="validator" role="form">
 
 
                         </form>
@@ -66,7 +55,7 @@
     <script src="https://cdnjs.com/libraries/1000hz-bootstrap-validator"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-    <script src="./choose-players.js"></script>
+    <script src="./index.js"></script>
 </body>
 
 </html>
