@@ -1,13 +1,27 @@
 const playerNamesForm = document.forms['name-players-form'];
 const getNumPlayers = document.getElementById('choose-players');
-const getPlayerNames = document.getElementById('name-players')
+const getPlayerNames = document.getElementById('name-players');
 const getPlayersList = document.getElementById('name-players-form');
 
+const errorMsg = localStorage.getItem('error');
+if (errorMsg !== null) {
+    // Place it in an alert message
+    const getErrorMsg = document.getElementById('error-message');
+    getErrorMsg.innerHTML = `
+        ${errorMsg}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        `;
+    getErrorMsg.classList.remove('hidden');
+    localStorage.removeItem('error');
+}
 
 function playersChosen(num) {
     getNumPlayers.classList.add('hidden');
     getPlayerNames.classList.remove('hidden');
     console.log('playersChosen = ' + num);
+    localStorage.clear();
 
     // Add an input field for each player
     for (let i = 0; i < num; i++) {
@@ -35,16 +49,17 @@ playerNamesForm.addEventListener('submit', (e) => {
     console.log('playerNamesForm :>> ', playerNamesForm);
     console.log('players :>> ', players);
 
-    for (let player of players){
-        playerNames.push(player.value)
+    for (let player of players) {
+        playerNames.push(player.value);
     }
     console.log('playerNames :>> ', playerNames);
 
     localStorage.setItem("playerNames", JSON.stringify(playerNames));
 
     //redirect to game page
-    setTimeout(function(){console.log('Waiting 5 seconds to redirect');}, 5000);
+    setTimeout(function () {
+        console.log('Waiting 5 seconds to redirect');
+    }, 5000);
     window.location.href = "./game.html";
 
 });
-

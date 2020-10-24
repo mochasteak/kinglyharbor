@@ -1,9 +1,18 @@
+// Check if there playerNames, if not, redirect with error message
+if(localStorage.getItem('playerNames') === null) {
+    alert('Player names not set. Redirecting to home screen');
+    localStorage.setItem('error', 'You must select players first');
+    window.location.href = './index.html';
+}
+
 // Constants
 const PLAYER_DEFAULT_MOVES = 1;
 const CARDS_TO_START = 3;
 const playerNames = JSON.parse(localStorage.getItem("playerNames"));
 
 // Set up variables
+let turnOf = Math.floor(Math.random() * playerNames.length);
+let actingPlayer = turnOf;
 let deck = [];
 let discardPile = [];
 let board = [];
@@ -757,6 +766,7 @@ function calcPlayerMoves() {
             } else {
                 break;
             }
+            break;
 
         case 4:
             if (!fourColorBonusUsed) {
