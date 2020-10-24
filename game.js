@@ -1,6 +1,7 @@
 // Constants
 const PLAYER_DEFAULT_MOVES = 1;
 const CARDS_TO_START = 3;
+const playerNames = JSON.parse(localStorage.getItem("playerNames"));
 
 // Set up variables
 let deck = [];
