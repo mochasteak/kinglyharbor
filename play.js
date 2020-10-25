@@ -23,7 +23,7 @@ function Card(name, type) {
     return {
         name,
         type,
-    }
+    };
 }
 
 deck.push(new Card('Admiral', 'person'));

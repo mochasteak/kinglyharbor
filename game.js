@@ -20,8 +20,6 @@ let board = [];
 let expeditions = [];
 let colorsAlreadySeen = [];
 let players = [];
-let playerBoard = [];
-let playerCoins = [];
 let playerMoves = PLAYER_DEFAULT_MOVES;
 let playerSwords = 0;
 let isDeckDisabled = false;
@@ -34,6 +32,8 @@ let alreadyTakenTurn = false;
 // Getters
 const getBoard = document.getElementById('board');
 const getPlayerBoard = document.getElementById('player-cards');
+const getPlayers = document.getElementById('players');
+console.log(getPlayers);
 const getCardsRemaining = document.getElementById('cards-remaining');
 const getDiscardCount = document.getElementById('discard');
 const getMessage = document.getElementById('message');
@@ -81,6 +81,7 @@ function createPlayers(array) {
         players.push(new Player(name));
     }
     console.log('players :>> ', players);
+
 }
 
 // Add all game cards into deck
@@ -255,7 +256,21 @@ function displayGameBoard() {
         getBoard.innerHTML += composeCard(card);
     });
     getPlayerMoves.innerHTML = playerMoves;
-    // console.log('playerMoves :>> ', playerMoves);
+    
+    getPlayers.innerHTML = '';
+
+    players.map(player => {
+        getPlayers.innerHTML += `
+        <div class="player">
+        <div class="row">
+            <div class="col text-center">
+                <p>${player.name}</p>
+            <div class="player-col player-coins text-center"><span id="coins">0</span></div>
+            <div class="player-col player-points text-center"><span id="player1-score">0</span></div>
+            </div>
+        </div>   
+    </div>`;
+    });
 }
 
 function displayExpeditions() {
@@ -268,13 +283,13 @@ function displayExpeditions() {
 // Display the player's board
 function displayPlayerBoard() {
 
-    getActingPlayer.innerText = playerNames[actingPlayer];
+    console.log('displayBoard: playerCoins :>> ', players[actingPlayer].coins);
 
-    getPlayerCoins.innerHTML = playerCoins.length;
-    // console.log('playerCoins length: >>', playerCoins.length);
+    getActingPlayer.innerText = players[actingPlayer].name;
+    getPlayerCoins.innerHTML = players[actingPlayer].coins.length;
 
     // Show/hide coin image depending on num of coins
-    if (playerCoins.length <= 0) {
+    if ( players[actingPlayer].coins.length <= 0) {
         getPlayerCoinImage.classList.add('hidden');
     } else {
         getPlayerCoinImage.classList.remove('hidden');
@@ -282,7 +297,7 @@ function displayPlayerBoard() {
 
     // Render each card in playerBoard using composeCard
     getPlayerBoard.innerHTML = '';
-    playerBoard.map(card => {
+     players[actingPlayer].cards.map(card => {
         getPlayerBoard.innerHTML += composeCard(card);
     });
 }
@@ -332,8 +347,8 @@ const madamoiselleDiscount = (card) => {
         console.log('Card is a person AND found a Madame in playerBoard');
 
         // Check the number of Madamoiselle cards
-        for(let i = 0; i < playerBoard.length; i++) {
-            if(playerBoard[i].name === 'Madamoiselle') {
+        for(let i = 0; i <  players[actingPlayer].cards.length; i++) {
+            if( players[actingPlayer].cards[i].name === 'Madamoiselle') {
                 discount++;
             }
         }
@@ -422,7 +437,7 @@ function checkIfAffordable(card) {
 
     // For all 'person' cards, calculate affordability (incl discounts)
     } else {
-        if (card.coins - madamoiselleDiscount(card) <= playerCoins.length) {
+        if (card.coins - madamoiselleDiscount(card) <= players[actingPlayer].coins.length) {
             return true;
         }
         return false;
@@ -456,8 +471,8 @@ function purchaseCard(cardId) {
             console.log('numTraders :>> ', getPlayerCards().Trader);
 
             // Check the number and color of Trader cards
-            for(let i = 0; i < playerBoard.length; i++) {
-                if(playerBoard[i].name === 'Trader' && playerBoard[i].color === shipColor) {
+            for(let i = 0; i <  players[actingPlayer].cards.length; i++) {
+                if( players[actingPlayer].cards[i].name === 'Trader' &&  players[actingPlayer].cards[i].color === shipColor) {
                     console.log(`Found a ${shipColor} trader!`);
                     traderBonus++;
                     console.log(`Adding 1 to traderBonus`);
@@ -466,9 +481,9 @@ function purchaseCard(cardId) {
             }
         }
 
-        // ...add the right number of cards to playerCoins
+        // ...add the right number of cards to players[actingPlayer].coins
         for (let index = 0; index < cardCoins + traderBonus; index++) {
-            playerCoins.push(deck.pop());
+            players[actingPlayer].coins.push(deck.pop());
             console.log('adding a card to playerCoins');
         }
         // Move the card to the discard pile
@@ -478,7 +493,7 @@ function purchaseCard(cardId) {
 
         // Remove the card cost from playerCoins
         for (let i = 0; i < cardCoins; i++) {
-            discardPile.push(playerCoins.pop());
+            discardPile.push(players[actingPlayer].coins.pop());
             console.log('Moving a card from playerCoins to discardPile');
         }
 
@@ -490,7 +505,7 @@ function purchaseCard(cardId) {
         }
 
         // Add card to discard pile
-        playerBoard.push(purchasedCard[0]);
+         players[actingPlayer].cards.push(purchasedCard[0]);
 
     }
 
@@ -571,13 +586,13 @@ function dealCard() {
 
 function collectTaxes() {
     console.log('collectTaxes invoked');
-    console.log('Num of coins: ', playerCoins.length);
-    console.log('Tax: ', Math.ceil(playerCoins.length / 2));
+    console.log('Num of coins: ', players[actingPlayer].coins.length);
+    console.log('Tax: ', Math.ceil(players[actingPlayer].coins.length / 2));
 
-    if (playerCoins.length >= 12) {
+    if (players[actingPlayer].coins.length >= 12) {
         //take half the coins
-        for (let i = 0; i <= Math.floor(playerCoins.length / 2) + 1; i++) {
-            discardPile.push(playerCoins.pop());
+        for (let i = 0; i <= Math.floor( players[actingPlayer].coins.length / 2) + 1; i++) {
+            discardPile.push(players[actingPlayer].coins.pop());
             console.log('paying 1 coin in tax');
         }
     }
@@ -607,7 +622,7 @@ function twoShips() {
         let jesterBonus = getPlayerCards().Jester * 2;
 
         for (let i = 0; i < jesterBonus; i++) {
-            playerCoins.push(deck.pop());
+            players[actingPlayer].coins.push(deck.pop());
             console.log('Adding a coin to player due to Jester bonus. Iteration: ' + i);
         }
     }
@@ -679,36 +694,13 @@ function calcPlayerSwords() {
     console.log('caclPlayerSwords invoked');
     playerSwords = 0;
     // loop through cards in player's board, count num swords
-    for (let entry of Object.entries(playerBoard)) {
+    for (let entry of Object.entries( players[actingPlayer].cards)) {
         console.log('entry :>> ', entry);
         playerSwords += entry[1].swords;
         console.log('playerSwords :>> ', playerSwords);
     }
 }
 
-/*
-// Given a name of a type of card, returns number for how many player has in their board
-function playerHasCard(cardName) {
-    console.log('PlayerHasCard invoked');
-    console.log('cardName:>> ', cardName);
-
-    let playerCardTypes = [];
-
-    for (let card of playerBoard) {
-        playerCardTypes.push(card.name);
-    }
-    console.log('playerCardTypes :>> ', playerCardTypes);
-
-    const countOccurrences = arr => arr.reduce((prev, curr) => (prev[curr] = ++prev[curr] || 1, prev), {});
-    const playerCards = countOccurrences(playerCardTypes);
-    
-    console.log('playerCards :>> ', playerCards);
-    console.log('playerCards.Jester :>> ', playerCards.Jester);
-    console.log('playerCards.cardName :>> ', playerCards.cardName);
-    
-    return playerCards.cardName;
-}
-*/
 
 // Helper function to create an array of items and their frequency
 const countOccurrences = arr => arr.reduce((prev, curr) => (prev[curr] = ++prev[curr] || 1, prev), {});
@@ -720,7 +712,7 @@ const getPlayerCards = () => {
 
     let playerCardTypes = [];
 
-    for (let card of playerBoard) {
+    for (let card of  players[actingPlayer].cards) {
         playerCardTypes.push(card.name);
     }
     console.log('playerCardTypes :>> ', playerCardTypes);
@@ -748,7 +740,7 @@ function calcAbilities() {
             //console.log('admiralBonus :>> ', admiralBonus);
 
             for (let i = 0; i < admiralBonus; i++) {
-                playerCoins.push(deck.pop());
+                players[actingPlayer].coins.push(deck.pop());
                 console.log('Adding a coin to player due to Admiral bonus. Iteration: ' + i);
             }
             admiralBonusGiven = true;
@@ -815,8 +807,14 @@ function clearMoves() {
 }
 
 function cycleActingPlayer() {
-    actingPlayer++;
-    console.log('The active player has changed');
+    console.log('actingPlayer :>> ', actingPlayer);
+    console.log('players.length :>> ', players.length);
+    if (actingPlayer === players.length - 1) {
+        actingPlayer = 0;
+    } else {
+        actingPlayer++;
+    }
+    console.log(`The acting player has changed to ${players[actingPlayer].name}`);
 }
 
 // End a turn - Move the cards from the board to the discard pile
@@ -843,27 +841,15 @@ function endTurn() {
     displayBoards();
 }
 
+// Deal each player the starting amount of cards
 function dealToStart() {
-    for (let person in players) {
+    for (let person of players) {
         for (let i = 0; i < CARDS_TO_START; i++) {
-
-            /* KEEP MADAMEOISELLE CARDS OUT OF PLAYER COINS
-            let tempCard = deck.pop();
-            if(tempCard.name === 'Madamoiselle') {
-                deck.unshift(tempCard)
-            } else {
-                playerCoins.push(tempCard);
-            } */
-    
             person.coins.push(deck.pop());
         }
     }
-    console.log('players :>> ', players);
 }
 
-function showPlayerCoins() {
-    console.log('playerCoins: >> ', playerCoins);
-}
 
 // Start the game
 createDeck();

@@ -44,7 +44,7 @@ body {
 .player {
     margin-right: 10px;
     padding: 5px;
-    border: 1px solid white;
+    width: 6rem;
 }
 
 .player p {
@@ -55,21 +55,20 @@ body {
 .player-col {
     padding: 2px 5px 5px 5px;
     color: #333;
-    margin: 5px;
 }
 
 .player-coins {
     background-image: url(./img/coin.png);
     background-position: top center;
     background-repeat: no-repeat;
-    background-size: 30px 30px;
+    background-size: 24px 24px;
 }
 
 .player-points {
     background-image: url(./img/shield.png);
     background-position: top center;
     background-repeat: no-repeat;
-    background-size: 40px 40px;
+    background-size: 30px 30px;
 }
 
 #player-coins {
