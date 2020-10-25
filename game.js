@@ -71,12 +71,7 @@ function Player(name) {
     return {
         name,
         cards: [],
-        coins: [],
-        getCards() {
-            // return an array with all the card objects this player owns
-            console.log(this.cards); // Just to see if it works at all
-            return this.cards;
-        }
+        coins: []
     };
 }
 
