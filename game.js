@@ -7,7 +7,7 @@ if(localStorage.getItem('playerNames') === null) {
 
 // Constants
 const PLAYER_DEFAULT_MOVES = 1;
-const CARDS_TO_START = 8;
+const CARDS_TO_START = 3;
 const playerNames = JSON.parse(localStorage.getItem("playerNames"));
 // console.log('playerNames :>> ', playerNames);
 
@@ -172,7 +172,14 @@ function createDeck() {
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
-/*
+
+    // Delete these when done with testing
+    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
+    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
+    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
+    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
+    // <-- Delete above this
+
     deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
     deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
     deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
@@ -187,7 +194,7 @@ function createDeck() {
     deck.push(new Card('Pirate', 'person', 5, 2, null, 1));
     deck.push(new Card('Pirate', 'person', 7, 2, null, 2));
     deck.push(new Card('Pirate', 'person', 9, 2, null, 3));
-
+/*
     deck.push(new Card('Trader', 'person', 3, 0, 'yellow', 1));
     deck.push(new Card('Trader', 'person', 5, 0, 'yellow', 2));
     deck.push(new Card('Trader', 'person', 3, 0, 'blue', 1));
@@ -625,9 +632,6 @@ function collectTaxes(card) {
 
     // First, take away half the coins for any player with 12 or more
     for (let player of players) {
-        // console.log(`${player.name} has player.coins.length :>> ', ${player.coins.length}`);
-        // console.log('Math.floor of half :>> ', Math.floor(player.coins.length / 2));
-        
         if(player.coins.length >= 12) {
             // console.log('Tax threshold exceeded by ' + player.name);
             for (let i = -2; i <= Math.floor(player.coins.length / 2); i++) {
@@ -638,26 +642,46 @@ function collectTaxes(card) {
     }
     // Second, apply the minPoints or maxSwords bonus
     console.log('card.requirements :>> ', card.requirements);
+
+    // Apply min points bonus
     if (card.requirements === 'min points') {
         
         // Calculate all the points for all the players
         let playerPoints = [];
 
         for (let player of players) {
-            playerPoints.push(player.getPoints());
+            playerPoints.push([player , player.getPoints()]);
         }
-        // Add one coin to the one with the least points 
+        console.log('playerPoints :>> ', playerPoints);
         
+        // Sort the array of player points
+        playerPoints.sort((a, b) => {
+            let aPoints = a[1];
+            let bPoints = b[1];
+            if (aPoints < bPoints) {
+                return -1;
+            } else if(aPoints > bPoints) {
+                return 1;
+            }
+            return 0;
+            });
+
+        console.log('sorted playerPoints: >> ', playerPoints);
+
+        // Add one coin to the one with the least points
+        for (let player of players) {
+            if(player.getPoints() === playerPoints[0][1] ) {
+                player.coins.push(deck.pop());
+                console.log('Adding min points bonus to ' + player.name);
+            }
+        }
+
     } else {
         // Calculate all the swords for all the players
         // Add one coin to the one with teh most swords
     }
-
-
-
     
     displayBoards();
-    // TO DO: Give a bonus depending on what type of tax it is
 }
 
 function checkOutOfMoves() {
