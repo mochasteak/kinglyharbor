@@ -37,6 +37,26 @@
         </div>
     </div>
 
+    <!-- New turn modal -->
+    <div class="modal fade" id="new-turn-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><span class="player-turn"></span>'s Turn</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="tax-modal-body">
+                    <p>Heads up: the turn is changing. It is now <em><span class="player-turn"></span>'s</em> turn. Anyone who takes from their board will have to pay <span class="player-turn"></span> a one coin tax.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Got it</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Expedition modal -->
     <div class="modal fade" id="expedition-modal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -121,8 +141,7 @@
     </div>
 
     <!-- Deck disabled modal -->
-    <div class="modal fade" id="deck-disabled-modal" tabindex="-1" role="dialog"
-        aria-hidden="true">
+    <div class="modal fade" id="deck-disabled-modal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -254,7 +273,7 @@
                         <div class="col player-col player-points text-center"><span id="player1-score">0</span></div>
                     </div>
                 </div>
-                
+
                 <div class="player col">
                     <div class="row">
                         <div class="col">

@@ -1,5 +1,5 @@
 // Check if there playerNames, if not, redirect with error message
-if(localStorage.getItem('playerNames') === null) {
+if (localStorage.getItem('playerNames') === null) {
     alert('Player names not set. Redirecting to home screen');
     localStorage.setItem('error', 'You must select players first');
     window.location.href = './index.html';
@@ -9,7 +9,8 @@ if(localStorage.getItem('playerNames') === null) {
 const PLAYER_DEFAULT_MOVES = 1;
 const CARDS_TO_START = 3;
 const playerNames = JSON.parse(localStorage.getItem("playerNames"));
-// console.log('playerNames :>> ', playerNames);
+const VICTORY = 12;
+const TAX_THRESHOLD = 12;
 
 // Set up variables
 let turnOf = Math.floor(Math.random() * playerNames.length);
@@ -27,13 +28,12 @@ let fourColorBonusUsed = false;
 let fiveColorBonusUsed = false;
 let isNewTurn = true;
 let admiralBonusGiven = false;
-let alreadyTakenTurn = false;
+let alreadyTakenTurn = true;
 
 // Getters
 const getBoard = document.getElementById('board');
 const getPlayerBoard = document.getElementById('player-cards');
 const getPlayers = document.getElementById('players');
-// console.log(getPlayers);
 const getCardsRemaining = document.getElementById('cards-remaining');
 const getDiscardCount = document.getElementById('discard');
 const getMessage = document.getElementById('message');
@@ -47,6 +47,7 @@ const getDefeatShip = document.getElementById('defeat-ship');
 const getTaxModal = document.getElementById('tax-card');
 const getTaxDescription = document.getElementById('tax-description');
 const getActingPlayer = document.getElementById('acting-player');
+const getPlayerTurn = document.getElementsByClassName('player-turn');
 
 
 // Factory functions
@@ -173,13 +174,6 @@ function createDeck() {
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
 
-    // Delete these when done with testing
-    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
-    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
-    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
-    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
-    // <-- Delete above this
-
     deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
     deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
     deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
@@ -194,7 +188,7 @@ function createDeck() {
     deck.push(new Card('Pirate', 'person', 5, 2, null, 1));
     deck.push(new Card('Pirate', 'person', 7, 2, null, 2));
     deck.push(new Card('Pirate', 'person', 9, 2, null, 3));
-/*
+
     deck.push(new Card('Trader', 'person', 3, 0, 'yellow', 1));
     deck.push(new Card('Trader', 'person', 5, 0, 'yellow', 2));
     deck.push(new Card('Trader', 'person', 3, 0, 'blue', 1));
@@ -257,7 +251,7 @@ function createDeck() {
     deck.push(new Card('Expedition', 'expedition', 3, 0, null, 6, ['Priest', 'Priest', 'Settler']));
     deck.push(new Card('Expedition', 'expedition', 3, 0, null, 6, ['Captain', 'Captain', 'Settler']));
     deck.push(new Card('Expedition', 'expedition', 3, 0, null, 5, ['Captain', 'Priest', 'Settler']));
-*/
+
 
     // console.log('Just created deck: ', deck);
 
@@ -291,7 +285,7 @@ function displayGameBoard() {
         getBoard.innerHTML += composeCard(card);
     });
     getPlayerMoves.innerHTML = playerMoves;
-    
+
     getPlayers.innerHTML = '';
 
     let playerIndex = 0;
@@ -302,7 +296,7 @@ function displayGameBoard() {
         <div class="player" id="player-${playerIndex}">
             <div class="row">
                 <div class="col text-center">
-                    <p>${player.name}</p>
+                    <p>${player.name} <span class="${displayTurn(playerIndex)}"></span></p>
                 <div class="col player-col player-coins text-center"><span id="coins">${player.coins.length}</span></div>
                 <div class="col player-col player-points text-center"><span id="player1-score">${player.getPoints()}</span></div>
                 </div>
@@ -314,6 +308,18 @@ function displayGameBoard() {
     });
 
     highlightActingPlayer();
+
+    // Write the name of the player whose turn it is into the modal
+    for (let span of getPlayerTurn) {
+        span.innerText = players[turnOf].name;
+    }
+
+}
+
+function displayTurn(index) {
+    if (index === turnOf) {
+        return 'dot';
+    }
 }
 
 function displayExpeditions() {
@@ -332,7 +338,7 @@ function displayPlayerBoard() {
     getPlayerCoins.innerHTML = players[actingPlayer].coins.length;
 
     // Show/hide coin image depending on num of coins
-    if ( players[actingPlayer].coins.length <= 0) {
+    if (players[actingPlayer].coins.length <= 0) {
         getPlayerCoinImage.classList.add('hidden');
     } else {
         getPlayerCoinImage.classList.remove('hidden');
@@ -340,7 +346,7 @@ function displayPlayerBoard() {
 
     // Render each card in playerBoard using composeCard
     getPlayerBoard.innerHTML = '';
-     players[actingPlayer].cards.map(card => {
+    players[actingPlayer].cards.map(card => {
         getPlayerBoard.innerHTML += composeCard(card);
     });
 }
@@ -390,8 +396,8 @@ const madamoiselleDiscount = (card) => {
         // console.log('Card is a person AND found a Madame in playerBoard');
 
         // Check the number of Madamoiselle cards
-        for(let i = 0; i <  players[actingPlayer].cards.length; i++) {
-            if( players[actingPlayer].cards[i].name === 'Madamoiselle') {
+        for (let i = 0; i < players[actingPlayer].cards.length; i++) {
+            if (players[actingPlayer].cards[i].name === 'Madamoiselle') {
                 discount++;
             }
         }
@@ -405,7 +411,7 @@ function composeCard(card, board = 'game') {
 
     let cardHtml = '';
 
-    if(card.type !== 'tax') {
+    if (card.type !== 'tax') {
 
         cardHtml = `
             <div class="board-card border-${card.color}">
@@ -419,7 +425,7 @@ function composeCard(card, board = 'game') {
 
     } else if (card.type === 'tax') {
 
-        if(card.requirements === 'min points') {
+        if (card.requirements === 'min points') {
             getTaxDescription.innerText = 'the least points';
         } else {
             getTaxDescription.innerText = 'the most swords';
@@ -474,11 +480,11 @@ function checkIfAffordable(card) {
     if (card.type === ('tax' || 'expedition')) {
         return false;
 
-    // Ships are always 'purchaseable'
+        // Ships are always 'purchaseable'
     } else if (card.type === 'ship' && !isDeckDisabled) {
         return true;
 
-    // For all 'person' cards, calculate affordability (incl discounts)
+        // For all 'person' cards, calculate affordability (incl discounts)
     } else {
         if (card.coins - madamoiselleDiscount(card) <= players[actingPlayer].coins.length) {
             return true;
@@ -514,8 +520,8 @@ function purchaseCard(cardId) {
             // console.log('numTraders :>> ', getPlayerCards().Trader);
 
             // Check the number and color of Trader cards
-            for(let i = 0; i <  players[actingPlayer].cards.length; i++) {
-                if( players[actingPlayer].cards[i].name === 'Trader' &&  players[actingPlayer].cards[i].color === shipColor) {
+            for (let i = 0; i < players[actingPlayer].cards.length; i++) {
+                if (players[actingPlayer].cards[i].name === 'Trader' && players[actingPlayer].cards[i].color === shipColor) {
                     // console.log(`Found a ${shipColor} trader!`);
                     traderBonus++;
                     // console.log(`Adding 1 to traderBonus`);
@@ -548,7 +554,7 @@ function purchaseCard(cardId) {
         }
 
         // Add card to discard pile
-         players[actingPlayer].cards.push(purchasedCard[0]);
+        players[actingPlayer].cards.push(purchasedCard[0]);
 
     }
 
@@ -632,7 +638,7 @@ function collectTaxes(card) {
 
     // First, take away half the coins for any player with 12 or more
     for (let player of players) {
-        if(player.coins.length >= 12) {
+        if (player.coins.length >= TAX_THRESHOLD) {
             // console.log('Tax threshold exceeded by ' + player.name);
             for (let i = -2; i <= Math.floor(player.coins.length / 2); i++) {
                 // console.log('Removing 1 coin from ' + player.name);
@@ -641,46 +647,80 @@ function collectTaxes(card) {
         }
     }
     // Second, apply the minPoints or maxSwords bonus
-    console.log('card.requirements :>> ', card.requirements);
+    //console.log('card.requirements :>> ', card.requirements);
 
     // Apply min points bonus
     if (card.requirements === 'min points') {
-        
+
         // Calculate all the points for all the players
         let playerPoints = [];
 
         for (let player of players) {
-            playerPoints.push([player , player.getPoints()]);
+            playerPoints.push([player, player.getPoints()]);
         }
-        console.log('playerPoints :>> ', playerPoints);
-        
+        // console.log('playerPoints :>> ', playerPoints);
+
         // Sort the array of player points
         playerPoints.sort((a, b) => {
             let aPoints = a[1];
             let bPoints = b[1];
             if (aPoints < bPoints) {
                 return -1;
-            } else if(aPoints > bPoints) {
+            } else if (aPoints > bPoints) {
                 return 1;
             }
             return 0;
-            });
+        });
 
-        console.log('sorted playerPoints: >> ', playerPoints);
+        // console.log('sorted playerPoints: >> ', playerPoints);
 
         // Add one coin to the one with the least points
         for (let player of players) {
-            if(player.getPoints() === playerPoints[0][1] ) {
+            if (player.getPoints() === playerPoints[0][1]) {
                 player.coins.push(deck.pop());
-                console.log('Adding min points bonus to ' + player.name);
+                // console.log('Adding min points bonus to ' + player.name);
             }
         }
 
     } else {
+        // Calculate maxSwords bonus
         // Calculate all the swords for all the players
         // Add one coin to the one with teh most swords
+
+        if (card.requirements === 'max swords') {
+
+            // Calculate all the swords for all the players
+            let playerSwords = [];
+
+            for (let player of players) {
+                playerSwords.push([player, player.getSwords()]);
+            }
+            // console.log('playerSwords :>> ', playerSwords);
+
+            // Sort the array of player points
+            playerSwords.sort((a, b) => {
+                let aSwords = a[1];
+                let bSwords = b[1];
+                if (aSwords > bSwords) {
+                    return -1;
+                } else if (aSwords < bSwords) {
+                    return 1;
+                }
+                return 0;
+            });
+
+            // console.log('sorted playerSwords: >> ', playerSwords);
+
+            // Add one coin to the one with the least points
+            for (let player of players) {
+                if (player.getPoints() === playerSwords[0][1]) {
+                    player.coins.push(deck.pop());
+                    // console.log('Adding min points bonus to ' + player.name);
+                }
+            }
+        }
     }
-    
+
     displayBoards();
 }
 
@@ -778,7 +818,7 @@ function calcPlayerSwords() {
     // console.log('caclPlayerSwords invoked');
     playerSwords = 0;
     // loop through cards in player's board, count num swords
-    for (let entry of Object.entries( players[actingPlayer].cards)) {
+    for (let entry of Object.entries(players[actingPlayer].cards)) {
         // console.log('entry :>> ', entry);
         playerSwords += entry[1].swords;
         // console.log('playerSwords :>> ', playerSwords);
@@ -796,7 +836,7 @@ const getPlayerCards = () => {
 
     let playerCardTypes = [];
 
-    for (let card of  players[actingPlayer].cards) {
+    for (let card of players[actingPlayer].cards) {
         playerCardTypes.push(card.name);
     }
     // console.log('playerCardTypes :>> ', playerCardTypes);
@@ -855,7 +895,7 @@ function calcPlayerMoves() {
     // If 4 or 5 different colored ships on the board, increase moves
     switch (colorsAlreadySeen.length) {
         case 5:
-            if(!fiveColorBonusUsed) {
+            if (!fiveColorBonusUsed) {
                 playerMoves++;
                 // console.log('incrementing playerMoves to: ' + playerMoves);
                 fiveColorBonusUsed = true;
@@ -891,14 +931,37 @@ function clearMoves() {
 }
 
 function cycleActingPlayer() {
-    // console.log('actingPlayer :>> ', actingPlayer);
-    // console.log('players.length :>> ', players.length);
+    console.log('cycleActivePlayer invoked');
+
+    // Move the acting player
     if (actingPlayer === players.length - 1) {
+        console.log('setting actingPlayer index to 0');
         actingPlayer = 0;
     } else {
+        console.log('Incrementing actingPlayer');
         actingPlayer++;
     }
-    // console.log(`The acting player has changed to ${players[actingPlayer].name}`);
+    cycleTurn();
+}
+
+function cycleTurn() {
+    // Check if the TURN needs to move
+    if (actingPlayer === turnOf && alreadyTakenTurn === true) {
+
+        if (turnOf === players.length - 1) {
+            turnOf = 0;
+        } else {
+            turnOf++;
+        }
+        alreadyTakenTurn = false;
+        cycleActingPlayer();
+        $('#new-turn-modal').modal();
+
+
+    } else if (actingPlayer === turnOf && alreadyTakenTurn === false) {
+        alreadyTakenTurn = true;
+    }
+
 }
 
 function highlightActingPlayer() {
@@ -915,7 +978,7 @@ function highlightActingPlayer() {
             // console.log(getPlayerIds[i] + 'This is not the acting player');
             getPlayerIds[i].classList.remove('border');
         }
-        
+
     }
 
     // Remove the .border class from all
@@ -933,7 +996,7 @@ function endTurn() {
     }
 
     // End turn
-    discardPile.push(...board); 
+    discardPile.push(...board);
     getDiscardCount.innerHTML = discardPile.length;
     board.length = 0;
     playerMoves = PLAYER_DEFAULT_MOVES;
