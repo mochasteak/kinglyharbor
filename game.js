@@ -7,7 +7,7 @@ if(localStorage.getItem('playerNames') === null) {
 
 // Constants
 const PLAYER_DEFAULT_MOVES = 1;
-const CARDS_TO_START = 3;
+const CARDS_TO_START = 8;
 const playerNames = JSON.parse(localStorage.getItem("playerNames"));
 console.log('playerNames :>> ', playerNames);
 
@@ -71,7 +71,21 @@ function Player(name) {
     return {
         name,
         cards: [],
-        coins: []
+        coins: [],
+        getPoints() {
+            console.log('getPoints invoked');
+            let points = 0;
+            console.log('this.cards :>> ', this.cards);
+            console.log('this.cards.length :>> ', this.cards.length);
+            if (this.cards.length > 0) {
+                for (let item of this.cards) {
+                    console.log('item :>> ', item);
+                    console.log(`Adding ${item.points} to player's score`);
+                    points += item.points;
+                }
+            }
+            return points;
+        }
     };
 }
 
@@ -146,7 +160,7 @@ function createDeck() {
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
-
+/*
     deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
     deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
     deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
@@ -224,6 +238,7 @@ function createDeck() {
     deck.push(new Card('Expedition', 'expedition', 3, 0, null, 6, ['Priest', 'Priest', 'Settler']));
     deck.push(new Card('Expedition', 'expedition', 3, 0, null, 6, ['Captain', 'Captain', 'Settler']));
     deck.push(new Card('Expedition', 'expedition', 3, 0, null, 5, ['Captain', 'Priest', 'Settler']));
+*/
 
     console.log('Just created deck: ', deck);
 
@@ -251,6 +266,7 @@ function displayBoards() {
 
 // Render the cards on the game board
 function displayGameBoard() {
+    console.log('displayGameBoard invoked');
     getBoard.innerHTML = '';
     board.map(card => {
         getBoard.innerHTML += composeCard(card);
@@ -269,7 +285,7 @@ function displayGameBoard() {
                 <div class="col text-center">
                     <p>${player.name}</p>
                 <div class="col player-col player-coins text-center"><span id="coins">${player.coins.length}</span></div>
-                <div class="col player-col player-points text-center"><span id="player1-score">${player.cards}</span></div>
+                <div class="col player-col player-points text-center"><span id="player1-score">${player.getPoints()}</span></div>
                 </div>
             </div>
         </div>`;
@@ -594,16 +610,21 @@ function dealCard() {
 
 function collectTaxes() {
     console.log('collectTaxes invoked');
-    console.log('Num of coins: ', players[actingPlayer].coins.length);
-    console.log('Tax: ', Math.ceil(players[actingPlayer].coins.length / 2));
 
-    if (players[actingPlayer].coins.length >= 12) {
-        //take half the coins
-        for (let i = 0; i <= Math.floor( players[actingPlayer].coins.length / 2) + 1; i++) {
-            discardPile.push(players[actingPlayer].coins.pop());
-            console.log('paying 1 coin in tax');
+    for (let player of players) {
+        console.log(`${player.name} has player.coins.length :>> ', ${player.coins.length}`);
+        console.log('Math.floor of half :>> ', Math.floor(player.coins.length / 2));
+        
+        if(player.coins.length >= 12) {
+            console.log('Tax threshold exceeded by ' + player.name);
+            for (let i = -2; i <= Math.floor(player.coins.length / 2); i++) {
+                console.log('Removing 1 coin from ' + player.name);
+                discardPile.push(player.coins.pop());
+            }
         }
+        
     }
+    
     displayBoards();
     // TO DO: Give a bonus depending on what type of tax it is
 }
