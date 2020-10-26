@@ -271,6 +271,7 @@ function shuffleCards(deck) {
     return deck;
 }
 
+// Render all the parts of the game
 function displayBoards() {
     displayGameBoard();
     displayPlayerBoard();
@@ -296,7 +297,7 @@ function displayGameBoard() {
         <div class="player" id="player-${playerIndex}">
             <div class="row">
                 <div class="col text-center">
-                    <p>${player.name} <span class="${displayTurn(playerIndex)}"></span></p>
+                    <p>${player.name} <span class="${(playerIndex === turnOf) ? 'dot' : ''}"></span></p>
                 <div class="col player-col player-coins text-center"><span id="coins">${player.coins.length}</span></div>
                 <div class="col player-col player-points text-center"><span id="player1-score">${player.getPoints()}</span></div>
                 </div>
@@ -312,13 +313,6 @@ function displayGameBoard() {
     // Write the name of the player whose turn it is into the modal
     for (let span of getPlayerTurn) {
         span.innerText = players[turnOf].name;
-    }
-
-}
-
-function displayTurn(index) {
-    if (index === turnOf) {
-        return 'dot';
     }
 }
 
@@ -371,7 +365,7 @@ function getIcons(text) {
         case 'Jester':
             return 'far fa-smile-wink';
         case 'Admiral':
-            return 'fas fa-boat';
+            return 'fas fa-binoculars';
         case 'Sailor':
         case 'Pirate':
             return 'fas fa-skull-crossbones';
@@ -381,8 +375,8 @@ function getIcons(text) {
             return 'fas fa-anchor';
         case 'Settler':
             return 'fas fa-home';
-        case 'Madameoiselle':
-            return 'fas fa-female';
+        case 'Madamoiselle':
+            return 'fas fa-percent';
         case 'Jack of all Trades':
             return 'fas fa-asterisk';
     }
@@ -405,6 +399,12 @@ const madamoiselleDiscount = (card) => {
     // console.log('Madamoiselle discount :>> ', discount);
     return discount;
 };
+
+function calcPrice(card) {
+    // madamoiselle discount
+    // turn fee
+    // display turn fee
+}
 
 // Compose each card according to its type
 function composeCard(card, board = 'game') {
@@ -495,15 +495,17 @@ function checkIfAffordable(card) {
 
 // Buying a card
 function purchaseCard(cardId) {
-    // console.log('Purchase button clicked');
 
     // Move the card out of the game board
     let purchasedCard = board.splice(board.findIndex(card => card.id === cardId), 1);
-    // console.log('purchasedCard :>> ', purchasedCard);
 
-    // Get the number of coins for the card with this cardId
+    // Get the number of coins for this card
     let cardCoins = purchasedCard[0].coins;
-    // console.log('cardCoins :>> ', cardCoins);
+
+    // Find out if there should be a turn fee or not
+    let turnFee = (actingPlayer === turnOf) ? 0 : 1;
+    console.log('turnFee :>> ', turnFee);
+    
 
     // If card is a ship...
     if (purchasedCard[0].type === 'ship') {
@@ -512,29 +514,32 @@ function purchaseCard(cardId) {
 
         // Check if there is a trader with the same color as the ship in player's board
         if ('Trader' in getPlayerCards()) {
-            // console.log('Found a Trader in playerBoard');
 
             // If there is, set up variable to store bonus 
             let shipColor = purchasedCard[0].color;
-            // console.log('shipColor :>> ', shipColor);
-            // console.log('numTraders :>> ', getPlayerCards().Trader);
 
             // Check the number and color of Trader cards
             for (let i = 0; i < players[actingPlayer].cards.length; i++) {
                 if (players[actingPlayer].cards[i].name === 'Trader' && players[actingPlayer].cards[i].color === shipColor) {
-                    // console.log(`Found a ${shipColor} trader!`);
                     traderBonus++;
-                    // console.log(`Adding 1 to traderBonus`);
-                    // console.log('traderBonus :>> ', traderBonus);
                 }
             }
         }
 
         // ...add the right number of cards to players[actingPlayer].coins
-        for (let index = 0; index < cardCoins + traderBonus; index++) {
+        for (let index = 0; index < cardCoins + traderBonus - turnFee; index++) {
             players[actingPlayer].coins.push(deck.pop());
-            // console.log('adding a card to playerCoins');
+            console.log('paying out a coin');
         }
+
+        // If it's not this player's turn, give one card to the player whose turn it is
+        if(turnFee == 1) {
+            console.log('Paying one coin to active player for this ship');
+            players[turnOf].coins.push(deck.pop());
+            console.log('players[turnOf] :>> ', players[turnOf]);
+
+        } 
+
         // Move the card to the discard pile
         discardPile.push(purchasedCard[0]);
 
@@ -1002,6 +1007,8 @@ function endTurn() {
     playerMoves = PLAYER_DEFAULT_MOVES;
     playerSwords = 0;
     cycleActingPlayer();
+    console.log('turnOf :>> ', turnOf);
+    console.log('actingPlayer :>> ', actingPlayer);
     fourColorBonusUsed = false;
     fiveColorBonusUsed = false;
     admiralBonusGiven = false;
