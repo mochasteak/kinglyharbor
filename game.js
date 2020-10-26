@@ -259,18 +259,26 @@ function displayGameBoard() {
     
     getPlayers.innerHTML = '';
 
+    let playerIndex = 0;
+
     players.map(player => {
+
         getPlayers.innerHTML += `
-        <div class="player">
-        <div class="row">
-            <div class="col text-center">
-                <p>${player.name}</p>
-            <div class="player-col player-coins text-center"><span id="coins">0</span></div>
-            <div class="player-col player-points text-center"><span id="player1-score">0</span></div>
+        <div class="player" id="player-${playerIndex}">
+            <div class="row">
+                <div class="col text-center">
+                    <p>${player.name}</p>
+                <div class="col player-col player-coins text-center"><span id="coins">${player.coins.length}</span></div>
+                <div class="col player-col player-points text-center"><span id="player1-score">${player.cards}</span></div>
+                </div>
             </div>
-        </div>   
-    </div>`;
+        </div>`;
+
+        playerIndex++;
+
     });
+
+    highlightActingPlayer();
 }
 
 function displayExpeditions() {
@@ -815,6 +823,28 @@ function cycleActingPlayer() {
         actingPlayer++;
     }
     console.log(`The acting player has changed to ${players[actingPlayer].name}`);
+}
+
+function highlightActingPlayer() {
+    console.log('highlighActingPlayer invoked');
+    // Get all the HTML elements with class "player"
+    const getPlayerIds = document.getElementsByClassName('player');
+    console.log('getPlayerIds :>> ', getPlayerIds);
+
+    for (let i = 0; i < getPlayerIds.length; i++) {
+        if (getPlayerIds[i].id === 'player-' + actingPlayer) {
+            console.log(getPlayerIds[i] + 'This is the acting player');
+            getPlayerIds[i].classList.add('border');
+        } else {
+            console.log(getPlayerIds[i] + 'This is not the acting player');
+            getPlayerIds[i].classList.remove('border');
+        }
+        
+    }
+
+    // Remove the .border class from all
+    // Whatever the acting player is, find the div.id for that player
+    // Add the .border class to it
 }
 
 // End a turn - Move the cards from the board to the discard pile
