@@ -174,7 +174,8 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    You can only draw cards when it's your turn. (The blue dot next to a player's name indicates whose turn it is.)
+                    You can only draw cards when it's your turn. (The blue dot next to a player's name indicates whose
+                    turn it is.)
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-dismiss="modal">Got it</button>
@@ -257,57 +258,13 @@
 
     <!-- Game display -->
     <div class="game container">
+        <div class="row">
+            <div class="col text-center">
+                <h1>Kingly Harbor</h1>
+            </div>
+        </div>
         <div class="row d-flex justify-content-between">
             <div class="players col-5" id="players">
-
-                <div class="player col">
-                    <div class="row">
-                        <div class="col">
-                            <p>Brian</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col player-col player-coins text-center"><span id="coins">0</span></div>
-                        <div class="col player-col player-points text-center"><span id="player1-score">0</span></div>
-                    </div>
-                </div>
-
-                <div class="player col">
-                    <div class="row">
-                        <div class="col">
-                            <p>Robyn</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col player-col player-coins text-center"><span id="coins">0</span></div>
-                        <div class="col player-col player-points text-center"><span id="player1-score">0</span></div>
-                    </div>
-                </div>
-
-                <div class="player col">
-                    <div class="row">
-                        <div class="col">
-                            <p>Sydney</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col player-col player-coins text-center"><span id="coins">0</span></div>
-                        <div class="col player-col player-points text-center"><span id="player1-score">0</span></div>
-                    </div>
-                </div>
-
-                <div class="player col">
-                    <div class="row">
-                        <div class="col">
-                            <p>Cayden</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col player-col player-coins text-center"><span id="coins">0</span></div>
-                        <div class="col player-col player-points text-center"><span id="player1-score">0</span></div>
-                    </div>
-                </div>
-
 
             </div>
 
@@ -335,9 +292,18 @@
 
             <!-- Game Board -->
             <div class="col-9">
-                <h3>Moves available: <span id="player-moves"></span></h3>
-                <div class="board" id="board">
-
+                <div class="row">
+                    <div class="col">
+                       <h3>Game board</h3>
+                    </div>
+                    <div class="col text-right">
+                        <h3>Moves left: <span id="player-moves"></span></h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="board" id="board"></div>
+                    </div>
                 </div>
             </div>
             <div class="col text-center">
@@ -346,8 +312,6 @@
                     <h2 class="align-middle"><span id="discard"></span></h2>
                 </div>
             </div>
-
-
         </div>
 
         <div class="row my-3">

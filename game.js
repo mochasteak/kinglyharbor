@@ -392,10 +392,12 @@ const madamoiselleDiscount = (card) => {
     return discount;
 };
 
-function calcPrice(card) {
-    // madamoiselle discount
-    // turn fee
-    // display turn fee
+function turnfee() {
+    if(actingPlayer === turnOf) {
+        return 0;
+    } else {
+        return 1;
+    }
 }
 
 // Compose each card according to its type
@@ -472,13 +474,13 @@ function checkIfAffordable(card) {
     if (card.type === ('tax' || 'expedition')) {
         return false;
 
-        // Ships are always 'purchaseable'
+    // Ships are always 'purchaseable'
     } else if (card.type === 'ship' && !isDeckDisabled) {
         return true;
 
-        // For all 'person' cards, calculate affordability (incl discounts)
+    // For all 'person' cards, calculate affordability (incl discounts)
     } else {
-        if (card.coins - madamoiselleDiscount(card) <= players[actingPlayer].coins.length) {
+        if (card.coins - madamoiselleDiscount(card) + turnFee <= players[actingPlayer].coins.length) {
             return true;
         }
         return false;
@@ -494,10 +496,6 @@ function purchaseCard(cardId) {
     // Get the number of coins for this card
     let cardCoins = purchasedCard[0].coins;
 
-    // Find out if there should be a turn fee or not
-    let turnFee = (actingPlayer === turnOf) ? 0 : 1;
-    console.log('turnFee :>> ', turnFee);
-    
 
     // If card is a ship...
     if (purchasedCard[0].type === 'ship') {
@@ -524,10 +522,10 @@ function purchaseCard(cardId) {
         }
 
         // If it's not this player's turn, give one card to the player whose turn it is
-        if(turnFee == 1) {
+        if (turnFee == 1) {
             players[turnOf].coins.push(deck.pop());
 
-        } 
+        }
 
         // Move the card to the discard pile
         discardPile.push(purchasedCard[0]);
@@ -566,7 +564,7 @@ function dealCard() {
     // If the deck is disabled...
     if (isDeckDisabled) {
 
-        if(actingPlayer !== turnOf) {
+        if (actingPlayer !== turnOf) {
             console.log('Acting player NOT same as turn player');
             $('#not-your-turn-modal').modal();
             return;
@@ -930,7 +928,7 @@ function cycleActingPlayer() {
         console.log('Incrementing actingPlayer');
         actingPlayer++;
     }
-    if(actingPlayer !== turnOf) {
+    if (actingPlayer !== turnOf) {
         isDeckDisabled = true;
     }
     checkTurn();
@@ -1005,8 +1003,8 @@ function endTurn(cycle = true) {
     if (cycle) {
         cycleActingPlayer();
     }
-    
-   
+
+
     console.log('turnOf :>> ', turnOf);
     console.log('actingPlayer :>> ', actingPlayer);
 
