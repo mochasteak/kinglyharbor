@@ -465,7 +465,7 @@ function composeExpeditionCard(card) {
 // Check if the purchase button should be displayed
 function checkIfAffordable(card) {
 
-    if (isDeckDisabled) {
+    if (playerMoves == 0) {
         return;
     }
     // Taxes and expeditions cannot be bought
@@ -563,11 +563,19 @@ function purchaseCard(cardId) {
 
 // Deal a card onto the board
 function dealCard() {
-    // If the deck is not disabled...
+    // If the deck is disabled...
     if (isDeckDisabled) {
 
-        $('#deck-disabled-modal').modal();
-        return;
+        if(actingPlayer !== turnOf) {
+            console.log('Acting player NOT same as turn player');
+            $('#not-your-turn-modal').modal();
+            return;
+
+        } else {
+            console.log('Acting player SAME as turn player');
+            $('#deck-disabled-modal').modal();
+            return;
+        }
 
     } else {
 
@@ -772,7 +780,6 @@ function checkForDuplicates(board) {
             colorsAlreadySeen.push(color);
         }
     }
-    // console.log('colorsAlreadySeen :>> ', colorsAlreadySeen);
 
     return false;
 }
@@ -877,19 +884,11 @@ function calcAbilities() {
 
 function calcPlayerMoves() {
 
-    // console.log('calcPlayerMoves invoked');
-
-    /*
-    if(isDeckDisabled) {
-        return;
-    } */
-
     // If 4 or 5 different colored ships on the board, increase moves
     switch (colorsAlreadySeen.length) {
         case 5:
             if (!fiveColorBonusUsed) {
                 playerMoves++;
-                // console.log('incrementing playerMoves to: ' + playerMoves);
                 fiveColorBonusUsed = true;
                 getShipColors.innerHTML = '<em>5</em>';
                 $('#additional-move-modal').modal();
@@ -902,7 +901,6 @@ function calcPlayerMoves() {
         case 4:
             if (!fourColorBonusUsed) {
                 playerMoves++;
-                // console.log('Adding 1 to playerMoves: >>', playerMoves);
                 fourColorBonusUsed = true;
                 getShipColors.innerHTML = '<em>4</em>';
                 $('#additional-move-modal').modal();
@@ -931,6 +929,9 @@ function cycleActingPlayer() {
     } else {
         console.log('Incrementing actingPlayer');
         actingPlayer++;
+    }
+    if(actingPlayer !== turnOf) {
+        isDeckDisabled = true;
     }
     checkTurn();
 }
@@ -995,6 +996,7 @@ function endTurn(cycle = true) {
     // Things we always do regardless of actingPlayer end or turnOf end
     fourColorBonusUsed = false;
     fiveColorBonusUsed = false;
+    colorsAlreadySeen = [];
     admiralBonusGiven = false;
     isNewTurn = true;
     playerSwords = 0;
