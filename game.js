@@ -9,7 +9,7 @@ if(localStorage.getItem('playerNames') === null) {
 const PLAYER_DEFAULT_MOVES = 1;
 const CARDS_TO_START = 8;
 const playerNames = JSON.parse(localStorage.getItem("playerNames"));
-console.log('playerNames :>> ', playerNames);
+// console.log('playerNames :>> ', playerNames);
 
 // Set up variables
 let turnOf = Math.floor(Math.random() * playerNames.length);
@@ -33,7 +33,7 @@ let alreadyTakenTurn = false;
 const getBoard = document.getElementById('board');
 const getPlayerBoard = document.getElementById('player-cards');
 const getPlayers = document.getElementById('players');
-console.log(getPlayers);
+// console.log(getPlayers);
 const getCardsRemaining = document.getElementById('cards-remaining');
 const getDiscardCount = document.getElementById('discard');
 const getMessage = document.getElementById('message');
@@ -73,28 +73,40 @@ function Player(name) {
         cards: [],
         coins: [],
         getPoints() {
-            console.log('getPoints invoked');
+            // console.log('getPoints invoked');
             let points = 0;
-            console.log('this.cards :>> ', this.cards);
-            console.log('this.cards.length :>> ', this.cards.length);
+            // console.log('this.cards :>> ', this.cards);
+            // console.log('this.cards.length :>> ', this.cards.length);
             if (this.cards.length > 0) {
                 for (let item of this.cards) {
-                    console.log('item :>> ', item);
-                    console.log(`Adding ${item.points} to player's score`);
+                    // console.log('item :>> ', item);
+                    // console.log(`Adding ${item.points} to player's score`);
                     points += item.points;
                 }
             }
             return points;
+        },
+        getSwords() {
+
+            let swords = 0;
+
+            if (this.cards.length > 0) {
+                for (let item of this.cards) {
+                    swords += item.swords;
+                }
+            }
+            console.log(`${this.name} has ${swords} swords`);
+            return swords;
         }
     };
 }
 
 function createPlayers(array) {
-    console.log('array :>> ', array);
+    // console.log('array :>> ', array);
     for (let name of array) {
         players.push(new Player(name));
     }
-    console.log('players :>> ', players);
+    // console.log('players :>> ', players);
 
 }
 
@@ -240,7 +252,7 @@ function createDeck() {
     deck.push(new Card('Expedition', 'expedition', 3, 0, null, 5, ['Captain', 'Priest', 'Settler']));
 */
 
-    console.log('Just created deck: ', deck);
+    // console.log('Just created deck: ', deck);
 
 }
 
@@ -266,7 +278,7 @@ function displayBoards() {
 
 // Render the cards on the game board
 function displayGameBoard() {
-    console.log('displayGameBoard invoked');
+    // console.log('displayGameBoard invoked');
     getBoard.innerHTML = '';
     board.map(card => {
         getBoard.innerHTML += composeCard(card);
@@ -307,7 +319,7 @@ function displayExpeditions() {
 // Display the player's board
 function displayPlayerBoard() {
 
-    console.log('displayBoard: playerCoins :>> ', players[actingPlayer].coins);
+    // console.log('displayBoard: playerCoins :>> ', players[actingPlayer].coins);
 
     getActingPlayer.innerText = players[actingPlayer].name;
     getPlayerCoins.innerHTML = players[actingPlayer].coins.length;
@@ -368,7 +380,7 @@ const madamoiselleDiscount = (card) => {
     let discount = 0;
 
     if (card.type === 'person' && 'Madamoiselle' in getPlayerCards()) {
-        console.log('Card is a person AND found a Madame in playerBoard');
+        // console.log('Card is a person AND found a Madame in playerBoard');
 
         // Check the number of Madamoiselle cards
         for(let i = 0; i <  players[actingPlayer].cards.length; i++) {
@@ -377,7 +389,7 @@ const madamoiselleDiscount = (card) => {
             }
         }
     }
-    console.log('Madamoiselle discount :>> ', discount);
+    // console.log('Madamoiselle discount :>> ', discount);
     return discount;
 };
 
@@ -470,11 +482,11 @@ function checkIfAffordable(card) {
 
 // Buying a card
 function purchaseCard(cardId) {
-    console.log('Purchase button clicked');
+    // console.log('Purchase button clicked');
 
     // Move the card out of the game board
     let purchasedCard = board.splice(board.findIndex(card => card.id === cardId), 1);
-    console.log('purchasedCard :>> ', purchasedCard);
+    // console.log('purchasedCard :>> ', purchasedCard);
 
     // Get the number of coins for the card with this cardId
     let cardCoins = purchasedCard[0].coins;
@@ -487,20 +499,20 @@ function purchaseCard(cardId) {
 
         // Check if there is a trader with the same color as the ship in player's board
         if ('Trader' in getPlayerCards()) {
-            console.log('Found a Trader in playerBoard');
+            // console.log('Found a Trader in playerBoard');
 
             // If there is, set up variable to store bonus 
             let shipColor = purchasedCard[0].color;
-            console.log('shipColor :>> ', shipColor);
-            console.log('numTraders :>> ', getPlayerCards().Trader);
+            // console.log('shipColor :>> ', shipColor);
+            // console.log('numTraders :>> ', getPlayerCards().Trader);
 
             // Check the number and color of Trader cards
             for(let i = 0; i <  players[actingPlayer].cards.length; i++) {
                 if( players[actingPlayer].cards[i].name === 'Trader' &&  players[actingPlayer].cards[i].color === shipColor) {
-                    console.log(`Found a ${shipColor} trader!`);
+                    // console.log(`Found a ${shipColor} trader!`);
                     traderBonus++;
-                    console.log(`Adding 1 to traderBonus`);
-                    console.log('traderBonus :>> ', traderBonus);
+                    // console.log(`Adding 1 to traderBonus`);
+                    // console.log('traderBonus :>> ', traderBonus);
                 }
             }
         }
@@ -508,7 +520,7 @@ function purchaseCard(cardId) {
         // ...add the right number of cards to players[actingPlayer].coins
         for (let index = 0; index < cardCoins + traderBonus; index++) {
             players[actingPlayer].coins.push(deck.pop());
-            console.log('adding a card to playerCoins');
+            // console.log('adding a card to playerCoins');
         }
         // Move the card to the discard pile
         discardPile.push(purchasedCard[0]);
@@ -518,7 +530,7 @@ function purchaseCard(cardId) {
         // Remove the card cost from playerCoins
         for (let i = 0; i < cardCoins; i++) {
             discardPile.push(players[actingPlayer].coins.pop());
-            console.log('Moving a card from playerCoins to discardPile');
+            // console.log('Moving a card from playerCoins to discardPile');
         }
 
         // Apply the move bonus if it is a Governor
@@ -534,7 +546,7 @@ function purchaseCard(cardId) {
     }
 
     playerMoves--;
-    console.log('Reducing player moves by one to: ' + playerMoves);
+    // console.log('Reducing player moves by one to: ' + playerMoves);
     calcPlayerMoves();
     calcPlayerSwords();
     displayBoards();
@@ -554,9 +566,9 @@ function dealCard() {
 
         // If there are no more cards in the deck...
         if (deck.length <= 0) {
-            console.log('Pre-shuffle discardPile :>> ', discardPile);
+            // console.log('Pre-shuffle discardPile :>> ', discardPile);
             shuffleCards(discardPile); // Shuffle the discard pile
-            console.log('Post-shuffle discardPile :>> ', discardPile);
+            // console.log('Post-shuffle discardPile :>> ', discardPile);
             deck.push(...discardPile); // Copy discard pile cards into deck
             discardPile.length = 0; // Clear discard pile
             // console.log('discardPile :>> ', discardPile);
@@ -565,7 +577,7 @@ function dealCard() {
         }
 
         // ...if there ARE cards in the deck:
-        console.log('Dealing a card');
+        // console.log('Dealing a card');
         board.push(deck.pop());
 
         calcPlayerSwords();
@@ -578,7 +590,7 @@ function dealCard() {
 
         if (dealtCard.type === 'expedition') {
             // Move it to expedition array
-            console.log('Moving expedition to array');
+            // console.log('Moving expedition to array');
             expeditions.push(board.pop());
             // Trigger expedition modal
             $('#expedition-modal').modal();
@@ -587,9 +599,9 @@ function dealCard() {
         }
 
         if (dealtCard.type === 'tax') {
-            console.log('Found a tax');
-            console.log('dealtCard :>> ', dealtCard);
-            collectTaxes();
+            // console.log('Found a tax');
+            // console.log('dealtCard :>> ', dealtCard);
+            collectTaxes(dealtCard);
             discardPile.push(board.pop());
             displayBoards();
             getTaxModal.innerHTML = composeCard(dealtCard, 'modal');
@@ -597,7 +609,7 @@ function dealCard() {
         }
 
         if (dealtCard.type === 'ship') {
-            console.log('dealCard: breaking out. checkIfDefeatable');
+            // console.log('dealCard: breaking out. checkIfDefeatable');
             checkIfDefeatable(board[board.length - 1]);
             return;
         }
@@ -608,29 +620,48 @@ function dealCard() {
     }
 }
 
-function collectTaxes() {
-    console.log('collectTaxes invoked');
+function collectTaxes(card) {
+    // console.log('collectTaxes invoked');
 
+    // First, take away half the coins for any player with 12 or more
     for (let player of players) {
-        console.log(`${player.name} has player.coins.length :>> ', ${player.coins.length}`);
-        console.log('Math.floor of half :>> ', Math.floor(player.coins.length / 2));
+        // console.log(`${player.name} has player.coins.length :>> ', ${player.coins.length}`);
+        // console.log('Math.floor of half :>> ', Math.floor(player.coins.length / 2));
         
         if(player.coins.length >= 12) {
-            console.log('Tax threshold exceeded by ' + player.name);
+            // console.log('Tax threshold exceeded by ' + player.name);
             for (let i = -2; i <= Math.floor(player.coins.length / 2); i++) {
-                console.log('Removing 1 coin from ' + player.name);
+                // console.log('Removing 1 coin from ' + player.name);
                 discardPile.push(player.coins.pop());
             }
         }
-        
     }
+    // Second, apply the minPoints or maxSwords bonus
+    console.log('card.requirements :>> ', card.requirements);
+    if (card.requirements === 'min points') {
+        
+        // Calculate all the points for all the players
+        let playerPoints = [];
+
+        for (let player of players) {
+            playerPoints.push(player.getPoints());
+        }
+        // Add one coin to the one with the least points 
+        
+    } else {
+        // Calculate all the swords for all the players
+        // Add one coin to the one with teh most swords
+    }
+
+
+
     
     displayBoards();
     // TO DO: Give a bonus depending on what type of tax it is
 }
 
 function checkOutOfMoves() {
-    console.log('checkOutOfMoves invoked');
+    // console.log('checkOutOfMoves invoked');
 
     if (playerMoves <= 0) {
         isDeckDisabled = true;
@@ -652,7 +683,7 @@ function twoShips() {
 
         for (let i = 0; i < jesterBonus; i++) {
             players[actingPlayer].coins.push(deck.pop());
-            console.log('Adding a coin to player due to Jester bonus. Iteration: ' + i);
+            // console.log('Adding a coin to player due to Jester bonus. Iteration: ' + i);
         }
     }
     endTurn();
@@ -661,7 +692,7 @@ function twoShips() {
 // Check to see if there are two ships of the same color
 function checkForDuplicates(board) {
 
-    console.log('checkForDuplicates invoked');
+    // console.log('checkForDuplicates invoked');
 
     colorsAlreadySeen = [];
 
@@ -685,18 +716,18 @@ function checkForDuplicates(board) {
             colorsAlreadySeen.push(color);
         }
     }
-    console.log('colorsAlreadySeen :>> ', colorsAlreadySeen);
+    // console.log('colorsAlreadySeen :>> ', colorsAlreadySeen);
 
     return false;
 }
 
 function checkIfDefeatable(card) {
-    console.log('checkIfDefeatable: card :>> ', card);
+    // console.log('checkIfDefeatable: card :>> ', card);
 
     // If player has enough swords, trigger modal
     if (playerSwords >= card.swords) {
         getDefeatShip.innerHTML = composeCard(card, 'modal');
-        console.log('Triggering defeat-ship modal');
+        // console.log('Triggering defeat-ship modal');
         $('#defeat-ship-modal').modal(); // Trigger modal
         return;
     }
@@ -720,13 +751,13 @@ function updateCardsRemaining() {
 }
 
 function calcPlayerSwords() {
-    console.log('caclPlayerSwords invoked');
+    // console.log('caclPlayerSwords invoked');
     playerSwords = 0;
     // loop through cards in player's board, count num swords
     for (let entry of Object.entries( players[actingPlayer].cards)) {
-        console.log('entry :>> ', entry);
+        // console.log('entry :>> ', entry);
         playerSwords += entry[1].swords;
-        console.log('playerSwords :>> ', playerSwords);
+        // console.log('playerSwords :>> ', playerSwords);
     }
 }
 
@@ -737,23 +768,23 @@ const countOccurrences = arr => arr.reduce((prev, curr) => (prev[curr] = ++prev[
 
 // Returns an array of player cards and number of them
 const getPlayerCards = () => {
-    console.log('getPlayerCards invoked');
+    // console.log('getPlayerCards invoked');
 
     let playerCardTypes = [];
 
     for (let card of  players[actingPlayer].cards) {
         playerCardTypes.push(card.name);
     }
-    console.log('playerCardTypes :>> ', playerCardTypes);
+    // console.log('playerCardTypes :>> ', playerCardTypes);
 
-    console.log('output of getPlayerCards', countOccurrences(playerCardTypes));
+    // console.log('output of getPlayerCards', countOccurrences(playerCardTypes));
     return countOccurrences(playerCardTypes);
 };
 
 
 // Apply the special bonuses depending on card types
 function calcAbilities() {
-    console.log(' === calcAbilities invoked ===');
+    // console.log(' === calcAbilities invoked ===');
 
 
     if ('Admiral' in getPlayerCards()) {
@@ -770,7 +801,7 @@ function calcAbilities() {
 
             for (let i = 0; i < admiralBonus; i++) {
                 players[actingPlayer].coins.push(deck.pop());
-                console.log('Adding a coin to player due to Admiral bonus. Iteration: ' + i);
+                // console.log('Adding a coin to player due to Admiral bonus. Iteration: ' + i);
             }
             admiralBonusGiven = true;
             getAdmiralBonus.innerText = admiralBonus;
@@ -780,7 +811,7 @@ function calcAbilities() {
     }
 
     if ('Governor' in getPlayerCards()) {
-        console.log('calcAbilities: Adding ' + getPlayerCards().Governor + ' to playerMoves');
+        // console.log('calcAbilities: Adding ' + getPlayerCards().Governor + ' to playerMoves');
         if (isNewTurn) {
             playerMoves += getPlayerCards().Governor;
             calcPlayerMoves();
@@ -790,7 +821,7 @@ function calcAbilities() {
 
 function calcPlayerMoves() {
 
-    console.log('calcPlayerMoves invoked');
+    // console.log('calcPlayerMoves invoked');
 
     /*
     if(isDeckDisabled) {
@@ -802,7 +833,7 @@ function calcPlayerMoves() {
         case 5:
             if(!fiveColorBonusUsed) {
                 playerMoves++;
-                console.log('incrementing playerMoves to: ' + playerMoves);
+                // console.log('incrementing playerMoves to: ' + playerMoves);
                 fiveColorBonusUsed = true;
                 getShipColors.innerHTML = '<em>5</em>';
                 $('#additional-move-modal').modal();
@@ -815,7 +846,7 @@ function calcPlayerMoves() {
         case 4:
             if (!fourColorBonusUsed) {
                 playerMoves++;
-                console.log('Adding 1 to playerMoves: >>', playerMoves);
+                // console.log('Adding 1 to playerMoves: >>', playerMoves);
                 fourColorBonusUsed = true;
                 getShipColors.innerHTML = '<em>4</em>';
                 $('#additional-move-modal').modal();
@@ -826,7 +857,7 @@ function calcPlayerMoves() {
     }
 
     getPlayerMoves.innerHTML = playerMoves;
-    console.log('playerMoves :>> ', playerMoves);
+    // console.log('playerMoves :>> ', playerMoves);
 }
 
 function clearMoves() {
@@ -836,28 +867,28 @@ function clearMoves() {
 }
 
 function cycleActingPlayer() {
-    console.log('actingPlayer :>> ', actingPlayer);
-    console.log('players.length :>> ', players.length);
+    // console.log('actingPlayer :>> ', actingPlayer);
+    // console.log('players.length :>> ', players.length);
     if (actingPlayer === players.length - 1) {
         actingPlayer = 0;
     } else {
         actingPlayer++;
     }
-    console.log(`The acting player has changed to ${players[actingPlayer].name}`);
+    // console.log(`The acting player has changed to ${players[actingPlayer].name}`);
 }
 
 function highlightActingPlayer() {
-    console.log('highlighActingPlayer invoked');
+    // console.log('highlighActingPlayer invoked');
     // Get all the HTML elements with class "player"
     const getPlayerIds = document.getElementsByClassName('player');
-    console.log('getPlayerIds :>> ', getPlayerIds);
+    // console.log('getPlayerIds :>> ', getPlayerIds);
 
     for (let i = 0; i < getPlayerIds.length; i++) {
         if (getPlayerIds[i].id === 'player-' + actingPlayer) {
-            console.log(getPlayerIds[i] + 'This is the acting player');
+            // console.log(getPlayerIds[i] + 'This is the acting player');
             getPlayerIds[i].classList.add('border');
         } else {
-            console.log(getPlayerIds[i] + 'This is not the acting player');
+            // console.log(getPlayerIds[i] + 'This is not the acting player');
             getPlayerIds[i].classList.remove('border');
         }
         
