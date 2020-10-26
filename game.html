@@ -48,7 +48,9 @@
                     </button>
                 </div>
                 <div class="modal-body" id="tax-modal-body">
-                    <p>Heads up: the turn is changing. It is now <em><span class="player-turn"></span>'s</em> turn. Anyone who takes from their board will have to pay <span class="player-turn"></span> a one coin tax.</p>
+                    <p>Heads up: the turn is changing. It is now <em><span class="player-turn"></span>'s</em> turn.
+                        Anyone who takes from their board will have to pay <span class="player-turn"></span> a one coin
+                        tax.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-dismiss="modal">Got it</button>
@@ -155,6 +157,27 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" onclick="endTurn()" data-dismiss="modal">End
+                        turn</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Not your turn modal -->
+    <div class="modal fade" id="not-your-turn-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Deck is disabled</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    You can only draw cards when it's your turn. (The blue dot next to a player's name indicates whose turn it is.)
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">End
                         turn</button>
                 </div>
             </div>

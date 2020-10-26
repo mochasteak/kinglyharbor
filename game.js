@@ -74,29 +74,21 @@ function Player(name) {
         cards: [],
         coins: [],
         getPoints() {
-            // console.log('getPoints invoked');
             let points = 0;
-            // console.log('this.cards :>> ', this.cards);
-            // console.log('this.cards.length :>> ', this.cards.length);
             if (this.cards.length > 0) {
                 for (let item of this.cards) {
-                    // console.log('item :>> ', item);
-                    // console.log(`Adding ${item.points} to player's score`);
                     points += item.points;
                 }
             }
             return points;
         },
         getSwords() {
-
             let swords = 0;
-
             if (this.cards.length > 0) {
                 for (let item of this.cards) {
                     swords += item.swords;
                 }
             }
-            console.log(`${this.name} has ${swords} swords`);
             return swords;
         }
     };
@@ -529,14 +521,11 @@ function purchaseCard(cardId) {
         // ...add the right number of cards to players[actingPlayer].coins
         for (let index = 0; index < cardCoins + traderBonus - turnFee; index++) {
             players[actingPlayer].coins.push(deck.pop());
-            console.log('paying out a coin');
         }
 
         // If it's not this player's turn, give one card to the player whose turn it is
         if(turnFee == 1) {
-            console.log('Paying one coin to active player for this ship');
             players[turnOf].coins.push(deck.pop());
-            console.log('players[turnOf] :>> ', players[turnOf]);
 
         } 
 
@@ -546,7 +535,7 @@ function purchaseCard(cardId) {
     } else {
 
         // Remove the card cost from playerCoins
-        for (let i = 0; i < cardCoins; i++) {
+        for (let i = 0; i < cardCoins + turnFee; i++) {
             discardPile.push(players[actingPlayer].coins.pop());
             // console.log('Moving a card from playerCoins to discardPile');
         }
@@ -752,24 +741,22 @@ function twoShips() {
 
         for (let i = 0; i < jesterBonus; i++) {
             players[actingPlayer].coins.push(deck.pop());
-            // console.log('Adding a coin to player due to Jester bonus. Iteration: ' + i);
         }
     }
-    endTurn();
+
+    // move the TURN to the next player (without cycling actingPlayer)
+    cycleTurn();
+    endTurn(false);
 }
 
 // Check to see if there are two ships of the same color
 function checkForDuplicates(board) {
-
-    // console.log('checkForDuplicates invoked');
 
     colorsAlreadySeen = [];
 
     for (let i = 0; i < board.length; i++) {
         let color = board[i].color;
         let cardType = board[i].type;
-        // console.log('color :>> ', color);
-        // console.log('cardType :>> ', cardType);
 
         // If there ARE two ships of the same color, trigger the modal
         if (cardType === 'ship' && colorsAlreadySeen.indexOf(color) !== -1) {
@@ -794,7 +781,7 @@ function checkIfDefeatable(card) {
     // console.log('checkIfDefeatable: card :>> ', card);
 
     // If player has enough swords, trigger modal
-    if (playerSwords >= card.swords) {
+    if (players[actingPlayer].getSwords() >= card.swords) {
         getDefeatShip.innerHTML = composeCard(card, 'modal');
         // console.log('Triggering defeat-ship modal');
         $('#defeat-ship-modal').modal(); // Trigger modal
@@ -936,7 +923,6 @@ function clearMoves() {
 }
 
 function cycleActingPlayer() {
-    console.log('cycleActivePlayer invoked');
 
     // Move the acting player
     if (actingPlayer === players.length - 1) {
@@ -946,26 +932,32 @@ function cycleActingPlayer() {
         console.log('Incrementing actingPlayer');
         actingPlayer++;
     }
-    cycleTurn();
+    checkTurn();
 }
 
-function cycleTurn() {
-    // Check if the TURN needs to move
+// Check if the TURN needs to move
+function checkTurn() {
     if (actingPlayer === turnOf && alreadyTakenTurn === true) {
-
-        if (turnOf === players.length - 1) {
-            turnOf = 0;
-        } else {
-            turnOf++;
-        }
-        alreadyTakenTurn = false;
-        cycleActingPlayer();
-        $('#new-turn-modal').modal();
-
-
+        cycleTurn();
     } else if (actingPlayer === turnOf && alreadyTakenTurn === false) {
         alreadyTakenTurn = true;
     }
+}
+
+// Move the turn to the next player
+function cycleTurn() {
+    if (turnOf === players.length - 1) {
+        turnOf = 0;
+    } else {
+        turnOf++;
+    }
+    alreadyTakenTurn = false;
+    isDeckDisabled = false;
+    discardPile.push(...board);
+    board.length = 0;
+    cycleActingPlayer();
+    getDiscardCount.innerHTML = discardPile.length;
+    $('#new-turn-modal').modal();
 
 }
 
@@ -992,7 +984,7 @@ function highlightActingPlayer() {
 }
 
 // End a turn - Move the cards from the board to the discard pile
-function endTurn() {
+function endTurn(cycle = true) {
 
     // If there are moves left, trigger warning
     if (playerMoves > 0 && !isDeckDisabled) {
@@ -1000,20 +992,22 @@ function endTurn() {
         return;
     }
 
-    // End turn
-    discardPile.push(...board);
-    getDiscardCount.innerHTML = discardPile.length;
-    board.length = 0;
-    playerMoves = PLAYER_DEFAULT_MOVES;
-    playerSwords = 0;
-    cycleActingPlayer();
-    console.log('turnOf :>> ', turnOf);
-    console.log('actingPlayer :>> ', actingPlayer);
+    // Things we always do regardless of actingPlayer end or turnOf end
     fourColorBonusUsed = false;
     fiveColorBonusUsed = false;
     admiralBonusGiven = false;
-    isDeckDisabled = false;
     isNewTurn = true;
+    playerSwords = 0;
+    playerMoves = PLAYER_DEFAULT_MOVES;
+
+    if (cycle) {
+        cycleActingPlayer();
+    }
+    
+   
+    console.log('turnOf :>> ', turnOf);
+    console.log('actingPlayer :>> ', actingPlayer);
+
     displayBoards();
 }
 
