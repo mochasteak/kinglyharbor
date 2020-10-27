@@ -7,7 +7,7 @@ if (localStorage.getItem('playerNames') === null) {
 
 // Constants
 const PLAYER_DEFAULT_MOVES = 1;
-const COINS_TO_START = 8;
+const COINS_TO_START = 3;
 const playerNames = JSON.parse(localStorage.getItem("playerNames"));
 const VICTORY = 6;
 const TAX_THRESHOLD = 12;
@@ -119,7 +119,7 @@ function createPlayers(array) {
 // Add all game cards into deck
 function createDeck() {
 
-    /*
+
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
@@ -175,11 +175,11 @@ function createDeck() {
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
 
+
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
-    */
 
     deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
     deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
@@ -207,19 +207,6 @@ function createDeck() {
     deck.push(new Card('Trader', 'person', 3, 0, 'black', 1));
     deck.push(new Card('Trader', 'person', 3, 0, 'black', 1));
 
-    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
-    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
-    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
-    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
-
-    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
-    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
-    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
-    deck.push(new Card('Governor', 'person', 8, 0, null, 0));    
-    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
-    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
-    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
-    deck.push(new Card('Governor', 'person', 8, 0, null, 0));    
     deck.push(new Card('Governor', 'person', 8, 0, null, 0));
     deck.push(new Card('Governor', 'person', 8, 0, null, 0));
     deck.push(new Card('Governor', 'person', 8, 0, null, 0));
@@ -259,6 +246,18 @@ function createDeck() {
     deck.push(new Card('Settler', 'person', 4, 0, null, 1));
     deck.push(new Card('Settler', 'person', 4, 0, null, 1));
 
+    deck.push(new Card('Jester', 'person', 5, 0, null, 1));
+    deck.push(new Card('Jester', 'person', 7, 0, null, 2));
+    deck.push(new Card('Jester', 'person', 7, 0, null, 2));
+    deck.push(new Card('Jester', 'person', 7, 0, null, 2));
+    deck.push(new Card('Jester', 'person', 9, 0, null, 3));
+
+    // Doubled jesters for testing
+    deck.push(new Card('Jester', 'person', 5, 0, null, 1));
+    deck.push(new Card('Jester', 'person', 7, 0, null, 2));
+    deck.push(new Card('Jester', 'person', 7, 0, null, 2));
+    deck.push(new Card('Jester', 'person', 7, 0, null, 2));
+    deck.push(new Card('Jester', 'person', 9, 0, null, 3));
     deck.push(new Card('Jester', 'person', 5, 0, null, 1));
     deck.push(new Card('Jester', 'person', 7, 0, null, 2));
     deck.push(new Card('Jester', 'person', 7, 0, null, 2));
@@ -468,27 +467,17 @@ function composeCard(card, board = 'game') {
 
 function composeExpeditionCard(card) {
     return `
-    <div class="card">
-    <div class="card-body">
-        <div class="card-text">
-            <div class="row">
-                <div class="col expedition-points">
-                    <p>${card.points}</p>
-                </div>
-                <div class="col expedition-coins">
-                    <p>${card.coins}</p>
-                </div>
-            </div>
-            <p class="text-left expedition-label">Requires:</p>
-            <div class="expedition-items mt-2">
-                <i class="${getIcons(card.requirements[0])} fa-lg"></i><i class="${getIcons(card.requirements[1])} fa-lg"></i><i class="${getIcons(card.requirements[2]) || ''} fa-lg"></i>
-            </div>
+    <div class="expedition-card border-null">
+        <div class="flex-row-expedition mb-3">
+            <div class="player-points half">${card.points}</div>
+            <div class="player-coins half">${card.coins}</div>
         </div>
+        <h3>Requirements: </h3>
+        <p>
+        <i class="${getIcons(card.requirements[0])} fa-lg"></i><i class="${getIcons(card.requirements[1])} fa-lg"></i><i class="${getIcons(card.requirements[2]) || ''} fa-lg"></i>
+        </p>
+        <button class="btn btn-primary btn-small m-2" onclick="purchaseCard(${card.id})"  ${checkIfAffordable(card) ? '' : 'disabled'}>Redeem</button>
     </div>
-    <div class="card-footer">
-        <button class="btn btn-sm btn-primary">Purchase</button>
-    </div>
-</div>
     `;
 }
 
@@ -499,7 +488,19 @@ function checkIfAffordable(card) {
         return;
     }
     // Taxes and expeditions cannot be bought
-    if (card.type === ('tax' || 'expedition')) {
+    if (card.type === 'tax') {
+        return false;
+    }
+
+    if (card.type === 'expedition') {
+        // Check if the player has all of the items needed
+        console.log('Expedition requires: ', card.requirements);
+
+        // Get a countOccurrenced list of the requirements
+        console.log('Player cards:>> ',players[actingPlayer].getCards());
+
+        // Get a countOccurrenced list of the requirements
+        // If they are the same: true, if not: false
         return false;
 
     // Ships are always 'purchaseable'
@@ -811,14 +812,13 @@ function checkOutOfMoves() {
     }
 }
 
-// Give any player with a Jester two coins for each Jester
 function twoShips() {
-    // TO DO: Add stuff here to make it work for all players
+
     for (let player of players) {
 
         if(player.getCards('Jester')) {
             console.log(`${player.name} has ${player.getCards('Jester')} Jesters`);
-            let jesterBonus = player.getCards('Jester') * 2;
+            let jesterBonus = player.getCards('Jester');
 
             for (let i = 0; i < jesterBonus; i++) {
                 player.coins.push(deck.pop());
@@ -1082,7 +1082,7 @@ function endTurn(cycle = true) {
         cycleActingPlayer();
     }
     calcAbilities();
-    
+
     console.log('endTurn: isNewTurn :>>', isNewTurn);
     console.log('endTurn: turnOf :>> ', turnOf);
     console.log('endTurn: actingPlayer :>> ', actingPlayer);

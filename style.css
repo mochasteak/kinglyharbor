@@ -1,6 +1,7 @@
 * {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 body {
@@ -8,18 +9,18 @@ body {
     width: 100vw;
     background-image: url(./img/bg.jpg);
     background-repeat: none;
+    background-size: cover;
     font-family: 'Oswald', sans-serif;
     color: white;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
 }
 
 table {
     color: white!important;
     font-size: 1.4rem;
-}
-
-
-.game {
-    margin-top: 20px;
 }
 
 .title {
@@ -28,6 +29,12 @@ table {
 
 .hidden {
     display: none;
+}
+
+.flex-row-expedition {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 #defeat-ship {
@@ -71,14 +78,14 @@ table {
     background-image: url(./img/coin.png);
     background-position: top center;
     background-repeat: no-repeat;
-    background-size: 22px 22px;
+    background-size: 24px 24px;
 }
 
 .player-points {
     background-image: url(./img/shield.png);
     background-position: top center;
     background-repeat: no-repeat;
-    background-size: 26px 26px;
+    background-size: 28px 28px;
 }
 
 #player-coins {
@@ -120,6 +127,11 @@ table {
 .expedition i {
     font-size: 1.5rem;
     margin: 5px 0;
+}
+
+.expedition-card i {
+    font-size: 1.6rem;
+    margin: 10px 3px;
 }
 
 .expedition p {
@@ -190,6 +202,24 @@ table {
     background-position: center top;
 }
 
+.expedition-card {
+    height: 12rem;
+    width: 8rem;
+    border: 2px solid white;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    color: white;
+    text-align: center;
+    margin: 5px;
+    padding: 5px;
+}
+
+.half {
+    width: 40%;
+    color: #333
+}
+
 .board-card {
     height: 14rem;
     width: 9rem;
@@ -202,13 +232,13 @@ table {
     margin: 5px;
 }
 
-.board-card h3 {
+.board-card h3, .expedition-card h3 {
     font-weight: 200;
     font-size: 1.4rem;
     padding-top: 5px;
 }
 
-.board-card p {
+.board-card p, .expedition-card p {
     margin-bottom: 0;
 }
 
