@@ -477,8 +477,10 @@ function checkIfAffordable(card) {
         return false;
 
     // Ships are always 'purchaseable'
-    } else if (card.type === 'ship' && !isDeckDisabled) {
-        return true;
+    } else if (card.type === 'ship'){
+        if(actingPlayer !== turnOf || !isDeckDisabled) {
+            return true;
+        }    
 
     // For all 'person' cards, calculate affordability (incl discounts)
     } else {
@@ -646,18 +648,17 @@ function checkVictoryThreshold() {
 
 function checkGameOver() {
     // If final round is true, and actingPlayer and turnOf are the same
-    if(finalRound && actingPlayer === turnOf) {
+    if(finalRound && (turnOf === startingPlayer)) {
         isDeckDisabled = true;
         playerMoves = 0;
         // Calculate the winner
-        // Trigger the modal
-        $('#end-game-modal').modal();
-        // Redirect to the gameover page
-    }
 
+        window.location.href('./game-over.html');
+
+    }
 }
 
-function determineWinner() {
+function calcWinner() {
     // Write everyone's points into a 2D array (with their index)
     // Sort by points
     // See how many with the same highest number
@@ -939,6 +940,7 @@ function clearMoves() {
 }
 
 function cycleActingPlayer() {
+    console.log('cycleActingPlayer invoked');
 
     // Move the acting player
     if (actingPlayer === players.length - 1) {
@@ -952,20 +954,24 @@ function cycleActingPlayer() {
         isDeckDisabled = true;
     }
     checkTurn();
-    checkGameOver();
 }
 
 // Check if the TURN needs to move
 function checkTurn() {
+    console.log('checkTurn invoked');
+
     if (actingPlayer === turnOf && alreadyTakenTurn === true) {
         cycleTurn();
     } else if (actingPlayer === turnOf && alreadyTakenTurn === false) {
         alreadyTakenTurn = true;
     }
+    
 }
 
 // Move the turn to the next player
 function cycleTurn() {
+    console.log('cycleTurn invoked');
+
     if (turnOf === players.length - 1) {
         turnOf = 0;
     } else {
@@ -976,6 +982,7 @@ function cycleTurn() {
     discardPile.push(...board);
     board.length = 0;
     cycleActingPlayer();
+    checkGameOver();
     getDiscardCount.innerHTML = discardPile.length;
     $('#new-turn-modal').modal();
 
@@ -1005,6 +1012,8 @@ function highlightActingPlayer() {
 
 // End a turn - Move the cards from the board to the discard pile
 function endTurn(cycle = true) {
+    console.log('endTurn invoked');
+
 
     // If there are moves left, trigger warning
     if (playerMoves > 0 && !isDeckDisabled) {
