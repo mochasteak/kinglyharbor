@@ -647,24 +647,41 @@ function checkVictoryThreshold() {
 }
 
 function checkGameOver() {
+    console.log('checkGameOver invoked');
     // If final round is true, and actingPlayer and turnOf are the same
     if(finalRound && (turnOf === startingPlayer)) {
         isDeckDisabled = true;
         playerMoves = 0;
         calcWinner();
-        // window.location.href = './game-over.html';
+        window.location.href = './game-over.html';
     }
 }
 
 function calcWinner() {
+    console.log('calcWinner invoked');
     // Write everyone's points into a 2D array (with their index)
     let finalScores = [];
 
     for (let player of players) {
-        finalScores.push([player.name, player.getPoints()]);
+        finalScores.push([player.name, player.getPoints(), player.coins.length]);
     }
-    console.log('finalScores :>> ', finalScores);
+    
     // Sort by points
+    finalScores.sort((a, b) => {
+        let aPoints = a[1];
+        let bPoints = b[1];
+        if (aPoints < bPoints) {
+            return -1;
+        } else if (aPoints > bPoints) {
+            return 1;
+        }
+        return 0;
+    });
+
+    console.log('finalScores :>> ', finalScores);
+
+    localStorage.setItem('finalScores', JSON.stringify(finalScores));
+    
     // See how many with the same highest number
     // If both have the same, count their coins
 }
@@ -969,7 +986,6 @@ function checkTurn() {
     } else if (actingPlayer === turnOf && alreadyTakenTurn === false) {
         alreadyTakenTurn = true;
     }
-    
 }
 
 // Move the turn to the next player

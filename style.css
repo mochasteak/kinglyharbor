@@ -12,6 +12,10 @@ body {
     color: white;
 }
 
+table {
+    color: white!important;
+}
+
 .game {
     margin-top: 20px;
 }
