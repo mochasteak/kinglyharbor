@@ -9,11 +9,12 @@ if (localStorage.getItem('playerNames') === null) {
 const PLAYER_DEFAULT_MOVES = 1;
 const CARDS_TO_START = 3;
 const playerNames = JSON.parse(localStorage.getItem("playerNames"));
-const VICTORY = 12;
+const VICTORY = 4;
 const TAX_THRESHOLD = 12;
 
 // Set up variables
-let turnOf = Math.floor(Math.random() * playerNames.length);
+let turnOf, startingPlayer;
+turnOf = startingPlayer = Math.floor(Math.random() * playerNames.length);
 let actingPlayer = turnOf;
 let deck = [];
 let discardPile = [];
@@ -29,6 +30,7 @@ let fiveColorBonusUsed = false;
 let isNewTurn = true;
 let admiralBonusGiven = false;
 let alreadyTakenTurn = true;
+let gameOver = false;
 
 // Getters
 const getBoard = document.getElementById('board');
@@ -392,7 +394,7 @@ const madamoiselleDiscount = (card) => {
     return discount;
 };
 
-function turnfee() {
+function turnFee() {
     if(actingPlayer === turnOf) {
         return 0;
     } else {
@@ -480,7 +482,7 @@ function checkIfAffordable(card) {
 
     // For all 'person' cards, calculate affordability (incl discounts)
     } else {
-        if (card.coins - madamoiselleDiscount(card) + turnFee <= players[actingPlayer].coins.length) {
+        if (card.coins - madamoiselleDiscount(card) + turnFee() <= players[actingPlayer].coins.length) {
             return true;
         }
         return false;
@@ -495,7 +497,6 @@ function purchaseCard(cardId) {
 
     // Get the number of coins for this card
     let cardCoins = purchasedCard[0].coins;
-
 
     // If card is a ship...
     if (purchasedCard[0].type === 'ship') {
@@ -517,12 +518,12 @@ function purchaseCard(cardId) {
         }
 
         // ...add the right number of cards to players[actingPlayer].coins
-        for (let index = 0; index < cardCoins + traderBonus - turnFee; index++) {
+        for (let index = 0; index < cardCoins + traderBonus - turnFee(); index++) {
             players[actingPlayer].coins.push(deck.pop());
         }
 
         // If it's not this player's turn, give one card to the player whose turn it is
-        if (turnFee == 1) {
+        if (turnFee() == 1) {
             players[turnOf].coins.push(deck.pop());
 
         }
@@ -533,9 +534,12 @@ function purchaseCard(cardId) {
     } else {
 
         // Remove the card cost from playerCoins
-        for (let i = 0; i < cardCoins + turnFee; i++) {
+        for (let i = 0; i < cardCoins; i++) {
             discardPile.push(players[actingPlayer].coins.pop());
-            // console.log('Moving a card from playerCoins to discardPile');
+        }
+        // Give the player whose turn it is an extra coin
+        if (actingPlayer !== turnOf) {
+            players[turnOf].coins.push(players[actingPlayer].coins.pop());
         }
 
         // Apply the move bonus if it is a Governor
@@ -551,7 +555,7 @@ function purchaseCard(cardId) {
     }
 
     playerMoves--;
-    // console.log('Reducing player moves by one to: ' + playerMoves);
+    checkVictoryThreshold();
     calcPlayerMoves();
     calcPlayerSwords();
     displayBoards();
@@ -612,8 +616,6 @@ function dealCard() {
         }
 
         if (dealtCard.type === 'tax') {
-            // console.log('Found a tax');
-            // console.log('dealtCard :>> ', dealtCard);
             collectTaxes(dealtCard);
             discardPile.push(board.pop());
             displayBoards();
@@ -622,19 +624,33 @@ function dealCard() {
         }
 
         if (dealtCard.type === 'ship') {
-            // console.log('dealCard: breaking out. checkIfDefeatable');
             checkIfDefeatable(board[board.length - 1]);
             return;
         }
-
         checkForDuplicates(board);
         calcPlayerMoves();
-
     }
 }
 
+function checkVictoryThreshold() {
+
+    for (let player of players) {
+        if(player.getPoints() >= VICTORY ) {
+            console.log('WE HAVE A WINNER!');
+        }
+    }
+    // Figure out how to let everyone else have one more turn
+}
+
+function determineWinner() {
+    // Write everyone's points into a 2D array (with their index)
+    // Sort by points
+    // See how many with the same highest number
+    // If both have the same, count their coins
+}
+
+
 function collectTaxes(card) {
-    // console.log('collectTaxes invoked');
 
     // First, take away half the coins for any player with 12 or more
     for (let player of players) {
@@ -647,7 +663,6 @@ function collectTaxes(card) {
         }
     }
     // Second, apply the minPoints or maxSwords bonus
-    //console.log('card.requirements :>> ', card.requirements);
 
     // Apply min points bonus
     if (card.requirements === 'min points') {
@@ -658,7 +673,6 @@ function collectTaxes(card) {
         for (let player of players) {
             playerPoints.push([player, player.getPoints()]);
         }
-        // console.log('playerPoints :>> ', playerPoints);
 
         // Sort the array of player points
         playerPoints.sort((a, b) => {
@@ -671,8 +685,6 @@ function collectTaxes(card) {
             }
             return 0;
         });
-
-        // console.log('sorted playerPoints: >> ', playerPoints);
 
         // Add one coin to the one with the least points
         for (let player of players) {
@@ -695,7 +707,6 @@ function collectTaxes(card) {
             for (let player of players) {
                 playerSwords.push([player, player.getSwords()]);
             }
-            // console.log('playerSwords :>> ', playerSwords);
 
             // Sort the array of player points
             playerSwords.sort((a, b) => {
@@ -709,13 +720,10 @@ function collectTaxes(card) {
                 return 0;
             });
 
-            // console.log('sorted playerSwords: >> ', playerSwords);
-
             // Add one coin to the one with the least points
             for (let player of players) {
                 if (player.getPoints() === playerSwords[0][1]) {
                     player.coins.push(deck.pop());
-                    // console.log('Adding min points bonus to ' + player.name);
                 }
             }
         }
@@ -725,7 +733,6 @@ function collectTaxes(card) {
 }
 
 function checkOutOfMoves() {
-    // console.log('checkOutOfMoves invoked');
 
     if (playerMoves <= 0) {
         isDeckDisabled = true;
@@ -739,8 +746,8 @@ function checkOutOfMoves() {
     }
 }
 
+// Give any player with a Jester two coins for each Jester
 function twoShips() {
-    // Give any player with a Jester two coins for each Jester
     if (getPlayerCards().Jester) {
 
         let jesterBonus = getPlayerCards().Jester * 2;
@@ -783,7 +790,6 @@ function checkForDuplicates(board) {
 }
 
 function checkIfDefeatable(card) {
-    // console.log('checkIfDefeatable: card :>> ', card);
 
     // If player has enough swords, trigger modal
     if (players[actingPlayer].getSwords() >= card.swords) {
@@ -1028,3 +1034,4 @@ shuffleCards(deck);
 dealToStart();
 updateCardsRemaining();
 displayBoards();
+
