@@ -7,7 +7,7 @@ if (localStorage.getItem('playerNames') === null) {
 
 // Constants
 const PLAYER_DEFAULT_MOVES = 1;
-const CARDS_TO_START = 3;
+const COINS_TO_START = 5;
 const playerNames = JSON.parse(localStorage.getItem("playerNames"));
 const VICTORY = 1;
 const TAX_THRESHOLD = 12;
@@ -651,15 +651,19 @@ function checkGameOver() {
     if(finalRound && (turnOf === startingPlayer)) {
         isDeckDisabled = true;
         playerMoves = 0;
-        // Calculate the winner
-
-        window.location.href('./game-over.html');
-
+        calcWinner();
+        // window.location.href = './game-over.html';
     }
 }
 
 function calcWinner() {
     // Write everyone's points into a 2D array (with their index)
+    let finalScores = [];
+
+    for (let player of players) {
+        finalScores.push([player.name, player.getPoints()]);
+    }
+    console.log('finalScores :>> ', finalScores);
     // Sort by points
     // See how many with the same highest number
     // If both have the same, count their coins
@@ -1044,7 +1048,7 @@ function endTurn(cycle = true) {
 // Deal each player the starting amount of cards
 function dealToStart() {
     for (let person of players) {
-        for (let i = 0; i < CARDS_TO_START; i++) {
+        for (let i = 0; i < COINS_TO_START; i++) {
             person.coins.push(deck.pop());
         }
     }
