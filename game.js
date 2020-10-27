@@ -466,27 +466,36 @@ function composeExpeditionCard(card) {
 // Check if the purchase button should be displayed
 function checkIfAffordable(card) {
 
-    if (playerMoves == 0) {
-        return;
-    }
-    // Taxes and expeditions cannot be bought
-    if (card.type === 'tax') {
-        return false;
-    }
-
     if (card.type === 'expedition') {
         // Check if the player has all of the items needed
         console.log('Expedition requires: ', countOccurrences(card.requirements));
-
-        // Get a countOccurrenced list of the requirements
         console.log('Player cards:>> ', getPlayerCards());
 
-        // Get a countOccurrenced list of the requirements
-        // If they are the same: true, if not: false
+        let playerItems = {};
+        playerItems.Anchor = players[actingPlayer].getCards('Anchor');
+        playerItems.Settler = players[actingPlayer].getCards('Settler');
+        playerItems.Captain = players[actingPlayer].getCards('Captain');
+        console.log('playerItems :>> ', playerItems);
+
+        if(_.isEqual(card.requirements, playerItems)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    if (playerMoves == 0) {
+        return;
+    }
+
+    // Taxes  cannot be bought
+    if (card.type === 'tax') {
         return false;
+    }
+        
 
     // Ships are always 'purchaseable'
-    } else if (card.type === 'ship'){
+    if (card.type === 'ship'){
         if(actingPlayer !== turnOf || !isDeckDisabled) {
             return true;
         }    
