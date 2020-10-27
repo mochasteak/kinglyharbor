@@ -468,20 +468,27 @@ function checkIfAffordable(card) {
 
     if (card.type === 'expedition') {
         // Check if the player has all of the items needed
-        console.log('Expedition requires: ', countOccurrences(card.requirements));
+        let hasAllItems = false;
+        let requirements = countOccurrences(card.requirements);
+        console.log('Expedition requires: ', requirements);
+
         console.log('Player cards:>> ', getPlayerCards());
 
-        let playerItems = {};
-        playerItems.Anchor = players[actingPlayer].getCards('Anchor');
-        playerItems.Settler = players[actingPlayer].getCards('Settler');
-        playerItems.Captain = players[actingPlayer].getCards('Captain');
-        console.log('playerItems :>> ', playerItems);
-
-        if(_.isEqual(card.requirements, playerItems)) {
-            return true;
-        } else {
-            return false;
+        // for each element of requirements, do a player.getCards() on it to see if they are equal
+        for (let property in requirements) {
+            console.log('Requirement :>> ', requirements[property]);
+            console.log(`Player inventory of ${property} :>> ${players[actingPlayer].getCards(property)}`);
+            console.log('Are they the same:>> ', requirements[property] === players[actingPlayer].getCards(property));
+            
+            if(requirements[property] !== players[actingPlayer].getCards(property)) {
+                hasAllItems = false;
+                return;
+            } else {
+                hasAllItems = true;
+            }
         }
+        return hasAllItems;
+ 
     }
 
     if (playerMoves == 0) {
