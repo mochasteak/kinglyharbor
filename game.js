@@ -7,7 +7,7 @@ if (localStorage.getItem('playerNames') === null) {
 
 // Constants
 const PLAYER_DEFAULT_MOVES = 1;
-const COINS_TO_START = 3;
+const COINS_TO_START = 8;
 const playerNames = JSON.parse(localStorage.getItem("playerNames"));
 const VICTORY = 6;
 const TAX_THRESHOLD = 12;
@@ -92,6 +92,17 @@ function Player(name) {
                 }
             }
             return swords;
+        },
+        getCards(cardName) {
+            let result = 0;
+            if(this.cards.length > 0) {
+                for (let item of this.cards) {
+                    if(item.name === cardName) {
+                        result++;
+                    }
+                }
+            }
+            return result;
         }
     };
 }
@@ -108,6 +119,7 @@ function createPlayers(array) {
 // Add all game cards into deck
 function createDeck() {
 
+    /*
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
@@ -167,6 +179,7 @@ function createDeck() {
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
+    */
 
     deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
     deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
@@ -194,6 +207,19 @@ function createDeck() {
     deck.push(new Card('Trader', 'person', 3, 0, 'black', 1));
     deck.push(new Card('Trader', 'person', 3, 0, 'black', 1));
 
+    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
+    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
+    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
+    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
+
+    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
+    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
+    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
+    deck.push(new Card('Governor', 'person', 8, 0, null, 0));    
+    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
+    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
+    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
+    deck.push(new Card('Governor', 'person', 8, 0, null, 0));    
     deck.push(new Card('Governor', 'person', 8, 0, null, 0));
     deck.push(new Card('Governor', 'person', 8, 0, null, 0));
     deck.push(new Card('Governor', 'person', 8, 0, null, 0));
@@ -585,13 +611,9 @@ function dealCard() {
 
         // If there are no more cards in the deck...
         if (deck.length <= 0) {
-            // console.log('Pre-shuffle discardPile :>> ', discardPile);
             shuffleCards(discardPile); // Shuffle the discard pile
-            // console.log('Post-shuffle discardPile :>> ', discardPile);
             deck.push(...discardPile); // Copy discard pile cards into deck
             discardPile.length = 0; // Clear discard pile
-            // console.log('discardPile :>> ', discardPile);
-            // console.log('deck :>> ', deck);
             getDiscardCount.innerHTML = discardPile.length; // Update the discard pile count
         }
 
@@ -638,17 +660,14 @@ function checkVictoryThreshold() {
 
     for (let player of players) {
         if(player.getPoints() >= VICTORY ) {
-            console.log(`${player.name} has reached the victory threshold`);
             finalRound = true;
             console.log('Set finalRound to true');
-            alert(`${player.name} has ${player.getPoints()} points. This will be the final round`);
         }
     }
 }
 
 function checkGameOver() {
-    console.log('checkGameOver invoked');
-    console.log('startingPlayer :>> ', startingPlayer);
+
     // If final round is true, and actingPlayer and turnOf are the same
     if(finalRound && (turnOf === startingPlayer)) {
         isDeckDisabled = true;
@@ -659,7 +678,7 @@ function checkGameOver() {
 }
 
 function calcWinner() {
-    console.log('calcWinner invoked');
+
     // Write everyone's points into a 2D array (with their index)
     let finalScores = [];
 
@@ -692,8 +711,6 @@ function calcWinner() {
         return 0;
         */
     });
-
-    console.log('finalScores :>> ', finalScores);
 
     localStorage.setItem('finalScores', JSON.stringify(finalScores));
     
@@ -796,12 +813,17 @@ function checkOutOfMoves() {
 
 // Give any player with a Jester two coins for each Jester
 function twoShips() {
-    if (getPlayerCards().Jester) {
+    // TO DO: Add stuff here to make it work for all players
+    for (let player of players) {
 
-        let jesterBonus = getPlayerCards().Jester * 2;
+        if(player.getCards('Jester')) {
+            console.log(`${player.name} has ${player.getCards('Jester')} Jesters`);
+            let jesterBonus = player.getCards('Jester') * 2;
 
-        for (let i = 0; i < jesterBonus; i++) {
-            players[actingPlayer].coins.push(deck.pop());
+            for (let i = 0; i < jesterBonus; i++) {
+                player.coins.push(deck.pop());
+                console.log(`Adding 1 coin to ${player.name} for Jester bonus`);
+            }
         }
     }
 
@@ -899,14 +921,12 @@ const getPlayerCards = () => {
 
 // Apply the special bonuses depending on card types
 function calcAbilities() {
-    // console.log(' === calcAbilities invoked ===');
-
+    console.log('isNewTurn :>> ', isNewTurn);
+    console.log(' === calcAbilities invoked ===');
 
     if ('Admiral' in getPlayerCards()) {
-        //console.log('Found ' + getPlayerCards().Admiral + ' Admiral cards');
-        //console.log('Cards on board: ', board.length);
-        //console.log('admiralBonusGiven :>> ', !admiralBonusGiven);
         // Give two coins if there are five cards on the board when it's your turn
+
         if (!admiralBonusGiven && board.length >= 5 && playerMoves > 0) {
             //console.log('Admiral bonus function invoked');
 
@@ -926,7 +946,7 @@ function calcAbilities() {
     }
 
     if ('Governor' in getPlayerCards()) {
-        // console.log('calcAbilities: Adding ' + getPlayerCards().Governor + ' to playerMoves');
+        console.log('calcAbilities: Adding ' + getPlayerCards().Governor + ' to playerMoves');
         if (isNewTurn) {
             playerMoves += getPlayerCards().Governor;
             calcPlayerMoves();
@@ -973,7 +993,9 @@ function clearMoves() {
 }
 
 function cycleActingPlayer() {
-    console.log('cycleActingPlayer invoked');
+    console.log('Invoking cycleActingPlayer');
+
+    isNewTurn = true;
 
     // Move the acting player
     if (actingPlayer === players.length - 1) {
@@ -991,7 +1013,6 @@ function cycleActingPlayer() {
 
 // Check if the TURN needs to move
 function checkTurn() {
-    console.log('checkTurn invoked');
 
     if (actingPlayer === turnOf && alreadyTakenTurn === true) {
         cycleTurn();
@@ -1034,24 +1055,19 @@ function highlightActingPlayer() {
             // console.log(getPlayerIds[i] + 'This is not the acting player');
             getPlayerIds[i].classList.remove('border');
         }
-
     }
-
-    // Remove the .border class from all
-    // Whatever the acting player is, find the div.id for that player
-    // Add the .border class to it
 }
 
 // End a turn - Move the cards from the board to the discard pile
 function endTurn(cycle = true) {
-    console.log('endTurn invoked');
-
 
     // If there are moves left, trigger warning
     if (playerMoves > 0 && !isDeckDisabled) {
         $('#moves-left-modal').modal();
         return;
     }
+
+    console.log('=== END TURN CLICKED ===');
 
     // Things we always do regardless of actingPlayer end or turnOf end
     fourColorBonusUsed = false;
@@ -1065,10 +1081,11 @@ function endTurn(cycle = true) {
     if (cycle) {
         cycleActingPlayer();
     }
-
-
-    console.log('turnOf :>> ', turnOf);
-    console.log('actingPlayer :>> ', actingPlayer);
+    calcAbilities();
+    
+    console.log('endTurn: isNewTurn :>>', isNewTurn);
+    console.log('endTurn: turnOf :>> ', turnOf);
+    console.log('endTurn: actingPlayer :>> ', actingPlayer);
 
     displayBoards();
 }

@@ -6,6 +6,10 @@ let rank = 1;
 
 for (let score of scores) {
 
+    if(score[1] === scores[0][1] && score[2] === scores[0][2]) {
+        rank--;
+    }
+
     getScoresTable.innerHTML += `
     <tr>
     <th scope="row">${rank}</th>
