@@ -7,9 +7,9 @@ if (localStorage.getItem('playerNames') === null) {
 
 // Constants
 const PLAYER_DEFAULT_MOVES = 1;
-const COINS_TO_START = 5;
+const COINS_TO_START = 3;
 const playerNames = JSON.parse(localStorage.getItem("playerNames"));
-const VICTORY = 1;
+const VICTORY = 6;
 const TAX_THRESHOLD = 12;
 
 // Set up variables
@@ -641,13 +641,14 @@ function checkVictoryThreshold() {
             console.log(`${player.name} has reached the victory threshold`);
             finalRound = true;
             console.log('Set finalRound to true');
-            alert(`${player.name} has ${player.getPoints()} points. This will be the final round`)
+            alert(`${player.name} has ${player.getPoints()} points. This will be the final round`);
         }
     }
 }
 
 function checkGameOver() {
     console.log('checkGameOver invoked');
+    console.log('startingPlayer :>> ', startingPlayer);
     // If final round is true, and actingPlayer and turnOf are the same
     if(finalRound && (turnOf === startingPlayer)) {
         isDeckDisabled = true;
@@ -670,12 +671,26 @@ function calcWinner() {
     finalScores.sort((a, b) => {
         let aPoints = a[1];
         let bPoints = b[1];
+        let aCoins = a[2];
+        let bCoins = b[2];
+
+        if(aPoints == bPoints)
+        {
+            return (aCoins > bCoins) ? -1 : (aCoins < bCoins) ? 1 : 0;
+        }
+        else
+        {
+            return (aPoints > bPoints) ? -1 : 1;
+        }
+
+        /*
         if (aPoints < bPoints) {
             return -1;
         } else if (aPoints > bPoints) {
             return 1;
         }
         return 0;
+        */
     });
 
     console.log('finalScores :>> ', finalScores);
@@ -731,9 +746,6 @@ function collectTaxes(card) {
         }
 
     } else {
-        // Calculate maxSwords bonus
-        // Calculate all the swords for all the players
-        // Add one coin to the one with teh most swords
 
         if (card.requirements === 'max swords') {
 
@@ -756,9 +768,9 @@ function collectTaxes(card) {
                 return 0;
             });
 
-            // Add one coin to the one with the least points
+            // Add one coin to the one with the most swords
             for (let player of players) {
-                if (player.getPoints() === playerSwords[0][1]) {
+                if (player.getSwords() === playerSwords[0][1]) {
                     player.coins.push(deck.pop());
                 }
             }

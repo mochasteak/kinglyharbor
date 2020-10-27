@@ -3,8 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap"
-            rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Acme&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
         <script src="https://kit.fontawesome.com/879746a60e.js" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="./style.css">
@@ -14,7 +13,7 @@
     <div class="container">
         <div class="row my-5">
             <div class="col-6 mx-auto">
-                <h1>Game Over</h1>
+                <h1 class="title text-center">Game Over</h1>
             </div>
         </div>
         <div class="row">
@@ -24,8 +23,8 @@
                       <tr>
                         <th scope="col">#</th>
                         <th scope="col">Name</th>
-                        <th scope="col">Points</th>
-                        <th scope="col">Coins</th>
+                        <th scope="col"><img src="./img/shield.png" alt="points" width="24"> Points</th>
+                        <th scope="col"><img src="./img/coin.png" alt="points" width="24"> Coins</th>
                       </tr>
                     </thead>
                     <tbody id="scores-table">
@@ -36,7 +35,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-6 mx-auto">
+            <div class="col-6 mx-auto text-center mt-4">
                 <button class="btn btn-primary" onclick="window.location.replace('./index.html');">New game</button>
             </div>
         </div>

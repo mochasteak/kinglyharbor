@@ -14,7 +14,9 @@ body {
 
 table {
     color: white!important;
+    font-size: 1.4rem;
 }
+
 
 .game {
     margin-top: 20px;
