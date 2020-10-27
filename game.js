@@ -7,7 +7,7 @@ if (localStorage.getItem('playerNames') === null) {
 
 // Constants
 const PLAYER_DEFAULT_MOVES = 1;
-const COINS_TO_START = 3;
+const COINS_TO_START = 8;
 const playerNames = JSON.parse(localStorage.getItem("playerNames"));
 const VICTORY = 6;
 const TAX_THRESHOLD = 12;
@@ -119,7 +119,6 @@ function createPlayers(array) {
 // Add all game cards into deck
 function createDeck() {
 
-
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
     deck.push(new Card('Frigate', 'ship', 1, 1, 'red', 0));
@@ -174,7 +173,6 @@ function createDeck() {
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
-
 
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
@@ -252,28 +250,12 @@ function createDeck() {
     deck.push(new Card('Jester', 'person', 7, 0, null, 2));
     deck.push(new Card('Jester', 'person', 9, 0, null, 3));
 
-    // Doubled jesters for testing
-    deck.push(new Card('Jester', 'person', 5, 0, null, 1));
-    deck.push(new Card('Jester', 'person', 7, 0, null, 2));
-    deck.push(new Card('Jester', 'person', 7, 0, null, 2));
-    deck.push(new Card('Jester', 'person', 7, 0, null, 2));
-    deck.push(new Card('Jester', 'person', 9, 0, null, 3));
-    deck.push(new Card('Jester', 'person', 5, 0, null, 1));
-    deck.push(new Card('Jester', 'person', 7, 0, null, 2));
-    deck.push(new Card('Jester', 'person', 7, 0, null, 2));
-    deck.push(new Card('Jester', 'person', 7, 0, null, 2));
-    deck.push(new Card('Jester', 'person', 9, 0, null, 3));
-
     deck.push(new Card('Expedition', 'expedition', 2, 0, null, 4, ['Priest', 'Priest']));
     deck.push(new Card('Expedition', 'expedition', 2, 0, null, 4, ['Captain', 'Captain']));
     deck.push(new Card('Expedition', 'expedition', 2, 0, null, 4, ['Settler', 'Settler']));
     deck.push(new Card('Expedition', 'expedition', 3, 0, null, 6, ['Priest', 'Priest', 'Settler']));
     deck.push(new Card('Expedition', 'expedition', 3, 0, null, 6, ['Captain', 'Captain', 'Settler']));
     deck.push(new Card('Expedition', 'expedition', 3, 0, null, 5, ['Captain', 'Priest', 'Settler']));
-
-
-    // console.log('Just created deck: ', deck);
-
 }
 
 // Shuffle the deck
@@ -494,10 +476,10 @@ function checkIfAffordable(card) {
 
     if (card.type === 'expedition') {
         // Check if the player has all of the items needed
-        console.log('Expedition requires: ', card.requirements);
+        console.log('Expedition requires: ', countOccurrences(card.requirements));
 
         // Get a countOccurrenced list of the requirements
-        console.log('Player cards:>> ',players[actingPlayer].getCards());
+        console.log('Player cards:>> ', getPlayerCards());
 
         // Get a countOccurrenced list of the requirements
         // If they are the same: true, if not: false
