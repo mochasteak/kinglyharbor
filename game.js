@@ -9,7 +9,7 @@ if (localStorage.getItem('playerNames') === null) {
 const PLAYER_DEFAULT_MOVES = 1;
 const CARDS_TO_START = 3;
 const playerNames = JSON.parse(localStorage.getItem("playerNames"));
-const VICTORY = 4;
+const VICTORY = 1;
 const TAX_THRESHOLD = 12;
 
 // Set up variables
@@ -30,7 +30,7 @@ let fiveColorBonusUsed = false;
 let isNewTurn = true;
 let admiralBonusGiven = false;
 let alreadyTakenTurn = true;
-let gameOver = false;
+let finalRound = false;
 
 // Getters
 const getBoard = document.getElementById('board');
@@ -610,7 +610,7 @@ function dealCard() {
             // console.log('Moving expedition to array');
             expeditions.push(board.pop());
             // Trigger expedition modal
-            $('#expedition-modal').modal();
+            // $('#expedition-modal').modal();
             displayBoards();
 
         }
@@ -636,10 +636,25 @@ function checkVictoryThreshold() {
 
     for (let player of players) {
         if(player.getPoints() >= VICTORY ) {
-            console.log('WE HAVE A WINNER!');
+            console.log(`${player.name} has reached the victory threshold`);
+            finalRound = true;
+            console.log('Set finalRound to true');
+            alert(`${player.name} has ${player.getPoints()} points. This will be the final round`)
         }
     }
-    // Figure out how to let everyone else have one more turn
+}
+
+function checkGameOver() {
+    // If final round is true, and actingPlayer and turnOf are the same
+    if(finalRound && actingPlayer === turnOf) {
+        isDeckDisabled = true;
+        playerMoves = 0;
+        // Calculate the winner
+        // Trigger the modal
+        $('#end-game-modal').modal();
+        // Redirect to the gameover page
+    }
+
 }
 
 function determineWinner() {
@@ -648,7 +663,6 @@ function determineWinner() {
     // See how many with the same highest number
     // If both have the same, count their coins
 }
-
 
 function collectTaxes(card) {
 
@@ -938,6 +952,7 @@ function cycleActingPlayer() {
         isDeckDisabled = true;
     }
     checkTurn();
+    checkGameOver();
 }
 
 // Check if the TURN needs to move
