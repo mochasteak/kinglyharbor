@@ -13,9 +13,9 @@ body {
     font-family: 'Oswald', sans-serif;
     color: white;
     justify-content: center;
-    align-items: center;
+    /* align-items: center;
     display: flex;
-    flex-direction: column;
+    flex-direction: column; */
 }
 
 table {

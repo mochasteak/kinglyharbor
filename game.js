@@ -9,7 +9,7 @@ if (localStorage.getItem('playerNames') === null) {
 const PLAYER_DEFAULT_MOVES = 1;
 const COINS_TO_START = 3;
 const playerNames = JSON.parse(localStorage.getItem("playerNames"));
-const VICTORY = 1;
+const VICTORY = 12;
 const TAX_THRESHOLD = 12;
 
 // Set up variables
@@ -520,10 +520,10 @@ function checkIfAffordable(card) {
 }
 
 // Buying a card
-function purchaseCard(cardId, ship = false) {
+function purchaseCard(cardId, expedition = false) {
 
-    if (ship) {
-        //console.log('The card bought is a ship');
+    if (expedition) {
+        //console.log('The card bought is an expedition');
         // Move the card from expeditions 
         let purchasedExpedition = expeditions.splice(expeditions.findIndex(card => card.id === cardId), 1);
         let expeditionCoinBonus = purchasedExpedition[0].coins;
@@ -534,7 +534,7 @@ function purchaseCard(cardId, ship = false) {
             discardPile
                 .push(players[actingPlayer].cards
                 .splice(players[actingPlayer].cards
-                .findIndex(card => card.name === item), 1));
+                .findIndex(obj => obj.name === item), 1));
         }
 
         // Give the player the number of coins
@@ -547,6 +547,7 @@ function purchaseCard(cardId, ship = false) {
 
         // Re-render boards
         displayBoards();
+        checkVictoryThreshold();
 
         return;
     }
@@ -1100,7 +1101,7 @@ function highlightActingPlayer() {
 // End a turn - Move the cards from the board to the discard pile
 function endTurn(cycle = true) {
 
-    const getButtons = document.getElementsByClassName('.card-button');
+    const getButtons = document.getElementsByClassName('card-button');
     console.log('getButtons :>> ', getButtons);
 
 
@@ -1111,26 +1112,21 @@ function endTurn(cycle = true) {
     }
     // If there are cards on the board, and there are moves left, show the modal (TO DO: AND the cards can be bought...)
     if(playerMoves > 0 && board.length > 0) {
-        console.log('player moves > 0 and board > 0');
 
-        let hasPurchasableCard = false;
+        let hasPurchaseableCard = false;
 
-        // Check if there is at least one button that is NOT disabled
+        // Is there at least one button that is NOT disabled?
         for (const button of getButtons) {
-            console.log('button :>> ', button);
-            if(!button.hasOwnProperty('disabled')) {
-                hasPurchasableCard = true;
-                return;
+            if(!button.attributes.hasOwnProperty('disabled')) {
+                hasPurchaseableCard = true;
             }
         }
 
-        if(hasPurchasableCard) {
+        if(hasPurchaseableCard) {
             $('#moves-left-modal').modal();
             return;
         }
     }
-
-    console.log('=== END TURN CLICKED ===');
 
     // Things we always do regardless of actingPlayer end or turnOf end
     fourColorBonusUsed = false;
