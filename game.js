@@ -7,9 +7,9 @@ if (localStorage.getItem('playerNames') === null) {
 
 // Constants
 const PLAYER_DEFAULT_MOVES = 1;
-const COINS_TO_START = 13;
+const COINS_TO_START = 3;
 const playerNames = JSON.parse(localStorage.getItem("playerNames"));
-const VICTORY = 6;
+const VICTORY = 12;
 const TAX_THRESHOLD = 12;
 
 // Set up variables
