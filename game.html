@@ -60,6 +60,27 @@
         </div>
     </div>
 
+    <!-- Final round modal -->
+    <div class="modal fade" id="final-round-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">The end is nigh!</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="tax-modal-body">
+                    <p><span id="final-player"></span> has <span id="final-points"></span> points, which has triggered the final round. Play will continue until it is <span id="final-round"></span>'s turn.</p> 
+                    <p>Reminder: The person with the most points wins, if there's a tie, the person with the most coins left wins.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Got it</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Expedition modal -->
     <div class="modal fade" id="expedition-modal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -197,10 +218,11 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    The game has ended. 
+                    The game has ended.
                 </div>
                 <div class="modal-footer">
-                    <button role="button" class="btn btn-primary" data-dismiss="modal" onclick="window.location.replace('./game-over.html');">New game</button>
+                    <button role="button" class="btn btn-primary" data-dismiss="modal"
+                        onclick="window.location.replace('./game-over.html');">New game</button>
                 </div>
             </div>
         </div>

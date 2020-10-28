@@ -288,6 +288,17 @@ button {
     background-color: rgba(100, 100, 100, 0.3);
 }
 
+#final-player {
+    color: red;
+    font-size: 1.2rem;
+}
+
+#final-round {
+    color: blue;
+    font-style: italic;
+    font-size: 1.2rem;
+}
+
 .controls {
     display: flex;
     justify-content: center;

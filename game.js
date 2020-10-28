@@ -9,13 +9,12 @@ if (localStorage.getItem('playerNames') === null) {
 const PLAYER_DEFAULT_MOVES = 1;
 const COINS_TO_START = 3;
 const playerNames = JSON.parse(localStorage.getItem("playerNames"));
-const VICTORY = 12;
+const VICTORY = 1;
 const TAX_THRESHOLD = 12;
 
 // Set up variables
-let turnOf, startingPlayer;
-turnOf = startingPlayer = Math.floor(Math.random() * playerNames.length);
-let actingPlayer = turnOf;
+let actingPlayer, turnOf, startingPlayer;
+actingPlayer = turnOf = startingPlayer = Math.floor(Math.random() * playerNames.length);
 let deck = [];
 let discardPile = [];
 let board = [];
@@ -31,6 +30,7 @@ let isNewTurn = true;
 let admiralBonusGiven = false;
 let alreadyTakenTurn = true;
 let finalRound = false;
+let victoryMessageShown = false;
 
 // Getters
 const getBoard = document.getElementById('board');
@@ -50,6 +50,9 @@ const getTaxModal = document.getElementById('tax-card');
 const getTaxDescription = document.getElementById('tax-description');
 const getActingPlayer = document.getElementById('acting-player');
 const getPlayerTurn = document.getElementsByClassName('player-turn');
+const getFinalPlayer = document.getElementById('final-player');
+const getFinalPlayerPoints = document.getElementById('final-points');
+const getFinalRound = document.getElementById('final-round');
 
 
 // Factory functions
@@ -423,7 +426,7 @@ function composeCard(card, board = 'game') {
                 <p><img src="./img/coin.png" width="20px"> ${(card.coins - madamoiselleDiscount(card) >= 0) ? card.coins - madamoiselleDiscount(card) : 0 }</p>
                 <p><img src="./img/shield.png" width="20px"> ${card.points}</p>
                 <p><img src="./img/swords.png" width="20px"> ${card.swords}</p>
-                ${board === 'game' ? `<button class="btn btn-primary btn-small m-2" onclick="purchaseCard(${card.id})"  ${checkIfAffordable(card) ? '' : 'disabled'}>${(card.type == 'ship') ? 'Take coins' : 'Purchase' }</button>` : ''}
+                ${board === 'game' ? `<button class="btn btn-primary btn-small m-2 card-button" onclick="purchaseCard(${card.id})"  ${checkIfAffordable(card) ? '' : 'disabled'}>${(card.type == 'ship') ? 'Take coins' : 'Purchase' }</button>` : ''}
             </div>`;
 
     } else if (card.type === 'tax') {
@@ -458,7 +461,7 @@ function composeExpeditionCard(card) {
         <p>
         <i class="${getIcons(card.requirements[0])} fa-lg"></i><i class="${getIcons(card.requirements[1])} fa-lg"></i><i class="${getIcons(card.requirements[2]) || ''} fa-lg"></i>
         </p>
-        <button class="btn btn-primary btn-small m-2" onclick="purchaseCard(${card.id},true)"  ${checkIfAffordable(card) ? '' : 'disabled'}>Redeem</button>
+        <button class="btn btn-primary btn-small m-2 card-button" onclick="purchaseCard(${card.id},true)"  ${checkIfAffordable(card) ? '' : 'disabled'}>Redeem</button>
     </div>
     `;
 }
@@ -470,15 +473,15 @@ function checkIfAffordable(card) {
         // Check if the player has all of the items needed
         let hasAllItems = false;
         let requirements = countOccurrences(card.requirements);
-        console.log('Expedition requires: ', requirements);
+        //console.log('Expedition requires: ', requirements);
 
-        console.log('Player cards:>> ', getPlayerCards());
+        //console.log('Player cards:>> ', getPlayerCards());
 
         // for each element of requirements, do a player.getCards() on it to see if they are equal
         for (let property in requirements) {
-            console.log('Requirement :>> ', requirements[property]);
-            console.log(`Player inventory of ${property} :>> ${players[actingPlayer].getCards(property)}`);
-            console.log('Are they the same:>> ', requirements[property] === players[actingPlayer].getCards(property));
+            //console.log('Requirement :>> ', requirements[property]);
+            //console.log(`Player inventory of ${property} :>> ${players[actingPlayer].getCards(property)}`);
+            //console.log('Are they the same:>> ', requirements[property] === players[actingPlayer].getCards(property));
             
             if(requirements[property] !== players[actingPlayer].getCards(property)) {
                 hasAllItems = false;
@@ -520,14 +523,14 @@ function checkIfAffordable(card) {
 function purchaseCard(cardId, ship = false) {
 
     if (ship) {
-        console.log('The card bought is a ship');
+        //console.log('The card bought is a ship');
         // Move the card from expeditions 
         let purchasedExpedition = expeditions.splice(expeditions.findIndex(card => card.id === cardId), 1);
         let expeditionCoinBonus = purchasedExpedition[0].coins;
 
         // Remove the required items from player's cards
         for (let item of purchasedExpedition[0].requirements) {
-            console.log(`Removing a ${item} from player to pay for expedition`);
+            //console.log(`Removing a ${item} from player to pay for expedition`);
             discardPile
                 .push(players[actingPlayer].cards
                 .splice(players[actingPlayer].cards
@@ -685,10 +688,19 @@ function dealCard() {
 }
 
 function checkVictoryThreshold() {
+    console.log('Checking victory conditions');
 
     for (let player of players) {
         if(player.getPoints() >= VICTORY ) {
+            console.log(`=== ${players[actingPlayer].name} has reached enough points to win ===`);
             finalRound = true;
+            if(!victoryMessageShown) {
+                getFinalPlayer.innerText = players[actingPlayer].name;
+                getFinalPlayerPoints.innerText = players[actingPlayer].getPoints();
+                getFinalRound.innerText = players[startingPlayer].name;
+                victoryMessageShown = true;
+                $('#final-round-modal').modal();
+            }
             console.log('Set finalRound to true');
         }
     }
@@ -948,8 +960,8 @@ const getPlayerCards = () => {
 
 // Apply the special bonuses depending on card types
 function calcAbilities() {
-    console.log('isNewTurn :>> ', isNewTurn);
-    console.log(' === calcAbilities invoked ===');
+    //console.log('isNewTurn :>> ', isNewTurn);
+    //console.log(' === calcAbilities invoked ===');
 
     if ('Admiral' in getPlayerCards()) {
         // Give two coins if there are five cards on the board when it's your turn
@@ -1020,16 +1032,16 @@ function clearMoves() {
 }
 
 function cycleActingPlayer() {
-    console.log('Invoking cycleActingPlayer');
+    // console.log('Invoking cycleActingPlayer');
 
     isNewTurn = true;
 
     // Move the acting player
     if (actingPlayer === players.length - 1) {
-        console.log('setting actingPlayer index to 0');
+        // console.log('setting actingPlayer index to 0');
         actingPlayer = 0;
     } else {
-        console.log('Incrementing actingPlayer');
+        // console.log('Incrementing actingPlayer');
         actingPlayer++;
     }
     if (actingPlayer !== turnOf) {
@@ -1088,10 +1100,34 @@ function highlightActingPlayer() {
 // End a turn - Move the cards from the board to the discard pile
 function endTurn(cycle = true) {
 
-    // If there are moves left, trigger warning
+    const getButtons = document.getElementsByClassName('.card-button');
+    console.log('getButtons :>> ', getButtons);
+
+
+    // If there are moves left for the turn player, trigger warning
     if (playerMoves > 0 && !isDeckDisabled) {
         $('#moves-left-modal').modal();
         return;
+    }
+    // If there are cards on the board, and there are moves left, show the modal (TO DO: AND the cards can be bought...)
+    if(playerMoves > 0 && board.length > 0) {
+        console.log('player moves > 0 and board > 0');
+
+        let hasPurchasableCard = false;
+
+        // Check if there is at least one button that is NOT disabled
+        for (const button of getButtons) {
+            console.log('button :>> ', button);
+            if(!button.hasOwnProperty('disabled')) {
+                hasPurchasableCard = true;
+                return;
+            }
+        }
+
+        if(hasPurchasableCard) {
+            $('#moves-left-modal').modal();
+            return;
+        }
     }
 
     console.log('=== END TURN CLICKED ===');
@@ -1109,10 +1145,6 @@ function endTurn(cycle = true) {
         cycleActingPlayer();
     }
     calcAbilities();
-
-    console.log('endTurn: isNewTurn :>>', isNewTurn);
-    console.log('endTurn: turnOf :>> ', turnOf);
-    console.log('endTurn: actingPlayer :>> ', actingPlayer);
 
     displayBoards();
 }
