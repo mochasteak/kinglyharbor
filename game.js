@@ -32,6 +32,7 @@ let alreadyTakenTurn = true;
 let finalRound = false;
 let victoryMessageShown = false;
 let oneCardDrawn = false;
+let missingItems = 0;
 
 // Getters
 const getBoard = document.getElementById('board');
@@ -469,19 +470,26 @@ function composeExpeditionCard(card) {
 
 // Check if the purchase button should be displayed
 function checkIfAffordable(card) {
+    console.log('Checking affordability of :>> ', card.name);
 
     if (card.type === 'expedition') {
-        // Check if the player has all of the items needed
+
+        // Set up variables
+        missingItems = 0;
         let hasAllItems = false;
-        let missingItems = 0;
         let requirements = countOccurrences(card.requirements);
+        console.log('requirements :>> ', requirements);
+        console.log(`Player has ${players[actingPlayer].getCards('Jack of all Trades')} Jack of all Trades`);
 
         // See if player has enough of each item needed
         for (let property in requirements) {
 
+            console.log(`Need ${property}: ${requirements[property]} Player has: ${players[actingPlayer].getCards(property)}`);
+
             if(requirements[property] > players[actingPlayer].getCards(property)) {
                 hasAllItems = false;
                 missingItems += requirements[property] - players[actingPlayer].getCards(property);
+                console.log(`hasAllItems:>> ${hasAllItems} missingItems:>> ${missingItems}`);
             } else {
                 hasAllItems = true;
             }
@@ -489,10 +497,12 @@ function checkIfAffordable(card) {
 
         // See if player has enough Jack of all Trades to make up the difference
         if (missingItems <= players[actingPlayer].getCards('Jack of all Trades')) {
+            console.log(`Missing items: ${missingItems} Player Jacks: ${players[actingPlayer].getCards('Jack of all Trades')}`);
             hasAllItems = true;
         }
 
-        return hasAllItems;
+        console.log('hasAllItems :>> ', hasAllItems);
+        return (hasAllItems && (missingItems <= players[actingPlayer].getCards('Jack of all Trades')));
  
     }
 
@@ -535,11 +545,21 @@ function purchaseCard(cardId, expedition = false) {
 
         // Remove the required items from player's cards
         for (let item of purchasedExpedition[0].requirements) {
-            console.log(`Removing a ${item} from player to pay for expedition`);
-            discardPile
+
+            // Check if the item exists, if so, remove it, if not, remove a wild
+            if (players[actingPlayer].getCards(item) > 0) {
+                console.log(`Removing an ${item} to pay for expedition`);
+                discardPile
                 .push(players[actingPlayer].cards
                 .splice(players[actingPlayer].cards
                 .findIndex(obj => obj.name === item), 1));
+            } else {
+                console.log('Removing a wild card to pay for expedition');
+                discardPile
+                .push(players[actingPlayer].cards
+                .splice(players[actingPlayer].cards
+                .findIndex(obj => obj.name === 'Jack of all Trades'), 1));
+            }
         }
 
         // Give the player the number of coins
@@ -694,7 +714,6 @@ function dealCard() {
 }
 
 function checkVictoryThreshold() {
-    console.log('Checking victory conditions');
 
     for (let player of players) {
         if(player.getPoints() >= VICTORY ) {
@@ -874,6 +893,7 @@ function twoShips() {
 
     // move the TURN to the next player (without cycling actingPlayer)
     cycleTurn();
+    oneCardDrawn = true;
     endTurn(false);
 }
 
@@ -1041,6 +1061,7 @@ function cycleActingPlayer() {
     // console.log('Invoking cycleActingPlayer');
 
     isNewTurn = true;
+    missingItems = 0;
 
     // Move the acting player
     if (actingPlayer === players.length - 1) {
@@ -1075,12 +1096,13 @@ function cycleTurn() {
         turnOf++;
     }
     alreadyTakenTurn = false;
-    oneCardDrawn = false;
+    
     isDeckDisabled = false;
     discardPile.push(...board);
     board.length = 0;
     cycleActingPlayer();
     checkGameOver();
+    oneCardDrawn = false;
     getDiscardCount.innerHTML = discardPile.length;
     $('#new-turn-modal').modal();
 
@@ -1111,7 +1133,7 @@ function endTurn(cycle = true) {
     // If the actingPlayer is the starting player AND no card has been drawn
     // Pop an alert, don't end turn
     if (players[actingPlayer] === players[turnOf] 
-        && !oneCardDrawn ) {
+        && !oneCardDrawn) {
             $('#must-draw-modal').modal();
             return;
         }
