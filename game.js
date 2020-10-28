@@ -7,7 +7,7 @@ if (localStorage.getItem('playerNames') === null) {
 
 // Constants
 const PLAYER_DEFAULT_MOVES = 1;
-const COINS_TO_START = 3;
+const COINS_TO_START = 12;
 const playerNames = JSON.parse(localStorage.getItem("playerNames"));
 const VICTORY = 12;
 const TAX_THRESHOLD = 12;
@@ -31,6 +31,7 @@ let admiralBonusGiven = false;
 let alreadyTakenTurn = true;
 let finalRound = false;
 let victoryMessageShown = false;
+let oneCardDrawn = false;
 
 // Getters
 const getBoard = document.getElementById('board');
@@ -176,7 +177,7 @@ function createDeck() {
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
-
+/*
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
     deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
@@ -224,7 +225,7 @@ function createDeck() {
     deck.push(new Card('Madamoiselle', 'person', 9, 0, null, 3));
     deck.push(new Card('Madamoiselle', 'person', 7, 0, null, 2));
     deck.push(new Card('Madamoiselle', 'person', 7, 0, null, 2));
-
+*/
     deck.push(new Card('Jack of all Trades', 'person', 4, 0, null, 1));
     deck.push(new Card('Jack of all Trades', 'person', 4, 0, null, 1));
     deck.push(new Card('Jack of all Trades', 'person', 4, 0, null, 1));
@@ -472,24 +473,25 @@ function checkIfAffordable(card) {
     if (card.type === 'expedition') {
         // Check if the player has all of the items needed
         let hasAllItems = false;
+        let missingItems = 0;
         let requirements = countOccurrences(card.requirements);
-        //console.log('Expedition requires: ', requirements);
 
-        //console.log('Player cards:>> ', getPlayerCards());
-
-        // for each element of requirements, do a player.getCards() on it to see if they are equal
+        // See if player has enough of each item needed
         for (let property in requirements) {
-            //console.log('Requirement :>> ', requirements[property]);
-            //console.log(`Player inventory of ${property} :>> ${players[actingPlayer].getCards(property)}`);
-            //console.log('Are they the same:>> ', requirements[property] === players[actingPlayer].getCards(property));
-            
-            if(requirements[property] !== players[actingPlayer].getCards(property)) {
+
+            if(requirements[property] > players[actingPlayer].getCards(property)) {
                 hasAllItems = false;
-                return;
+                missingItems += requirements[property] - players[actingPlayer].getCards(property);
             } else {
                 hasAllItems = true;
             }
         }
+
+        // See if player has enough Jack of all Trades to make up the difference
+        if (missingItems <= players[actingPlayer].getCards('Jack of all Trades')) {
+            hasAllItems = true;
+        }
+
         return hasAllItems;
  
     }
@@ -501,8 +503,7 @@ function checkIfAffordable(card) {
     // Taxes  cannot be bought
     if (card.type === 'tax') {
         return false;
-    }
-        
+    } 
 
     // Ships are always 'purchaseable'
     if (card.type === 'ship'){
@@ -523,14 +524,18 @@ function checkIfAffordable(card) {
 function purchaseCard(cardId, expedition = false) {
 
     if (expedition) {
-        //console.log('The card bought is an expedition');
+
         // Move the card from expeditions 
-        let purchasedExpedition = expeditions.splice(expeditions.findIndex(card => card.id === cardId), 1);
+        let purchasedExpedition = 
+        expeditions
+        .splice(expeditions
+        .findIndex(card => card.id === cardId), 1);
+
         let expeditionCoinBonus = purchasedExpedition[0].coins;
 
         // Remove the required items from player's cards
         for (let item of purchasedExpedition[0].requirements) {
-            //console.log(`Removing a ${item} from player to pay for expedition`);
+            console.log(`Removing a ${item} from player to pay for expedition`);
             discardPile
                 .push(players[actingPlayer].cards
                 .splice(players[actingPlayer].cards
@@ -625,16 +630,15 @@ function purchaseCard(cardId, expedition = false) {
 
 // Deal a card onto the board
 function dealCard() {
+
     // If the deck is disabled...
     if (isDeckDisabled) {
 
         if (actingPlayer !== turnOf) {
-            console.log('Acting player NOT same as turn player');
             $('#not-your-turn-modal').modal();
             return;
 
         } else {
-            console.log('Acting player SAME as turn player');
             $('#deck-disabled-modal').modal();
             return;
         }
@@ -650,8 +654,9 @@ function dealCard() {
         }
 
         // ...if there ARE cards in the deck:
-        // console.log('Dealing a card');
+
         board.push(deck.pop());
+        oneCardDrawn = true;
 
         calcPlayerSwords();
         calcAbilities();
@@ -1063,7 +1068,6 @@ function checkTurn() {
 
 // Move the turn to the next player
 function cycleTurn() {
-    console.log('cycleTurn invoked');
 
     if (turnOf === players.length - 1) {
         turnOf = 0;
@@ -1071,6 +1075,7 @@ function cycleTurn() {
         turnOf++;
     }
     alreadyTakenTurn = false;
+    oneCardDrawn = false;
     isDeckDisabled = false;
     discardPile.push(...board);
     board.length = 0;
@@ -1102,8 +1107,14 @@ function highlightActingPlayer() {
 function endTurn(cycle = true) {
 
     const getButtons = document.getElementsByClassName('card-button');
-    console.log('getButtons :>> ', getButtons);
 
+    // If the actingPlayer is the starting player AND no card has been drawn
+    // Pop an alert, don't end turn
+    if (players[actingPlayer] === players[turnOf] 
+        && !oneCardDrawn ) {
+            $('#must-draw-modal').modal();
+            return;
+        }
 
     // If there are moves left for the turn player, trigger warning
     if (playerMoves > 0 && !isDeckDisabled) {
@@ -1113,7 +1124,7 @@ function endTurn(cycle = true) {
     // If there are cards on the board, and there are moves left, show the modal (TO DO: AND the cards can be bought...)
     if(playerMoves > 0 && board.length > 0) {
 
-        let hasPurchaseableCard = false;
+        let hasPurchaseableCard = false; 
 
         // Is there at least one button that is NOT disabled?
         for (const button of getButtons) {

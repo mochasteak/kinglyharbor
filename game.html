@@ -71,8 +71,10 @@
                     </button>
                 </div>
                 <div class="modal-body" id="tax-modal-body">
-                    <p><span id="final-player"></span> has <span id="final-points"></span> points, which has triggered the final round. Play will continue until it is <span id="final-round"></span>'s turn.</p> 
-                    <p>Reminder: The person with the most points wins, if there's a tie, the person with the most coins left wins.</p>
+                    <p><span id="final-player"></span> has <span id="final-points"></span> points, which has triggered
+                        the final round. Play will continue until it is <span id="final-round"></span>'s turn.</p>
+                    <p>Reminder: The person with the most points wins, if there's a tie, the person with the most coins
+                        left wins.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-dismiss="modal">Got it</button>
@@ -115,6 +117,26 @@
                 <div class="modal-body">
                     You've earned an additional move for being a risk-taker and having <span id="ship-colors"></span>
                     different colored ships on the board!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Got it</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Must draw modal -->
+    <div class="modal fade" id="must-draw-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Must draw at least one card</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Sorry. Them's the rules. You have to draw at least one card before you can end your turn. Take it up with Alexander Pfister.
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-dismiss="modal">Got it</button>
@@ -280,7 +302,7 @@
 
     <!-- Still have moves left modal -->
     <div class="modal fade" id="moves-left-modal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog  modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Still have moves left</h5>
@@ -303,8 +325,11 @@
     <!-- Game display -->
     <div class="container">
         <div class="row pt-3">
-            <div class="col text-center">
+            <div class="col-6 text-center ml-auto">
                 <h1 class="title">Kingly Harbor</h1>
+            </div>
+            <div class="col-3 text-right">
+                <a href="./index.html" class="btn btn-danger">New game <span class="icon fas fa-times ml-3 mr-0"></span></a>
             </div>
         </div>
         <div class="row d-flex justify-content-between">
