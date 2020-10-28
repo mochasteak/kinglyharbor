@@ -7,7 +7,7 @@ if (localStorage.getItem('playerNames') === null) {
 
 // Constants
 const PLAYER_DEFAULT_MOVES = 1;
-const COINS_TO_START = 8;
+const COINS_TO_START = 13;
 const playerNames = JSON.parse(localStorage.getItem("playerNames"));
 const VICTORY = 6;
 const TAX_THRESHOLD = 12;
@@ -458,7 +458,7 @@ function composeExpeditionCard(card) {
         <p>
         <i class="${getIcons(card.requirements[0])} fa-lg"></i><i class="${getIcons(card.requirements[1])} fa-lg"></i><i class="${getIcons(card.requirements[2]) || ''} fa-lg"></i>
         </p>
-        <button class="btn btn-primary btn-small m-2" onclick="purchaseCard(${card.id})"  ${checkIfAffordable(card) ? '' : 'disabled'}>Redeem</button>
+        <button class="btn btn-primary btn-small m-2" onclick="purchaseCard(${card.id},true)"  ${checkIfAffordable(card) ? '' : 'disabled'}>Redeem</button>
     </div>
     `;
 }
@@ -517,7 +517,36 @@ function checkIfAffordable(card) {
 }
 
 // Buying a card
-function purchaseCard(cardId) {
+function purchaseCard(cardId, ship = false) {
+
+    if (ship) {
+        console.log('The card bought is a ship');
+        // Move the card from expeditions 
+        let purchasedExpedition = expeditions.splice(expeditions.findIndex(card => card.id === cardId), 1);
+        let expeditionCoinBonus = purchasedExpedition[0].coins;
+
+        // Remove the required items from player's cards
+        for (let item of purchasedExpedition[0].requirements) {
+            console.log(`Removing a ${item} from player to pay for expedition`);
+            discardPile
+                .push(players[actingPlayer].cards
+                .splice(players[actingPlayer].cards
+                .findIndex(card => card.name === item), 1));
+        }
+
+        // Give the player the number of coins
+        for (let index = 0; index < expeditionCoinBonus; index++) {
+            players[actingPlayer].coins.push(deck.pop());
+        }
+
+        // Move the card to the player
+        players[actingPlayer].cards.push(purchasedExpedition[0]);
+
+        // Re-render boards
+        displayBoards();
+
+        return;
+    }
 
     // Move the card out of the game board
     let purchasedCard = board.splice(board.findIndex(card => card.id === cardId), 1);
@@ -576,7 +605,7 @@ function purchaseCard(cardId) {
             $('#governor-purchased-modal').modal();
         }
 
-        // Add card to discard pile
+        // Add card to player's cards
         players[actingPlayer].cards.push(purchasedCard[0]);
 
     }
