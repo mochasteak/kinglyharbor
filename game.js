@@ -100,9 +100,9 @@ function Player(name) {
         },
         getCards(cardName) {
             let result = 0;
-            if(this.cards.length > 0) {
+            if (this.cards.length > 0) {
                 for (let item of this.cards) {
-                    if(item.name === cardName) {
+                    if (item.name === cardName) {
                         result++;
                     }
                 }
@@ -178,55 +178,55 @@ function createDeck() {
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
-/*
-    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
-    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
-    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
-    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
+    /*
+        deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
+        deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
+        deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
+        deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
 
-    deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
-    deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
-    deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
-    deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
-    deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
-    deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
-    deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
-    deck.push(new Card('Sailor', 'person', 5, 1, null, 2));
-    deck.push(new Card('Sailor', 'person', 5, 1, null, 2));
-    deck.push(new Card('Sailor', 'person', 7, 1, null, 3));
+        deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
+        deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
+        deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
+        deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
+        deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
+        deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
+        deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
+        deck.push(new Card('Sailor', 'person', 5, 1, null, 2));
+        deck.push(new Card('Sailor', 'person', 5, 1, null, 2));
+        deck.push(new Card('Sailor', 'person', 7, 1, null, 3));
 
-    deck.push(new Card('Pirate', 'person', 5, 2, null, 1));
-    deck.push(new Card('Pirate', 'person', 7, 2, null, 2));
-    deck.push(new Card('Pirate', 'person', 9, 2, null, 3));
+        deck.push(new Card('Pirate', 'person', 5, 2, null, 1));
+        deck.push(new Card('Pirate', 'person', 7, 2, null, 2));
+        deck.push(new Card('Pirate', 'person', 9, 2, null, 3));
 
-    deck.push(new Card('Trader', 'person', 3, 0, 'yellow', 1));
-    deck.push(new Card('Trader', 'person', 5, 0, 'yellow', 2));
-    deck.push(new Card('Trader', 'person', 3, 0, 'blue', 1));
-    deck.push(new Card('Trader', 'person', 5, 0, 'blue', 2));
-    deck.push(new Card('Trader', 'person', 3, 0, 'green', 1));
-    deck.push(new Card('Trader', 'person', 3, 0, 'green', 1));
-    deck.push(new Card('Trader', 'person', 3, 0, 'red', 1));
-    deck.push(new Card('Trader', 'person', 3, 0, 'red', 1));
-    deck.push(new Card('Trader', 'person', 3, 0, 'black', 1));
-    deck.push(new Card('Trader', 'person', 3, 0, 'black', 1));
+        deck.push(new Card('Trader', 'person', 3, 0, 'yellow', 1));
+        deck.push(new Card('Trader', 'person', 5, 0, 'yellow', 2));
+        deck.push(new Card('Trader', 'person', 3, 0, 'blue', 1));
+        deck.push(new Card('Trader', 'person', 5, 0, 'blue', 2));
+        deck.push(new Card('Trader', 'person', 3, 0, 'green', 1));
+        deck.push(new Card('Trader', 'person', 3, 0, 'green', 1));
+        deck.push(new Card('Trader', 'person', 3, 0, 'red', 1));
+        deck.push(new Card('Trader', 'person', 3, 0, 'red', 1));
+        deck.push(new Card('Trader', 'person', 3, 0, 'black', 1));
+        deck.push(new Card('Trader', 'person', 3, 0, 'black', 1));
 
-    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
-    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
-    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
-    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
+        deck.push(new Card('Governor', 'person', 8, 0, null, 0));
+        deck.push(new Card('Governor', 'person', 8, 0, null, 0));
+        deck.push(new Card('Governor', 'person', 8, 0, null, 0));
+        deck.push(new Card('Governor', 'person', 8, 0, null, 0));
 
-    deck.push(new Card('Admiral', 'person', 5, 0, null, 1));
-    deck.push(new Card('Admiral', 'person', 7, 0, null, 2));
-    deck.push(new Card('Admiral', 'person', 7, 0, null, 2));
-    deck.push(new Card('Admiral', 'person', 7, 0, null, 2));
-    deck.push(new Card('Admiral', 'person', 9, 0, null, 3));
-    deck.push(new Card('Admiral', 'person', 9, 0, null, 3));
+        deck.push(new Card('Admiral', 'person', 5, 0, null, 1));
+        deck.push(new Card('Admiral', 'person', 7, 0, null, 2));
+        deck.push(new Card('Admiral', 'person', 7, 0, null, 2));
+        deck.push(new Card('Admiral', 'person', 7, 0, null, 2));
+        deck.push(new Card('Admiral', 'person', 9, 0, null, 3));
+        deck.push(new Card('Admiral', 'person', 9, 0, null, 3));
 
-    deck.push(new Card('Madamoiselle', 'person', 9, 0, null, 3));
-    deck.push(new Card('Madamoiselle', 'person', 9, 0, null, 3));
-    deck.push(new Card('Madamoiselle', 'person', 7, 0, null, 2));
-    deck.push(new Card('Madamoiselle', 'person', 7, 0, null, 2));
-*/
+        deck.push(new Card('Madamoiselle', 'person', 9, 0, null, 3));
+        deck.push(new Card('Madamoiselle', 'person', 9, 0, null, 3));
+        deck.push(new Card('Madamoiselle', 'person', 7, 0, null, 2));
+        deck.push(new Card('Madamoiselle', 'person', 7, 0, null, 2));
+    */
     deck.push(new Card('Jack of all Trades', 'person', 4, 0, null, 1));
     deck.push(new Card('Jack of all Trades', 'person', 4, 0, null, 1));
     deck.push(new Card('Jack of all Trades', 'person', 4, 0, null, 1));
@@ -301,13 +301,22 @@ function displayGameBoard() {
 
         getPlayers.innerHTML += `
         <div class="player" id="player-${playerIndex}">
-            <div class="row">
-                <div class="col text-center">
-                    <p>${player.name} <span class="${(playerIndex === turnOf) ? 'dot' : ''}"></span></p>
-                <div class="col player-col player-coins text-center"><span id="coins">${player.coins.length}</span></div>
-                <div class="col player-col player-points text-center"><span id="player1-score">${player.getPoints()}</span></div>
+
+            <div class="col-12">
+                <p>${player.name} <span class="${(playerIndex === turnOf) ? 'dot' : ''}"></span></p>
+            </div>
+            
+            <div class="player-stats">
+            
+                <div class="col player-col player-coins text-center">
+                    <span id="coins">${player.coins.length}</span>
+                </div>
+
+                <div class="col player-col player-points text-center">
+                    <span>${player.getPoints()}</span>
                 </div>
             </div>
+            
         </div>`;
 
         playerIndex++;
@@ -407,7 +416,7 @@ const madamoiselleDiscount = (card) => {
 };
 
 function turnFee() {
-    if(actingPlayer === turnOf) {
+    if (actingPlayer === turnOf) {
         return 0;
     } else {
         return 1;
@@ -486,7 +495,7 @@ function checkIfAffordable(card) {
 
             console.log(`Need ${property}: ${requirements[property]} Player has: ${players[actingPlayer].getCards(property)}`);
 
-            if(requirements[property] > players[actingPlayer].getCards(property)) {
+            if (requirements[property] > players[actingPlayer].getCards(property)) {
                 hasAllItems = false;
                 missingItems += requirements[property] - players[actingPlayer].getCards(property);
                 console.log(`hasAllItems:>> ${hasAllItems} missingItems:>> ${missingItems}`);
@@ -503,7 +512,7 @@ function checkIfAffordable(card) {
 
         console.log('hasAllItems :>> ', hasAllItems);
         return (hasAllItems && (missingItems <= players[actingPlayer].getCards('Jack of all Trades')));
- 
+
     }
 
     if (playerMoves == 0) {
@@ -513,15 +522,15 @@ function checkIfAffordable(card) {
     // Taxes  cannot be bought
     if (card.type === 'tax') {
         return false;
-    } 
+    }
 
     // Ships are always 'purchaseable'
-    if (card.type === 'ship'){
-        if(actingPlayer !== turnOf || !isDeckDisabled) {
+    if (card.type === 'ship') {
+        if (actingPlayer !== turnOf || !isDeckDisabled) {
             return true;
-        }    
+        }
 
-    // For all 'person' cards, calculate affordability (incl discounts)
+        // For all 'person' cards, calculate affordability (incl discounts)
     } else {
         if (card.coins - madamoiselleDiscount(card) + turnFee() <= players[actingPlayer].coins.length) {
             return true;
@@ -536,10 +545,10 @@ function purchaseCard(cardId, expedition = false) {
     if (expedition) {
 
         // Move the card from expeditions 
-        let purchasedExpedition = 
-        expeditions
-        .splice(expeditions
-        .findIndex(card => card.id === cardId), 1);
+        let purchasedExpedition =
+            expeditions
+            .splice(expeditions
+                .findIndex(card => card.id === cardId), 1);
 
         let expeditionCoinBonus = purchasedExpedition[0].coins;
 
@@ -550,15 +559,15 @@ function purchaseCard(cardId, expedition = false) {
             if (players[actingPlayer].getCards(item) > 0) {
                 console.log(`Removing an ${item} to pay for expedition`);
                 discardPile
-                .push(players[actingPlayer].cards
-                .splice(players[actingPlayer].cards
-                .findIndex(obj => obj.name === item), 1));
+                    .push(players[actingPlayer].cards
+                        .splice(players[actingPlayer].cards
+                            .findIndex(obj => obj.name === item), 1));
             } else {
                 console.log('Removing a wild card to pay for expedition');
                 discardPile
-                .push(players[actingPlayer].cards
-                .splice(players[actingPlayer].cards
-                .findIndex(obj => obj.name === 'Jack of all Trades'), 1));
+                    .push(players[actingPlayer].cards
+                        .splice(players[actingPlayer].cards
+                            .findIndex(obj => obj.name === 'Jack of all Trades'), 1));
             }
         }
 
@@ -716,10 +725,10 @@ function dealCard() {
 function checkVictoryThreshold() {
 
     for (let player of players) {
-        if(player.getPoints() >= VICTORY ) {
+        if (player.getPoints() >= VICTORY) {
             console.log(`=== ${players[actingPlayer].name} has reached enough points to win ===`);
             finalRound = true;
-            if(!victoryMessageShown) {
+            if (!victoryMessageShown) {
                 getFinalPlayer.innerText = players[actingPlayer].name;
                 getFinalPlayerPoints.innerText = players[actingPlayer].getPoints();
                 getFinalRound.innerText = players[startingPlayer].name;
@@ -734,7 +743,7 @@ function checkVictoryThreshold() {
 function checkGameOver() {
 
     // If final round is true, and actingPlayer and turnOf are the same
-    if(finalRound && (turnOf === startingPlayer)) {
+    if (finalRound && (turnOf === startingPlayer)) {
         isDeckDisabled = true;
         playerMoves = 0;
         calcWinner();
@@ -750,7 +759,7 @@ function calcWinner() {
     for (let player of players) {
         finalScores.push([player.name, player.getPoints(), player.coins.length]);
     }
-    
+
     // Sort by points
     finalScores.sort((a, b) => {
         let aPoints = a[1];
@@ -758,12 +767,9 @@ function calcWinner() {
         let aCoins = a[2];
         let bCoins = b[2];
 
-        if(aPoints == bPoints)
-        {
+        if (aPoints == bPoints) {
             return (aCoins > bCoins) ? -1 : (aCoins < bCoins) ? 1 : 0;
-        }
-        else
-        {
+        } else {
             return (aPoints > bPoints) ? -1 : 1;
         }
 
@@ -778,7 +784,7 @@ function calcWinner() {
     });
 
     localStorage.setItem('finalScores', JSON.stringify(finalScores));
-    
+
     // See how many with the same highest number
     // If both have the same, count their coins
 }
@@ -880,7 +886,7 @@ function twoShips() {
 
     for (let player of players) {
 
-        if(player.getCards('Jester')) {
+        if (player.getCards('Jester')) {
             console.log(`${player.name} has ${player.getCards('Jester')} Jesters`);
             let jesterBonus = player.getCards('Jester');
 
@@ -1096,7 +1102,7 @@ function cycleTurn() {
         turnOf++;
     }
     alreadyTakenTurn = false;
-    
+
     isDeckDisabled = false;
     discardPile.push(...board);
     board.length = 0;
@@ -1129,33 +1135,34 @@ function highlightActingPlayer() {
 function endTurn(cycle = true) {
 
     const getButtons = document.getElementsByClassName('card-button');
+    console.log('getButtons :>> ', getButtons);
 
     // If the actingPlayer is the starting player AND no card has been drawn
     // Pop an alert, don't end turn
-    if (players[actingPlayer] === players[turnOf] 
-        && !oneCardDrawn) {
-            $('#must-draw-modal').modal();
-            return;
-        }
+    if (players[actingPlayer] === players[turnOf] &&
+        !oneCardDrawn) {
+        $('#must-draw-modal').modal();
+        return;
+    }
 
     // If there are moves left for the turn player, trigger warning
     if (playerMoves > 0 && !isDeckDisabled) {
         $('#moves-left-modal').modal();
         return;
     }
-    // If there are cards on the board, and there are moves left, show the modal (TO DO: AND the cards can be bought...)
-    if(playerMoves > 0 && board.length > 0) {
+    // If there are cards on the board, and there are moves left, show the modal AND the cards can be bought...
+    if (playerMoves > 0 && board.length > 0) {
 
-        let hasPurchaseableCard = false; 
+        let hasPurchaseableCard = false;
 
         // Is there at least one button that is NOT disabled?
         for (const button of getButtons) {
-            if(!button.attributes.hasOwnProperty('disabled')) {
+            if (!button.attributes.hasOwnProperty('disabled')) {
                 hasPurchaseableCard = true;
             }
         }
 
-        if(hasPurchaseableCard) {
+        if (hasPurchaseableCard) {
             $('#moves-left-modal').modal();
             return;
         }
@@ -1195,4 +1202,3 @@ shuffleCards(deck);
 dealToStart();
 updateCardsRemaining();
 displayBoards();
-

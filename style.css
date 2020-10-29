@@ -50,7 +50,7 @@ table {
 .players {
     display: flex;
     flex-direction: row;
-    height: 6.5rem;
+    height: 5.2rem;
 }
 
 .header h2{
@@ -73,6 +73,15 @@ table {
 .player-col {
     padding: 0px 5px 5px 5px;
     color: #333;
+    width: 100%;
+    margin-top: 5px;
+}
+
+.player-stats {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    height: 3rem;
 }
 
 .player-coins {
