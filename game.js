@@ -6,8 +6,8 @@ if (localStorage.getItem('playerNames') === null) {
 }
 
 // Constants
-const PLAYER_DEFAULT_MOVES = 1;
-const COINS_TO_START = 12;
+const PLAYER_DEFAULT_MOVES = 2;
+const COINS_TO_START = 3;
 const playerNames = JSON.parse(localStorage.getItem("playerNames"));
 const VICTORY = 12;
 const TAX_THRESHOLD = 12;
@@ -28,10 +28,12 @@ let fourColorBonusUsed = false;
 let fiveColorBonusUsed = false;
 let isNewTurn = true;
 let admiralBonusGiven = false;
+let governorBonusGiven = false;
 let alreadyTakenTurn = true;
 let finalRound = false;
 let victoryMessageShown = false;
 let oneCardDrawn = false;
+let cardPurchased = false;
 let missingItems = 0;
 
 // Getters
@@ -55,6 +57,7 @@ const getPlayerTurn = document.getElementsByClassName('player-turn');
 const getFinalPlayer = document.getElementById('final-player');
 const getFinalPlayerPoints = document.getElementById('final-points');
 const getFinalRound = document.getElementById('final-round');
+const getDrawCardButton = document.getElementById('draw-card-button');
 
 
 // Factory functions
@@ -178,55 +181,55 @@ function createDeck() {
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
     deck.push(new Card('Pinnace', 'ship', 3, 4, 'yellow', 0));
-    /*
-        deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
-        deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
-        deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
-        deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
 
-        deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
-        deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
-        deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
-        deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
-        deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
-        deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
-        deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
-        deck.push(new Card('Sailor', 'person', 5, 1, null, 2));
-        deck.push(new Card('Sailor', 'person', 5, 1, null, 2));
-        deck.push(new Card('Sailor', 'person', 7, 1, null, 3));
+    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
+    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'min points'));
+    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
+    deck.push(new Card('Tax increase', 'tax', 1, 0, null, 0, 'max swords'));
 
-        deck.push(new Card('Pirate', 'person', 5, 2, null, 1));
-        deck.push(new Card('Pirate', 'person', 7, 2, null, 2));
-        deck.push(new Card('Pirate', 'person', 9, 2, null, 3));
+    deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
+    deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
+    deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
+    deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
+    deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
+    deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
+    deck.push(new Card('Sailor', 'person', 3, 1, null, 1));
+    deck.push(new Card('Sailor', 'person', 5, 1, null, 2));
+    deck.push(new Card('Sailor', 'person', 5, 1, null, 2));
+    deck.push(new Card('Sailor', 'person', 7, 1, null, 3));
 
-        deck.push(new Card('Trader', 'person', 3, 0, 'yellow', 1));
-        deck.push(new Card('Trader', 'person', 5, 0, 'yellow', 2));
-        deck.push(new Card('Trader', 'person', 3, 0, 'blue', 1));
-        deck.push(new Card('Trader', 'person', 5, 0, 'blue', 2));
-        deck.push(new Card('Trader', 'person', 3, 0, 'green', 1));
-        deck.push(new Card('Trader', 'person', 3, 0, 'green', 1));
-        deck.push(new Card('Trader', 'person', 3, 0, 'red', 1));
-        deck.push(new Card('Trader', 'person', 3, 0, 'red', 1));
-        deck.push(new Card('Trader', 'person', 3, 0, 'black', 1));
-        deck.push(new Card('Trader', 'person', 3, 0, 'black', 1));
+    deck.push(new Card('Pirate', 'person', 5, 2, null, 1));
+    deck.push(new Card('Pirate', 'person', 7, 2, null, 2));
+    deck.push(new Card('Pirate', 'person', 9, 2, null, 3));
 
-        deck.push(new Card('Governor', 'person', 8, 0, null, 0));
-        deck.push(new Card('Governor', 'person', 8, 0, null, 0));
-        deck.push(new Card('Governor', 'person', 8, 0, null, 0));
-        deck.push(new Card('Governor', 'person', 8, 0, null, 0));
+    deck.push(new Card('Trader', 'person', 3, 0, 'yellow', 1));
+    deck.push(new Card('Trader', 'person', 5, 0, 'yellow', 2));
+    deck.push(new Card('Trader', 'person', 3, 0, 'blue', 1));
+    deck.push(new Card('Trader', 'person', 5, 0, 'blue', 2));
+    deck.push(new Card('Trader', 'person', 3, 0, 'green', 1));
+    deck.push(new Card('Trader', 'person', 3, 0, 'green', 1));
+    deck.push(new Card('Trader', 'person', 3, 0, 'red', 1));
+    deck.push(new Card('Trader', 'person', 3, 0, 'red', 1));
+    deck.push(new Card('Trader', 'person', 3, 0, 'black', 1));
+    deck.push(new Card('Trader', 'person', 3, 0, 'black', 1));
 
-        deck.push(new Card('Admiral', 'person', 5, 0, null, 1));
-        deck.push(new Card('Admiral', 'person', 7, 0, null, 2));
-        deck.push(new Card('Admiral', 'person', 7, 0, null, 2));
-        deck.push(new Card('Admiral', 'person', 7, 0, null, 2));
-        deck.push(new Card('Admiral', 'person', 9, 0, null, 3));
-        deck.push(new Card('Admiral', 'person', 9, 0, null, 3));
+    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
+    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
+    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
+    deck.push(new Card('Governor', 'person', 8, 0, null, 0));
 
-        deck.push(new Card('Madamoiselle', 'person', 9, 0, null, 3));
-        deck.push(new Card('Madamoiselle', 'person', 9, 0, null, 3));
-        deck.push(new Card('Madamoiselle', 'person', 7, 0, null, 2));
-        deck.push(new Card('Madamoiselle', 'person', 7, 0, null, 2));
-    */
+    deck.push(new Card('Admiral', 'person', 5, 0, null, 1));
+    deck.push(new Card('Admiral', 'person', 7, 0, null, 2));
+    deck.push(new Card('Admiral', 'person', 7, 0, null, 2));
+    deck.push(new Card('Admiral', 'person', 7, 0, null, 2));
+    deck.push(new Card('Admiral', 'person', 9, 0, null, 3));
+    deck.push(new Card('Admiral', 'person', 9, 0, null, 3));
+
+    deck.push(new Card('Madamoiselle', 'person', 9, 0, null, 3));
+    deck.push(new Card('Madamoiselle', 'person', 9, 0, null, 3));
+    deck.push(new Card('Madamoiselle', 'person', 7, 0, null, 2));
+    deck.push(new Card('Madamoiselle', 'person', 7, 0, null, 2));
+
     deck.push(new Card('Jack of all Trades', 'person', 4, 0, null, 1));
     deck.push(new Card('Jack of all Trades', 'person', 4, 0, null, 1));
     deck.push(new Card('Jack of all Trades', 'person', 4, 0, null, 1));
@@ -254,6 +257,7 @@ function createDeck() {
     deck.push(new Card('Jester', 'person', 7, 0, null, 2));
     deck.push(new Card('Jester', 'person', 7, 0, null, 2));
     deck.push(new Card('Jester', 'person', 9, 0, null, 3));
+    
 
     deck.push(new Card('Expedition', 'expedition', 2, 0, null, 4, ['Priest', 'Priest']));
     deck.push(new Card('Expedition', 'expedition', 2, 0, null, 4, ['Captain', 'Captain']));
@@ -261,6 +265,7 @@ function createDeck() {
     deck.push(new Card('Expedition', 'expedition', 3, 0, null, 6, ['Priest', 'Priest', 'Settler']));
     deck.push(new Card('Expedition', 'expedition', 3, 0, null, 6, ['Captain', 'Captain', 'Settler']));
     deck.push(new Card('Expedition', 'expedition', 3, 0, null, 5, ['Captain', 'Priest', 'Settler']));
+
 }
 
 // Shuffle the deck
@@ -286,7 +291,7 @@ function displayBoards() {
 
 // Render the cards on the game board
 function displayGameBoard() {
-    // console.log('displayGameBoard invoked');
+
     getBoard.innerHTML = '';
     board.map(card => {
         getBoard.innerHTML += composeCard(card);
@@ -302,7 +307,7 @@ function displayGameBoard() {
         getPlayers.innerHTML += `
         <div class="player" id="player-${playerIndex}">
 
-            <div class="col-12">
+            <div class="col-12" id="player-name">
                 <p>${player.name} <span class="${(playerIndex === turnOf) ? 'dot' : ''}"></span></p>
             </div>
             
@@ -329,6 +334,13 @@ function displayGameBoard() {
     for (let span of getPlayerTurn) {
         span.innerText = players[turnOf].name;
     }
+
+    // Disable the button if deck is disabled or if a card has been drawn
+    if(isDeckDisabled || cardPurchased) {
+        getDrawCardButton.setAttribute('disabled', true);
+    } else {
+        getDrawCardButton.removeAttribute('disabled');
+    }
 }
 
 function displayExpeditions() {
@@ -348,9 +360,9 @@ function displayPlayerBoard() {
 
     // Show/hide coin image depending on num of coins
     if (players[actingPlayer].coins.length <= 0) {
-        getPlayerCoinImage.classList.add('hidden');
+        getPlayerCoinImage.style.backgroundImage = 'none';
     } else {
-        getPlayerCoinImage.classList.remove('hidden');
+        getPlayerCoinImage.style.backgroundImage = "url('./img/coin.jpg')";
     }
 
     // Render each card in playerBoard using composeCard
@@ -358,6 +370,16 @@ function displayPlayerBoard() {
     players[actingPlayer].cards.map(card => {
         getPlayerBoard.innerHTML += composeCard(card);
     });
+
+    // Hide the purchase buttons on the player cards
+    let getPlayerCardButtons = document.querySelectorAll('.player-cards button');
+
+    if (getPlayerCardButtons.length > 0) {
+        for (let button of getPlayerCardButtons) {
+            button.classList.add('hidden');
+        }
+    }
+
 }
 
 // Helper to provide correct icon, given a card name
@@ -428,6 +450,25 @@ function composeCard(card, board = 'game') {
 
     let cardHtml = '';
 
+    if (card.type === 'ship') {
+
+        let coinHtml = '<img src="./img/coin.png" width="32px" class="ship-coin-image">';
+        let totalCoinHtml = coinHtml.repeat(card.coins);
+
+        cardHtml = `
+        <div class="board-card border-${card.color}">
+            <h3>${card.name}</h3>
+            <div class="ship-card-coins justify-content-center">
+                ${totalCoinHtml}
+            </div>
+                <p><i class="${getIcons(card.name)} lead-icon"></i></p>
+                <p><img src="./img/swords.png" width="26px"> ${card.swords}</p>
+                ${board === 'game' ? `<button class="btn btn-primary btn-small m-2 card-button" onclick="purchaseCard(${card.id})"  ${checkIfAffordable(card) ? '' : 'disabled'}>${(card.type == 'ship') ? 'Take coins' : 'Purchase' }</button>` : ''}
+            </div>
+        `;
+        return cardHtml;
+    }
+
     if (card.type !== 'tax') {
 
         cardHtml = `
@@ -479,7 +520,7 @@ function composeExpeditionCard(card) {
 
 // Check if the purchase button should be displayed
 function checkIfAffordable(card) {
-    console.log('Checking affordability of :>> ', card.name);
+    // console.log('Checking affordability of :>> ', card.name);
 
     if (card.type === 'expedition') {
 
@@ -487,18 +528,18 @@ function checkIfAffordable(card) {
         missingItems = 0;
         let hasAllItems = false;
         let requirements = countOccurrences(card.requirements);
-        console.log('requirements :>> ', requirements);
-        console.log(`Player has ${players[actingPlayer].getCards('Jack of all Trades')} Jack of all Trades`);
+        // console.log('requirements :>> ', requirements);
+        // console.log(`Player has ${players[actingPlayer].getCards('Jack of all Trades')} Jack of all Trades`);
 
         // See if player has enough of each item needed
         for (let property in requirements) {
 
-            console.log(`Need ${property}: ${requirements[property]} Player has: ${players[actingPlayer].getCards(property)}`);
+            // console.log(`Need ${property}: ${requirements[property]} Player has: ${players[actingPlayer].getCards(property)}`);
 
             if (requirements[property] > players[actingPlayer].getCards(property)) {
                 hasAllItems = false;
                 missingItems += requirements[property] - players[actingPlayer].getCards(property);
-                console.log(`hasAllItems:>> ${hasAllItems} missingItems:>> ${missingItems}`);
+                // console.log(`hasAllItems:>> ${hasAllItems} missingItems:>> ${missingItems}`);
             } else {
                 hasAllItems = true;
             }
@@ -506,11 +547,11 @@ function checkIfAffordable(card) {
 
         // See if player has enough Jack of all Trades to make up the difference
         if (missingItems <= players[actingPlayer].getCards('Jack of all Trades')) {
-            console.log(`Missing items: ${missingItems} Player Jacks: ${players[actingPlayer].getCards('Jack of all Trades')}`);
+            // console.log(`Missing items: ${missingItems} Player Jacks: ${players[actingPlayer].getCards('Jack of all Trades')}`);
             hasAllItems = true;
         }
 
-        console.log('hasAllItems :>> ', hasAllItems);
+        // console.log('hasAllItems :>> ', hasAllItems);
         return (hasAllItems && (missingItems <= players[actingPlayer].getCards('Jack of all Trades')));
 
     }
@@ -542,6 +583,8 @@ function checkIfAffordable(card) {
 // Buying a card
 function purchaseCard(cardId, expedition = false) {
 
+    cardPurchased = true;
+
     if (expedition) {
 
         // Move the card from expeditions 
@@ -557,13 +600,13 @@ function purchaseCard(cardId, expedition = false) {
 
             // Check if the item exists, if so, remove it, if not, remove a wild
             if (players[actingPlayer].getCards(item) > 0) {
-                console.log(`Removing an ${item} to pay for expedition`);
+                // console.log(`Removing an ${item} to pay for expedition`);
                 discardPile
                     .push(players[actingPlayer].cards
                         .splice(players[actingPlayer].cards
                             .findIndex(obj => obj.name === item), 1));
             } else {
-                console.log('Removing a wild card to pay for expedition');
+                // console.log('Removing a wild card to pay for expedition');
                 discardPile
                     .push(players[actingPlayer].cards
                         .splice(players[actingPlayer].cards
@@ -588,6 +631,11 @@ function purchaseCard(cardId, expedition = false) {
 
     // Move the card out of the game board
     let purchasedCard = board.splice(board.findIndex(card => card.id === cardId), 1);
+    console.log(`Purchased card: ${purchasedCard[0].name}. Board: ${board.length}`);
+    
+    // Decrement the player's moves
+    playerMoves--;
+    // console.log('purchaseCard: Subtracting one player move');
 
     // Get the number of coins for this card
     let cardCoins = purchasedCard[0].coins;
@@ -639,6 +687,8 @@ function purchaseCard(cardId, expedition = false) {
         // Apply the move bonus if it is a Governor
         if (purchasedCard[0].name === 'Governor') {
             playerMoves++;
+            governorBonusGiven = true;
+            // console.log(`purchaseCard added 1 move. PlayerMoves: ${playerMoves}`);
             isNewTurn = false;
             $('#governor-purchased-modal').modal();
         }
@@ -648,19 +698,18 @@ function purchaseCard(cardId, expedition = false) {
 
     }
 
-    playerMoves--;
+    checkForAdmiralBonus();
     checkVictoryThreshold();
-    calcPlayerMoves();
+    calcMovesBonus();
     calcPlayerSwords();
     displayBoards();
-    calcAbilities();
     checkOutOfMoves();
 }
 
 // Deal a card onto the board
 function dealCard() {
 
-    // If the deck is disabled...
+    // If the deck is disabled, warn users
     if (isDeckDisabled) {
 
         if (actingPlayer !== turnOf) {
@@ -685,24 +734,19 @@ function dealCard() {
         // ...if there ARE cards in the deck:
 
         board.push(deck.pop());
+        displayBoards(); // So players can see the dealt card
+        
         oneCardDrawn = true;
-
-        calcPlayerSwords();
-        calcAbilities();
-        updateCardsRemaining();
         isNewTurn = false;
-        displayBoards();
+        calcPlayerSwords();
+        updateCardsRemaining();
 
         let dealtCard = board[board.length - 1];
 
         if (dealtCard.type === 'expedition') {
             // Move it to expedition array
-            // console.log('Moving expedition to array');
             expeditions.push(board.pop());
-            // Trigger expedition modal
-            // $('#expedition-modal').modal();
             displayBoards();
-
         }
 
         if (dealtCard.type === 'tax') {
@@ -717,8 +761,12 @@ function dealCard() {
             checkIfDefeatable(board[board.length - 1]);
             return;
         }
+
+        console.log(`Card dealt: ${dealtCard.name} Board length: ${board.length} PlayerMoves: ${playerMoves}`);
+
+        checkForAdmiralBonus();
         checkForDuplicates(board);
-        calcPlayerMoves();
+        calcMovesBonus();
     }
 }
 
@@ -726,7 +774,7 @@ function checkVictoryThreshold() {
 
     for (let player of players) {
         if (player.getPoints() >= VICTORY) {
-            console.log(`=== ${players[actingPlayer].name} has reached enough points to win ===`);
+            // console.log(`=== ${players[actingPlayer].name} has reached enough points to win ===`);
             finalRound = true;
             if (!victoryMessageShown) {
                 getFinalPlayer.innerText = players[actingPlayer].name;
@@ -735,7 +783,7 @@ function checkVictoryThreshold() {
                 victoryMessageShown = true;
                 $('#final-round-modal').modal();
             }
-            console.log('Set finalRound to true');
+            // console.log('Set finalRound to true');
         }
     }
 }
@@ -745,6 +793,7 @@ function checkGameOver() {
     // If final round is true, and actingPlayer and turnOf are the same
     if (finalRound && (turnOf === startingPlayer)) {
         isDeckDisabled = true;
+        console.log(`checkGameOver: set moves to 0`);
         playerMoves = 0;
         calcWinner();
         window.location.href = './game-over.html';
@@ -772,21 +821,9 @@ function calcWinner() {
         } else {
             return (aPoints > bPoints) ? -1 : 1;
         }
-
-        /*
-        if (aPoints < bPoints) {
-            return -1;
-        } else if (aPoints > bPoints) {
-            return 1;
-        }
-        return 0;
-        */
     });
 
     localStorage.setItem('finalScores', JSON.stringify(finalScores));
-
-    // See how many with the same highest number
-    // If both have the same, count their coins
 }
 
 function collectTaxes(card) {
@@ -794,9 +831,9 @@ function collectTaxes(card) {
     // First, take away half the coins for any player with 12 or more
     for (let player of players) {
         if (player.coins.length >= TAX_THRESHOLD) {
-            // console.log('Tax threshold exceeded by ' + player.name);
+            console.log(`Tax threshold hit: ${player.name} has ${player.coins.length} coins`);
             for (let i = -2; i <= Math.floor(player.coins.length / 2); i++) {
-                // console.log('Removing 1 coin from ' + player.name);
+                console.log('Removing 1 coin from ' + player.name);
                 discardPile.push(player.coins.pop());
             }
         }
@@ -829,7 +866,7 @@ function collectTaxes(card) {
         for (let player of players) {
             if (player.getPoints() === playerPoints[0][1]) {
                 player.coins.push(deck.pop());
-                // console.log('Adding min points bonus to ' + player.name);
+                console.log('Adding min points bonus to ' + player.name);
             }
         }
 
@@ -858,8 +895,10 @@ function collectTaxes(card) {
 
             // Add one coin to the one with the most swords
             for (let player of players) {
+                console.log(`Checking if ${player.name} has most swords`);
                 if (player.getSwords() === playerSwords[0][1]) {
                     player.coins.push(deck.pop());
+                    console.log(`Adding one coin to ${player.name} for max swords`);
                 }
             }
         }
@@ -871,19 +910,22 @@ function collectTaxes(card) {
 function checkOutOfMoves() {
 
     if (playerMoves <= 0) {
+
         isDeckDisabled = true;
+
         // Set all the buttons to disabled
         let cardButtons = document.querySelectorAll('.board .card button');
-        // console.log('cardButtons :>> ', cardButtons);
+
         for (let button in cardButtons) {
             button.disabled = true;
-            // console.log('Setting button to hidden');
         }
     }
 }
 
 function twoShips() {
-
+    console.log('TWO SHIPS invoked');
+    
+    // Give players with a Jester a coin
     for (let player of players) {
 
         if (player.getCards('Jester')) {
@@ -916,6 +958,7 @@ function checkForDuplicates(board) {
         if (cardType === 'ship' && colorsAlreadySeen.indexOf(color) !== -1) {
             isDeckDisabled = true;
             playerMoves = 0;
+            // console.log(`checkForDuplicates: set moves to 0`);
             displayBoards();
             $('#two-ships-modal').modal({
                 keyboard: false
@@ -926,9 +969,38 @@ function checkForDuplicates(board) {
             colorsAlreadySeen.push(color);
         }
     }
-
-    return false;
+    return;
 }
+
+
+// Give two coins for each Admiral, if there are five cards on the board
+function checkForAdmiralBonus() {
+
+    if (board.length >= 5) {
+        console.log('Checking for Admiral bonus');
+        console.log('admiralBonusGiven:>> ', admiralBonusGiven);
+
+        if('Admiral' in getPlayerCards()) {
+
+            if (playerMoves > 0 && !admiralBonusGiven) {
+    
+            let admiralBonus = getPlayerCards().Admiral * 2;
+    
+            console.log('admiralBonus :>> ', admiralBonus);
+    
+            for (let i = 0; i < admiralBonus; i++) {
+                players[actingPlayer].coins.push(deck.pop());
+                console.log('Adding a coin to player due to Admiral bonus. Iteration: ' + i);
+            }
+    
+            admiralBonusGiven = true;
+            $('#admiral-bonus-modal').modal();
+            getAdmiralBonus.innerText = admiralBonus;
+            }
+        }
+    } 
+}
+
 
 function checkIfDefeatable(card) {
 
@@ -939,8 +1011,10 @@ function checkIfDefeatable(card) {
         $('#defeat-ship-modal').modal(); // Trigger modal
         return;
     }
+
     checkForDuplicates(board);
-    calcPlayerMoves();
+    calcMovesBonus();
+    checkForAdmiralBonus();
 }
 
 function defeatShip(card) {
@@ -951,7 +1025,7 @@ function defeatShip(card) {
 
 function declineDefeatOption() {
     checkForDuplicates(board);
-    calcPlayerMoves();
+    calcMovesBonus();
 }
 
 function updateCardsRemaining() {
@@ -983,55 +1057,25 @@ const getPlayerCards = () => {
     for (let card of players[actingPlayer].cards) {
         playerCardTypes.push(card.name);
     }
-    // console.log('playerCardTypes :>> ', playerCardTypes);
 
-    // console.log('output of getPlayerCards', countOccurrences(playerCardTypes));
     return countOccurrences(playerCardTypes);
 };
 
+function calcMovesBonus() {
 
-// Apply the special bonuses depending on card types
-function calcAbilities() {
-    //console.log('isNewTurn :>> ', isNewTurn);
-    //console.log(' === calcAbilities invoked ===');
-
-    if ('Admiral' in getPlayerCards()) {
-        // Give two coins if there are five cards on the board when it's your turn
-
-        if (!admiralBonusGiven && board.length >= 5 && playerMoves > 0) {
-            //console.log('Admiral bonus function invoked');
-
-            let admiralBonus = getPlayerCards().Admiral * 2;
-
-            //console.log('admiralBonus :>> ', admiralBonus);
-
-            for (let i = 0; i < admiralBonus; i++) {
-                players[actingPlayer].coins.push(deck.pop());
-                // console.log('Adding a coin to player due to Admiral bonus. Iteration: ' + i);
-            }
-            admiralBonusGiven = true;
-            getAdmiralBonus.innerText = admiralBonus;
-            $('#admiral-bonus-modal').modal();
-        }
-        displayBoards();
+    // If there is a Governor in player cards, and the governor bonus hasn't been given, add a turn to playerMoves and set flag to 'true'
+    if ('Governor' in getPlayerCards() && !governorBonusGiven) {
+        playerMoves++;
+        governorBonusGiven = true;
+        // console.log(`calcMovesBonus: Increasing playerMoves to: ${playerMoves} `);
     }
-
-    if ('Governor' in getPlayerCards()) {
-        console.log('calcAbilities: Adding ' + getPlayerCards().Governor + ' to playerMoves');
-        if (isNewTurn) {
-            playerMoves += getPlayerCards().Governor;
-            calcPlayerMoves();
-        }
-    }
-}
-
-function calcPlayerMoves() {
 
     // If 4 or 5 different colored ships on the board, increase moves
     switch (colorsAlreadySeen.length) {
         case 5:
             if (!fiveColorBonusUsed) {
                 playerMoves++;
+                console.log(`Adding 1 move for having 5 different ship colors. PlayerMoves: ${playerMoves}`);
                 fiveColorBonusUsed = true;
                 getShipColors.innerHTML = '<em>5</em>';
                 $('#additional-move-modal').modal();
@@ -1044,6 +1088,7 @@ function calcPlayerMoves() {
         case 4:
             if (!fourColorBonusUsed) {
                 playerMoves++;
+                console.log(`Adding 1 move for having 4 different ship colors. PlayerMoves: ${playerMoves}`);
                 fourColorBonusUsed = true;
                 getShipColors.innerHTML = '<em>4</em>';
                 $('#additional-move-modal').modal();
@@ -1054,7 +1099,6 @@ function calcPlayerMoves() {
     }
 
     getPlayerMoves.innerHTML = playerMoves;
-    // console.log('playerMoves :>> ', playerMoves);
 }
 
 function clearMoves() {
@@ -1064,10 +1108,15 @@ function clearMoves() {
 }
 
 function cycleActingPlayer() {
-    // console.log('Invoking cycleActingPlayer');
+    console.log('cycleActingPlayer invoked');
 
     isNewTurn = true;
     missingItems = 0;
+    playerMoves = 1;
+    admiralBonusGiven = false;
+    governorBonusGiven = false;
+    isDeckDisabled = false;
+    cardPurchased = false;
 
     // Move the acting player
     if (actingPlayer === players.length - 1) {
@@ -1081,6 +1130,8 @@ function cycleActingPlayer() {
         isDeckDisabled = true;
     }
     checkTurn();
+    calcMovesBonus();
+    checkForAdmiralBonus();
 }
 
 // Check if the TURN needs to move
@@ -1096,13 +1147,15 @@ function checkTurn() {
 // Move the turn to the next player
 function cycleTurn() {
 
+    console.log('Cycling turn');
+
     if (turnOf === players.length - 1) {
         turnOf = 0;
     } else {
         turnOf++;
     }
-    alreadyTakenTurn = false;
 
+    alreadyTakenTurn = false;
     isDeckDisabled = false;
     discardPile.push(...board);
     board.length = 0;
@@ -1133,23 +1186,17 @@ function highlightActingPlayer() {
 
 // End a turn - Move the cards from the board to the discard pile
 function endTurn(cycle = true) {
+    console.log('endTurn invoked');
 
     const getButtons = document.getElementsByClassName('card-button');
-    console.log('getButtons :>> ', getButtons);
 
-    // If the actingPlayer is the starting player AND no card has been drawn
-    // Pop an alert, don't end turn
+    // If the actingPlayer is the starting player AND no card has been drawn, trigger modal
     if (players[actingPlayer] === players[turnOf] &&
         !oneCardDrawn) {
         $('#must-draw-modal').modal();
         return;
     }
 
-    // If there are moves left for the turn player, trigger warning
-    if (playerMoves > 0 && !isDeckDisabled) {
-        $('#moves-left-modal').modal();
-        return;
-    }
     // If there are cards on the board, and there are moves left, show the modal AND the cards can be bought...
     if (playerMoves > 0 && board.length > 0) {
 
@@ -1173,6 +1220,7 @@ function endTurn(cycle = true) {
     fiveColorBonusUsed = false;
     colorsAlreadySeen = [];
     admiralBonusGiven = false;
+    governorBonusGiven = false;
     isNewTurn = true;
     playerSwords = 0;
     playerMoves = PLAYER_DEFAULT_MOVES;
@@ -1180,7 +1228,6 @@ function endTurn(cycle = true) {
     if (cycle) {
         cycleActingPlayer();
     }
-    calcAbilities();
 
     displayBoards();
 }

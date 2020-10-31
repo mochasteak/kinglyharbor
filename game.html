@@ -325,7 +325,7 @@
     <!-- Game display -->
     <div class="container">
         <div class="row pt-3">
-            <div class="col-6 text-center ml-auto">
+            <div class="col-6 text-center ml-auto my-3">
                 <h1 class="title">Kingly Harbor</h1>
             </div>
             <div class="col-3 text-right">
@@ -355,8 +355,10 @@
         <div class="row main">
             <div class="col deck">
                 <h3><span id="cards-remaining"></span> cards</h3>
-                <a href="#" onclick="dealCard()"><img src="./img/coin.jpg" alt="deck"></a>
-                <p>Click deck to deal a card</p>
+                <div class="col text-center" id="game-coin-image">
+                    <div id="game-coin-area" class="d-flex align-items-end justify-content-center pb-2">
+                        <button id="draw-card-button" class="btn btn-primary" onclick="dealCard()">Draw card</button></div>
+                </div>
             </div>
 
             <!-- Game Board -->
@@ -386,16 +388,15 @@
         <div class="row my-3">
             <div class="col-12">
                 <div class="controls">
-                    <button class="btn btn-primary" onclick="endTurn()"><span class="icon fas fa-times"></span> End
-                        turn</button>
+                    <button id="end-turn-button" class="btn btn-primary" onclick="endTurn()">End turn <span class="icon fas fa-chevron-right ml-2"></span></button>
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col text-center" id="player-coin-area" onclick="showPlayerCoins()">
-                <h3><span id="player-coins"></span></h3>
-                <img id="player-coin-image" src="./img/coin.jpg" alt="deck">
+        <div class="row align-items-center">
+            <div class="col text-center" id="player-coin-image">
+                <div id="player-coin-area" class="d-flex align-items-center justify-content-center">
+                    <h3 class="text-center"><span id="player-coins"></span></h3></div>
             </div>
             <div class="col-9 player-board">
                 <h3><span id="acting-player"></span>'s cards</h3>

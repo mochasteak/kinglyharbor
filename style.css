@@ -62,7 +62,7 @@ table {
 .player {
     margin-right: 10px;
     padding: 5px;
-    width: 6rem;
+    width: 7rem;
 }
 
 .player p {
@@ -75,6 +75,11 @@ table {
     color: #333;
     width: 100%;
     margin-top: 5px;
+}
+
+#player-name {
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 .player-stats {
@@ -103,15 +108,23 @@ table {
     font-size: 2rem;
 }
 
-#player-coin-area {
+#player-coin-area, #game-coin-area {
     background-image: url(./img/coin.png);
-    background-position: top center;
+    background-position: center;
     background-repeat: no-repeat;
     background-size: 60px 60px;
+    height: 12rem;
 }
 #player-coin-area h3 {
-    padding-top: 10px;
+    padding-top: 16px;
     margin-bottom: 20px;
+}
+
+#player-coin-image, #game-coin-image {
+    background-image: url(./img/coin.jpg);
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 12rem;
 }
 
 .dot {
@@ -151,7 +164,7 @@ table {
 
 .expedition-lead-icon {
     font-size: 2rem!important;
-    margin-bottom: 10px!important;
+    margin-bottom: 6px!important;
 }
 
 .board {
@@ -254,6 +267,16 @@ table {
     margin-bottom: 0;
 }
 
+.ship-card-coins {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+}
+
+.ship-coin-image {
+    padding: 0 2px;
+}
+
 button:disabled {
     background-color: grey!important;
     border-color: grey!important;
@@ -263,9 +286,13 @@ button {
     padding: 4px 10px!important;
 }
 
+#end-turn-button {
+    width: 10rem;
+}
+
 .lead-icon {
     font-size: 2rem;
-    margin: 15px 0;
+    margin: 10px 0;
 }
 
 .border-green {
@@ -338,6 +365,9 @@ button {
     min-height: 14rem;
     border-radius: 5px;
     padding: 10px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 
 #choose-players, #name-players {
