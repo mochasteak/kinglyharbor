@@ -59,6 +59,24 @@ const getFinalPlayerPoints = document.getElementById('final-points');
 const getFinalRound = document.getElementById('final-round');
 const getDrawCardButton = document.getElementById('draw-card-button');
 
+// Add event listeners to modals
+const modals = document.getElementsByClassName('modal');
+console.log('modals :>> ', modals);
+
+for (let i = 0; i < modals.length; i++) {
+    modals[i].addEventListener('keypress', function(e) {
+        if(e.keyCode === 13) {
+            console.log('Event: ', e);
+            console.log('EventID: ', e.path[0].id);
+            $(`#${e.path[0].id}`).modal('hide');
+        } else {
+            console.log('Keypress: Not the enter key');
+        }
+    });
+    console.log(`Adding event listener to ${modals[i].id}`);
+}
+
+
 
 // Factory functions
 let currentCardId = 0;
@@ -281,6 +299,14 @@ function shuffleCards(deck) {
     }
     return deck;
 }
+
+// Check for enter key presses when modals are active
+function check(e) {
+    if(e.key === "Enter") {
+      console.log(e);
+      // $('#modal').modal('hide');
+    }
+  }
 
 // Render all the parts of the game
 function displayBoards() {
