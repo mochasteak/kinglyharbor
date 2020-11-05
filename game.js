@@ -61,25 +61,20 @@ const getDrawCardButton = document.getElementById('draw-card-button');
 
 // Add event listeners to modals
 const modalButtons = document.querySelectorAll('.modal');
-console.log('modals :>> ', modalButtons);
 
 for (let i = 0; i < modalButtons.length; i++) {
     modalButtons[i].addEventListener('keypress', function(e) {
 
         if(e.keyCode === 13) {
 
-            console.log('Event: ', e);  
             let buttonToPress = document.querySelector(`#${e.path[0].id} .btn-primary`);
-            console.log('buttonToPress :>> ', buttonToPress);
 
             buttonToPress.click();
 
         } else {
 
-            console.log('Keypress: Not the enter key');
         }
     });
-    console.log(`Adding event listener to ${modalButtons[i].id}`);
 }
 
 
@@ -385,8 +380,6 @@ function displayExpeditions() {
 // Display the player's board
 function displayPlayerBoard() {
 
-    // console.log('displayBoard: playerCoins :>> ', players[actingPlayer].coins);
-
     getActingPlayer.innerText = players[actingPlayer].name;
     getPlayerCoins.innerHTML = players[actingPlayer].coins.length;
 
@@ -456,7 +449,6 @@ const madamoiselleDiscount = (card) => {
     let discount = 0;
 
     if (card.type === 'person' && 'Madamoiselle' in getPlayerCards()) {
-        // console.log('Card is a person AND found a Madame in playerBoard');
 
         // Check the number of Madamoiselle cards
         for (let i = 0; i < players[actingPlayer].cards.length; i++) {
@@ -465,7 +457,6 @@ const madamoiselleDiscount = (card) => {
             }
         }
     }
-    // console.log('Madamoiselle discount :>> ', discount);
     return discount;
 };
 
@@ -488,7 +479,7 @@ function composeCard(card, board = 'game') {
         let totalCoinHtml = coinHtml.repeat(card.coins);
 
         cardHtml = `
-        <div class="board-card border-${card.color}">
+        <div class="board-card border-${card.color}" id="board-card-${card.id}">
             <h3>${card.name}</h3>
             <div class="ship-card-coins justify-content-center">
                 ${totalCoinHtml}
@@ -776,6 +767,19 @@ function dealCard() {
         // ...if there ARE cards in the deck:
 
         board.push(deck.pop());
+
+        let dealtCard = board[board.length - 1];
+
+        // Render and animate the added card
+        getBoard.innerHTML += composeCard(dealtCard);
+
+        anime({
+            targets: `#board-card-${dealtCard.id}`,
+            translateX: 200,
+
+        });
+
+
         displayBoards(); // So players can see the dealt card
         
         oneCardDrawn = true;
@@ -783,7 +787,7 @@ function dealCard() {
         calcPlayerSwords();
         updateCardsRemaining();
 
-        let dealtCard = board[board.length - 1];
+
 
         if (dealtCard.type === 'expedition') {
             // Move it to expedition array
