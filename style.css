@@ -18,6 +18,14 @@ body {
     flex-direction: column; */
 }
 
+#game-over {
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
 table {
     color: white!important;
     font-size: 1.4rem;

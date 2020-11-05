@@ -6,7 +6,7 @@ if (localStorage.getItem('playerNames') === null) {
 }
 
 // Constants
-const PLAYER_DEFAULT_MOVES = 2;
+const PLAYER_DEFAULT_MOVES = 1;
 const COINS_TO_START = 3;
 const playerNames = JSON.parse(localStorage.getItem("playerNames"));
 const VICTORY = 12;
@@ -710,15 +710,25 @@ function purchaseCard(cardId, expedition = false) {
 function dealCard() {
 
     // If the deck is disabled, warn users
-    if (isDeckDisabled) {
+    if (isDeckDisabled || cardPurchased) {
+        console.log('Deck clicked on while disabled');
 
         if (actingPlayer !== turnOf) {
+            console.log('Not your turn');
             $('#not-your-turn-modal').modal();
             return;
 
         } else {
-            $('#deck-disabled-modal').modal();
-            return;
+
+            if (cardPurchased) {
+                console.log('Card already purchased');
+                $('#phase-two-modal').modal();
+                return;
+            } else {
+                console.log('deck disabled');
+                $('#deck-disabled-modal').modal();
+                return;
+            }
         }
 
     } else {

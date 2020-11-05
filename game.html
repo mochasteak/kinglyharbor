@@ -136,7 +136,8 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Sorry. Them's the rules. You have to draw at least one card before you can end your turn. Take it up with Alexander Pfister.
+                    Sorry. Them's the rules. You have to draw at least one card before you can end your turn. Take it up
+                    with Alexander Pfister.
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-dismiss="modal">Got it</button>
@@ -178,6 +179,26 @@
                 <div class="modal-body">
                     You've earned <span id="admiral-bonus"></span> additional coins from the Admirals in your crew.
                     Hoo-arrh!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Got it</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phase two modal -->
+    <div class="modal fade" id="phase-two-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">You've already drawn a card</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Once you have taken a card from the board, you can't draw any more cards from the deck. RTFM.
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-dismiss="modal">Got it</button>
@@ -329,7 +350,8 @@
                 <h1 class="title">Kingly Harbor</h1>
             </div>
             <div class="col-3 text-right">
-                <a href="./index.html" class="btn btn-outline-danger">New game <span class="icon fas fa-times ml-3 mr-0"></span></a>
+                <a href="./index.html" class="btn btn-outline-danger">New game <span
+                        class="icon fas fa-times ml-3 mr-0"></span></a>
             </div>
         </div>
         <div class="row d-flex justify-content-between">
@@ -355,9 +377,10 @@
         <div class="row main">
             <div class="col deck">
                 <h3><span id="cards-remaining"></span> cards</h3>
-                <div class="col text-center" id="game-coin-image">
+                <div class="col text-center" id="game-coin-image" onclick="dealCard()">
                     <div id="game-coin-area" class="d-flex align-items-end justify-content-center pb-2">
-                        <button id="draw-card-button" class="btn btn-primary" onclick="dealCard()">Draw card</button></div>
+                        <button id="draw-card-button" class="btn btn-primary" onclick="dealCard()">Draw card</button>
+                    </div>
                 </div>
             </div>
 
@@ -388,7 +411,8 @@
         <div class="row my-3">
             <div class="col-12">
                 <div class="controls">
-                    <button id="end-turn-button" class="btn btn-primary" onclick="endTurn()">End turn <span class="icon fas fa-chevron-right ml-2"></span></button>
+                    <button id="end-turn-button" class="btn btn-primary" onclick="endTurn()">End turn <span
+                            class="icon fas fa-chevron-right ml-2"></span></button>
                 </div>
             </div>
         </div>
@@ -396,7 +420,8 @@
         <div class="row align-items-center">
             <div class="col text-center" id="player-coin-image">
                 <div id="player-coin-area" class="d-flex align-items-center justify-content-center">
-                    <h3 class="text-center"><span id="player-coins"></span></h3></div>
+                    <h3 class="text-center"><span id="player-coins"></span></h3>
+                </div>
             </div>
             <div class="col-9 player-board">
                 <h3><span id="acting-player"></span>'s cards</h3>

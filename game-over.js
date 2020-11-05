@@ -2,13 +2,15 @@ const scores = JSON.parse(window.localStorage.getItem('finalScores'));
 const getScoresTable = document.getElementById('scores-table');
 
 console.log('scores :>> ', scores);
+
+if (scores === null) {
+    window.location.href = './index.html';
+}
+
 let rank = 1;
 
 for (let score of scores) {
 
-    if(score[1] === scores[0][1] && score[2] === scores[0][2]) {
-        rank--;
-    }
 
     getScoresTable.innerHTML += `
     <tr>
