@@ -60,20 +60,26 @@ const getFinalRound = document.getElementById('final-round');
 const getDrawCardButton = document.getElementById('draw-card-button');
 
 // Add event listeners to modals
-const modals = document.getElementsByClassName('modal');
-console.log('modals :>> ', modals);
+const modalButtons = document.querySelectorAll('.modal');
+console.log('modals :>> ', modalButtons);
 
-for (let i = 0; i < modals.length; i++) {
-    modals[i].addEventListener('keypress', function(e) {
+for (let i = 0; i < modalButtons.length; i++) {
+    modalButtons[i].addEventListener('keypress', function(e) {
+
         if(e.keyCode === 13) {
-            console.log('Event: ', e);
-            console.log('EventID: ', e.path[0].id);
-            $(`#${e.path[0].id}`).modal('hide');
+
+            console.log('Event: ', e);  
+            let buttonToPress = document.querySelector(`#${e.path[0].id} .btn-primary`);
+            console.log('buttonToPress :>> ', buttonToPress);
+
+            buttonToPress.click();
+
         } else {
+
             console.log('Keypress: Not the enter key');
         }
     });
-    console.log(`Adding event listener to ${modals[i].id}`);
+    console.log(`Adding event listener to ${modalButtons[i].id}`);
 }
 
 
