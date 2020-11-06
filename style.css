@@ -55,6 +55,10 @@ table {
     font-size: 1.4rem;
 }
 
+#game-stats {
+    min-height: 13rem;
+}
+
 .players {
     display: flex;
     flex-direction: row;

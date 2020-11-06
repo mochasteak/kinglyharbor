@@ -495,7 +495,7 @@ function composeCard(card, board = 'game') {
     if (card.type !== 'tax') {
 
         cardHtml = `
-            <div class="board-card border-${card.color}">
+            <div class="board-card border-${card.color}" id="board-card-${card.id}">
                 <h3>${card.name}</h3>
                 <p><i class="${getIcons(card.name)} lead-icon"></i></p>
                 <p><img src="./img/coin.png" width="20px"> ${(card.coins - madamoiselleDiscount(card) >= 0) ? card.coins - madamoiselleDiscount(card) : 0 }</p>
@@ -527,7 +527,7 @@ function composeCard(card, board = 'game') {
 
 function composeExpeditionCard(card) {
     return `
-    <div class="expedition-card border-null">
+    <div class="expedition-card border-null" id="board-card-${card.id}">
         <div class="flex-row-expedition mb-3">
             <div class="player-points half">${card.points}</div>
             <div class="player-coins half">${card.coins}</div>
@@ -543,7 +543,6 @@ function composeExpeditionCard(card) {
 
 // Check if the purchase button should be displayed
 function checkIfAffordable(card) {
-    // console.log('Checking affordability of :>> ', card.name);
 
     if (card.type === 'expedition') {
 
@@ -551,13 +550,9 @@ function checkIfAffordable(card) {
         missingItems = 0;
         let hasAllItems = false;
         let requirements = countOccurrences(card.requirements);
-        // console.log('requirements :>> ', requirements);
-        // console.log(`Player has ${players[actingPlayer].getCards('Jack of all Trades')} Jack of all Trades`);
 
         // See if player has enough of each item needed
         for (let property in requirements) {
-
-            // console.log(`Need ${property}: ${requirements[property]} Player has: ${players[actingPlayer].getCards(property)}`);
 
             if (requirements[property] > players[actingPlayer].getCards(property)) {
                 hasAllItems = false;
@@ -570,11 +565,9 @@ function checkIfAffordable(card) {
 
         // See if player has enough Jack of all Trades to make up the difference
         if (missingItems <= players[actingPlayer].getCards('Jack of all Trades')) {
-            // console.log(`Missing items: ${missingItems} Player Jacks: ${players[actingPlayer].getCards('Jack of all Trades')}`);
             hasAllItems = true;
         }
 
-        // console.log('hasAllItems :>> ', hasAllItems);
         return (hasAllItems && (missingItems <= players[actingPlayer].getCards('Jack of all Trades')));
 
     }
@@ -594,7 +587,7 @@ function checkIfAffordable(card) {
             return true;
         }
 
-        // For all 'person' cards, calculate affordability (incl discounts)
+    // For all 'person' cards, calculate affordability (incl discounts)
     } else {
         if (card.coins - madamoiselleDiscount(card) + turnFee() <= players[actingPlayer].coins.length) {
             return true;
@@ -658,7 +651,6 @@ function purchaseCard(cardId, expedition = false) {
     
     // Decrement the player's moves
     playerMoves--;
-    // console.log('purchaseCard: Subtracting one player move');
 
     // Get the number of coins for this card
     let cardCoins = purchasedCard[0].coins;
@@ -711,7 +703,6 @@ function purchaseCard(cardId, expedition = false) {
         if (purchasedCard[0].name === 'Governor') {
             playerMoves++;
             governorBonusGiven = true;
-            // console.log(`purchaseCard added 1 move. PlayerMoves: ${playerMoves}`);
             isNewTurn = false;
             $('#governor-purchased-modal').modal();
         }
@@ -734,21 +725,17 @@ function dealCard() {
 
     // If the deck is disabled, warn users
     if (isDeckDisabled || cardPurchased) {
-        console.log('Deck clicked on while disabled');
 
         if (actingPlayer !== turnOf) {
-            console.log('Not your turn');
             $('#not-your-turn-modal').modal();
             return;
 
         } else {
 
             if (cardPurchased) {
-                console.log('Card already purchased');
                 $('#phase-two-modal').modal();
                 return;
             } else {
-                console.log('deck disabled');
                 $('#deck-disabled-modal').modal();
                 return;
             }
@@ -775,12 +762,14 @@ function dealCard() {
 
         anime({
             targets: `#board-card-${dealtCard.id}`,
-            translateX: 200,
-
+            translateX: -100,
+            direction: 'reverse',
+            opacity: 0,
+            duration: 500,
+            easing: 'easeInQuad'
         });
 
-
-        displayBoards(); // So players can see the dealt card
+        // displayBoards(); // So players can see the dealt card
         
         oneCardDrawn = true;
         isNewTurn = false;
@@ -808,8 +797,6 @@ function dealCard() {
             return;
         }
 
-        console.log(`Card dealt: ${dealtCard.name} Board length: ${board.length} PlayerMoves: ${playerMoves}`);
-
         checkForAdmiralBonus();
         checkForDuplicates(board);
         calcMovesBonus();
@@ -820,7 +807,6 @@ function checkVictoryThreshold() {
 
     for (let player of players) {
         if (player.getPoints() >= VICTORY) {
-            // console.log(`=== ${players[actingPlayer].name} has reached enough points to win ===`);
             finalRound = true;
             if (!victoryMessageShown) {
                 getFinalPlayer.innerText = players[actingPlayer].name;
@@ -829,7 +815,6 @@ function checkVictoryThreshold() {
                 victoryMessageShown = true;
                 $('#final-round-modal').modal();
             }
-            // console.log('Set finalRound to true');
         }
     }
 }
@@ -969,18 +954,15 @@ function checkOutOfMoves() {
 }
 
 function twoShips() {
-    console.log('TWO SHIPS invoked');
     
     // Give players with a Jester a coin
     for (let player of players) {
 
         if (player.getCards('Jester')) {
-            console.log(`${player.name} has ${player.getCards('Jester')} Jesters`);
             let jesterBonus = player.getCards('Jester');
 
             for (let i = 0; i < jesterBonus; i++) {
                 player.coins.push(deck.pop());
-                console.log(`Adding 1 coin to ${player.name} for Jester bonus`);
             }
         }
     }
@@ -1004,7 +986,6 @@ function checkForDuplicates(board) {
         if (cardType === 'ship' && colorsAlreadySeen.indexOf(color) !== -1) {
             isDeckDisabled = true;
             playerMoves = 0;
-            // console.log(`checkForDuplicates: set moves to 0`);
             displayBoards();
             $('#two-ships-modal').modal({
                 keyboard: false
@@ -1023,20 +1004,15 @@ function checkForDuplicates(board) {
 function checkForAdmiralBonus() {
 
     if (board.length >= 5) {
-        console.log('Checking for Admiral bonus');
-        console.log('admiralBonusGiven:>> ', admiralBonusGiven);
 
         if('Admiral' in getPlayerCards()) {
 
             if (playerMoves > 0 && !admiralBonusGiven) {
     
             let admiralBonus = getPlayerCards().Admiral * 2;
-    
-            console.log('admiralBonus :>> ', admiralBonus);
-    
+        
             for (let i = 0; i < admiralBonus; i++) {
                 players[actingPlayer].coins.push(deck.pop());
-                console.log('Adding a coin to player due to Admiral bonus. Iteration: ' + i);
             }
     
             admiralBonusGiven = true;
@@ -1047,13 +1023,11 @@ function checkForAdmiralBonus() {
     } 
 }
 
-
 function checkIfDefeatable(card) {
 
     // If player has enough swords, trigger modal
     if (players[actingPlayer].getSwords() >= card.swords) {
         getDefeatShip.innerHTML = composeCard(card, 'modal');
-        // console.log('Triggering defeat-ship modal');
         $('#defeat-ship-modal').modal(); // Trigger modal
         return;
     }
@@ -1079,13 +1053,10 @@ function updateCardsRemaining() {
 }
 
 function calcPlayerSwords() {
-    // console.log('caclPlayerSwords invoked');
     playerSwords = 0;
     // loop through cards in player's board, count num swords
     for (let entry of Object.entries(players[actingPlayer].cards)) {
-        // console.log('entry :>> ', entry);
         playerSwords += entry[1].swords;
-        // console.log('playerSwords :>> ', playerSwords);
     }
 }
 
@@ -1096,7 +1067,6 @@ const countOccurrences = arr => arr.reduce((prev, curr) => (prev[curr] = ++prev[
 
 // Returns an array of player cards and number of them
 const getPlayerCards = () => {
-    // console.log('getPlayerCards invoked');
 
     let playerCardTypes = [];
 
@@ -1113,7 +1083,6 @@ function calcMovesBonus() {
     if ('Governor' in getPlayerCards() && !governorBonusGiven) {
         playerMoves++;
         governorBonusGiven = true;
-        // console.log(`calcMovesBonus: Increasing playerMoves to: ${playerMoves} `);
     }
 
     // If 4 or 5 different colored ships on the board, increase moves
@@ -1121,7 +1090,6 @@ function calcMovesBonus() {
         case 5:
             if (!fiveColorBonusUsed) {
                 playerMoves++;
-                console.log(`Adding 1 move for having 5 different ship colors. PlayerMoves: ${playerMoves}`);
                 fiveColorBonusUsed = true;
                 getShipColors.innerHTML = '<em>5</em>';
                 $('#additional-move-modal').modal();
@@ -1134,7 +1102,6 @@ function calcMovesBonus() {
         case 4:
             if (!fourColorBonusUsed) {
                 playerMoves++;
-                console.log(`Adding 1 move for having 4 different ship colors. PlayerMoves: ${playerMoves}`);
                 fourColorBonusUsed = true;
                 getShipColors.innerHTML = '<em>4</em>';
                 $('#additional-move-modal').modal();
@@ -1154,7 +1121,6 @@ function clearMoves() {
 }
 
 function cycleActingPlayer() {
-    console.log('cycleActingPlayer invoked');
 
     isNewTurn = true;
     missingItems = 0;
@@ -1166,13 +1132,15 @@ function cycleActingPlayer() {
 
     // Move the acting player
     if (actingPlayer === players.length - 1) {
-        // console.log('setting actingPlayer index to 0');
         actingPlayer = 0;
+
     } else {
-        // console.log('Incrementing actingPlayer');
+
         actingPlayer++;
     }
+
     if (actingPlayer !== turnOf) {
+
         isDeckDisabled = true;
     }
     checkTurn();
@@ -1193,11 +1161,12 @@ function checkTurn() {
 // Move the turn to the next player
 function cycleTurn() {
 
-    console.log('Cycling turn');
-
     if (turnOf === players.length - 1) {
+
         turnOf = 0;
+
     } else {
+
         turnOf++;
     }
 
@@ -1214,17 +1183,14 @@ function cycleTurn() {
 }
 
 function highlightActingPlayer() {
-    // console.log('highlighActingPlayer invoked');
+
     // Get all the HTML elements with class "player"
     const getPlayerIds = document.getElementsByClassName('player');
-    // console.log('getPlayerIds :>> ', getPlayerIds);
 
     for (let i = 0; i < getPlayerIds.length; i++) {
         if (getPlayerIds[i].id === 'player-' + actingPlayer) {
-            // console.log(getPlayerIds[i] + 'This is the acting player');
             getPlayerIds[i].classList.add('border');
         } else {
-            // console.log(getPlayerIds[i] + 'This is not the acting player');
             getPlayerIds[i].classList.remove('border');
         }
     }
@@ -1232,7 +1198,6 @@ function highlightActingPlayer() {
 
 // End a turn - Move the cards from the board to the discard pile
 function endTurn(cycle = true) {
-    console.log('endTurn invoked');
 
     const getButtons = document.getElementsByClassName('card-button');
 
