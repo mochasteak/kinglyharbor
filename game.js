@@ -58,6 +58,7 @@ const getFinalPlayer = document.getElementById('final-player');
 const getFinalPlayerPoints = document.getElementById('final-points');
 const getFinalRound = document.getElementById('final-round');
 const getDrawCardButton = document.getElementById('draw-card-button');
+const getModal = document.getElementById('modal');
 
 // Add event listeners to modals
 const modalButtons = document.querySelectorAll('.modal');
@@ -135,12 +136,9 @@ function Player(name) {
 }
 
 function createPlayers(array) {
-    // console.log('array :>> ', array);
     for (let name of array) {
         players.push(new Player(name));
     }
-    // console.log('players :>> ', players);
-
 }
 
 // Add all game cards into deck
@@ -301,13 +299,6 @@ function shuffleCards(deck) {
     return deck;
 }
 
-// Check for enter key presses when modals are active
-function check(e) {
-    if(e.key === "Enter") {
-      console.log(e);
-      // $('#modal').modal('hide');
-    }
-  }
 
 // Render all the parts of the game
 function displayBoards() {
@@ -341,7 +332,7 @@ function displayGameBoard() {
             <div class="player-stats">
             
                 <div class="col player-col player-coins text-center">
-                    <span id="coins">${player.coins.length}</span>
+                    <span id="player-${playerIndex}-coins">${player.coins.length}</span>
                 </div>
 
                 <div class="col player-col player-points text-center">
@@ -370,12 +361,14 @@ function displayGameBoard() {
     }
 }
 
+
 function displayExpeditions() {
     getExpeditions.innerHTML = '';
     expeditions.map(card => {
         getExpeditions.innerHTML += composeExpeditionCard(card);
     });
 }
+
 
 // Display the player's board
 function displayPlayerBoard() {
@@ -444,6 +437,8 @@ function getIcons(text) {
     }
 }
 
+
+// Function to calculate what the Madamoiselle discount for any given card should be
 const madamoiselleDiscount = (card) => {
 
     let discount = 0;
@@ -460,12 +455,146 @@ const madamoiselleDiscount = (card) => {
     return discount;
 };
 
+// Helper function to determine if an extra fee 
+// should be paid for acting on someone else's board
 function turnFee() {
     if (actingPlayer === turnOf) {
         return 0;
     } else {
         return 1;
     }
+}
+
+// Create and trigger a modal
+function showModal(type) {
+    // Depending on the type, render the modal
+
+    // Set up variables
+    let modalTitle = '';
+    let modalBody = '';
+    let modalButtons = '';
+    let modalButtonText = 'Got it';
+    let modalOnclick = false;
+
+    // Possible modal types:
+
+    switch (type) {
+        case 'tax':
+            modalTitle = 'Taxes!';
+            modalBody = `You've hit a tax. All players with 12 cards or more will lose half their cards. The player(s)
+            with <em><span id="tax-description"></span></em> get an additional coin.`;
+            break;
+
+        case 'new turn':
+            modalTitle = `<span class="player-turn"></span>'s Turn`;
+            modalBody = `Heads up: the turn is changing. It is now <em><span class="player-turn"></span>'s</em> turn.
+            Anyone who takes from their board will have to pay <span class="player-turn"></span> a one coin
+            tax.`;
+            break;
+
+        case 'final round':
+            modalTitle = `The end is nigh!`;
+            modalBody = `<span id="final-player"></span> has <span id="final-points"></span> points, which has triggered the final round. Play will continue until it is <span id="final-round"></span>'s turn.</p>
+            <p>Reminder: The person with the most points wins, if there's a tie, the person with the most coins
+            left wins.`;
+            break;
+
+        case 'expedition':
+            modalTitle = `A new expedition`;
+            modalBody = `You've found a new expedition. This will be added to the expeditions board and can be purchased on your turn if you have the correct resources.`;
+            break;
+
+        case 'additional move':
+            modalTitle = `You gained a move!`;
+            modalBody = `You've earned an additional move for being a risk-taker and having <span id="ship-colors"></span>
+            different colored ships on the board!`;
+            break;
+
+        case 'must draw':
+            modalTitle = `Must draw at least one card`;
+            modalBody = `Sorry. Them's the rules. You have to draw at least one card before you can end your turn. Take it up
+            with Alexander Pfister.`;
+            break;
+
+        case 'governor purchased':
+            modalTitle = `You gained a move`;
+            modalBody = `The Governor you just purchased has given you an additional move`;
+            break;
+        
+        case 'admiral bonus':
+            modalTitle = `You got some coins`; 
+            modalBody = `You've earned <span id="admiral-bonus"></span> additional coins from the Admirals in your crew.
+            Hoo-arrh!`;
+            break;
+        
+        case 'phase two':
+            modalTitle = `Can't draw any more`;
+            modalBody = `Once you have taken a card from the board, you can't draw any more cards from the deck. RTFM.`;
+            break;
+
+        case 'deck disabled':
+            modalTitle = `Deck is disabled`;
+            modalBody = `You can't make any more moves. Time to pass the turn to someone else Greedy McGreedyPants.`;
+            modalOnclick = `onclick="endTurn()"`;
+            break;
+        
+        case 'not your turn':
+            modalTitle = `Deck is disabled`;
+            modalBody = `You can only draw cards when it's your turn. (The blue dot next to a player's name indicates whose turn it is.)`;
+            break;
+
+        case 'two ships':
+            modalTitle = `Oh no!`;
+            modalBody = `You pushed your luck too far. There are two ships of the same color on the board! Sadly, this is the end of this turn.`;
+            modalOnclick = `onclick="twoShips()"`;
+            modalButtonText = 'End turn';
+            break;
+
+        case 'defeat ship':
+            modalTitle = `Defeat this ship?`;
+            modalBody = `Looks like you've got enough firepower to defeat this ship, would you like to blast it into the deep, or keep it on the board?`;
+            modalOnclick = `onclick="defeatShip()"`;
+            modalButtonText = `Defeat it!`;
+            break;
+
+        case 'moves left':
+            modalTitle = `Still have moves left`;
+            modalBody = `Hey what's the rush, there are still moves you can take. Are you sure you want to end your turn?`;
+            modalOnclick = `onclick="clearMoves()"`;
+            modalButtonText = 'End my turn';
+            break;
+    
+        default:
+            break;
+    }
+
+    modalHtml = `
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">${modalTitle}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" ${type === 'tax' ? `id="tax-modal-body"` : ''}>
+                        <div id="defeat-ship" class="d-flex justify-content-center">
+                        <div id="tax-card" class="d-flex justify-content-center"></div>
+                        <p>${modalBody}</p>
+                    </div>
+                    <div class="modal-footer">
+                        ${type === 'defeat ship' ? `<button type="button" class="btn btn-secondary" data-dismiss="modal"
+                        onclick="declineDefeatOption()">Keep it</button>` : ''}
+                        ${type === 'moves left' ? `<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>` : ''}
+                        <button type="button" class="btn btn-primary" ${modalOnclick ? modalOnclick : ''} data-dismiss="modal">${modalButtonText}</button>
+                    </div>
+                </div>
+            </div>
+    `;
+
+    getModal.innerHTML = modalHtml;  // render the HTML
+    $('#modal').modal();  // trigger the modal
+    
 }
 
 // Compose each card according to its type
@@ -616,13 +745,11 @@ function purchaseCard(cardId, expedition = false) {
 
             // Check if the item exists, if so, remove it, if not, remove a wild
             if (players[actingPlayer].getCards(item) > 0) {
-                // console.log(`Removing an ${item} to pay for expedition`);
                 discardPile
                     .push(players[actingPlayer].cards
                         .splice(players[actingPlayer].cards
                             .findIndex(obj => obj.name === item), 1));
             } else {
-                // console.log('Removing a wild card to pay for expedition');
                 discardPile
                     .push(players[actingPlayer].cards
                         .splice(players[actingPlayer].cards
@@ -633,6 +760,8 @@ function purchaseCard(cardId, expedition = false) {
         // Give the player the number of coins
         for (let index = 0; index < expeditionCoinBonus; index++) {
             players[actingPlayer].coins.push(deck.pop());
+            // console.log('Triggering animation');
+            // animateCoins(actingPlayer);
         }
 
         // Move the card to the player
@@ -647,7 +776,6 @@ function purchaseCard(cardId, expedition = false) {
 
     // Move the card out of the game board
     let purchasedCard = board.splice(board.findIndex(card => card.id === cardId), 1);
-    console.log(`Purchased card: ${purchasedCard[0].name}. Board: ${board.length}`);
     
     // Decrement the player's moves
     playerMoves--;
@@ -677,11 +805,14 @@ function purchaseCard(cardId, expedition = false) {
         // ...add the right number of cards to players[actingPlayer].coins
         for (let index = 0; index < cardCoins + traderBonus - turnFee(); index++) {
             players[actingPlayer].coins.push(deck.pop());
+            console.log('Triggering animation');
+            animateCoins(actingPlayer);
         }
 
         // If it's not this player's turn, give one card to the player whose turn it is
         if (turnFee() == 1) {
             players[turnOf].coins.push(deck.pop());
+            animateCoins(turnOf);
 
         }
 
@@ -697,6 +828,7 @@ function purchaseCard(cardId, expedition = false) {
         // Give the player whose turn it is an extra coin
         if (actingPlayer !== turnOf) {
             players[turnOf].coins.push(players[actingPlayer].coins.pop());
+            animateCoins(turnOf);
         }
 
         // Apply the move bonus if it is a Governor
@@ -704,7 +836,7 @@ function purchaseCard(cardId, expedition = false) {
             playerMoves++;
             governorBonusGiven = true;
             isNewTurn = false;
-            $('#governor-purchased-modal').modal();
+            showModal('governor purchased');
         }
 
         // Add card to player's cards
@@ -718,6 +850,34 @@ function purchaseCard(cardId, expedition = false) {
     calcPlayerSwords();
     displayBoards();
     checkOutOfMoves();
+
+    // Animate the coins
+    let coinTimeline = anime.timeline({
+        easing: 'easeOutExpo',
+        duration: 250
+    });
+
+    coinTimeline
+        .add({
+            targets: `#player-${actingPlayer}-coins`,
+            scale: 2,
+            opacity: 0
+        })
+        .add({
+            targets: `#player-${actingPlayer}-coins`,
+            scale: 2,
+            opacity: 0
+        })
+        .add({
+            targets: `#player-${actingPlayer}-coins`,
+            scale: 2,
+            opacity: 0
+        })
+        .add({
+            targets: `#player-${actingPlayer}-coins`,
+            scale: 2,
+            opacity: 0
+        });
 }
 
 // Deal a card onto the board
@@ -727,16 +887,16 @@ function dealCard() {
     if (isDeckDisabled || cardPurchased) {
 
         if (actingPlayer !== turnOf) {
-            $('#not-your-turn-modal').modal();
+            showModal('not your turn');
             return;
 
         } else {
 
             if (cardPurchased) {
-                $('#phase-two-modal').modal();
+                showModal('phase two');
                 return;
             } else {
-                $('#deck-disabled-modal').modal();
+                showModal('deck disabled');
                 return;
             }
         }
@@ -788,8 +948,8 @@ function dealCard() {
             collectTaxes(dealtCard);
             discardPile.push(board.pop());
             displayBoards();
+            showModal('tax');
             getTaxModal.innerHTML = composeCard(dealtCard, 'modal');
-            $('#tax-modal').modal();
         }
 
         if (dealtCard.type === 'ship') {
@@ -798,6 +958,7 @@ function dealCard() {
         }
 
         checkForAdmiralBonus();
+        displayBoards();
         checkForDuplicates(board);
         calcMovesBonus();
     }
@@ -813,7 +974,7 @@ function checkVictoryThreshold() {
                 getFinalPlayerPoints.innerText = players[actingPlayer].getPoints();
                 getFinalRound.innerText = players[startingPlayer].name;
                 victoryMessageShown = true;
-                $('#final-round-modal').modal();
+                showModal('final round');
             }
         }
     }
@@ -824,7 +985,6 @@ function checkGameOver() {
     // If final round is true, and actingPlayer and turnOf are the same
     if (finalRound && (turnOf === startingPlayer)) {
         isDeckDisabled = true;
-        console.log(`checkGameOver: set moves to 0`);
         playerMoves = 0;
         calcWinner();
         window.location.href = './game-over.html';
@@ -864,7 +1024,7 @@ function collectTaxes(card) {
         if (player.coins.length >= TAX_THRESHOLD) {
             console.log(`Tax threshold hit: ${player.name} has ${player.coins.length} coins`);
             for (let i = -2; i <= Math.floor(player.coins.length / 2); i++) {
-                console.log('Removing 1 coin from ' + player.name);
+                // console.log('Removing 1 coin from ' + player.name);
                 discardPile.push(player.coins.pop());
             }
         }
@@ -897,7 +1057,7 @@ function collectTaxes(card) {
         for (let player of players) {
             if (player.getPoints() === playerPoints[0][1]) {
                 player.coins.push(deck.pop());
-                console.log('Adding min points bonus to ' + player.name);
+                animateCoins(actingPlayer);
             }
         }
 
@@ -926,17 +1086,29 @@ function collectTaxes(card) {
 
             // Add one coin to the one with the most swords
             for (let player of players) {
-                console.log(`Checking if ${player.name} has most swords`);
                 if (player.getSwords() === playerSwords[0][1]) {
                     player.coins.push(deck.pop());
-                    console.log(`Adding one coin to ${player.name} for max swords`);
+                    animateCoins(players.indexOf(player));
                 }
             }
         }
     }
-
     displayBoards();
 }
+
+function animateCoins(player) {
+    console.log(`#player-${player}-coins`);
+
+    anime({
+        targets: `#player-${player}-coins`,
+        keyframes: [
+            {scale: 2, opacity: 0, duration: 200},
+            {scale: 1, opacity: 1, duration: 0}
+        ],
+        easing: 'easeOutExpo'
+    });
+}
+
 
 function checkOutOfMoves() {
 
@@ -987,9 +1159,7 @@ function checkForDuplicates(board) {
             isDeckDisabled = true;
             playerMoves = 0;
             displayBoards();
-            $('#two-ships-modal').modal({
-                keyboard: false
-            });
+            showModal('two ships');
 
             // If there ARE NOT two ships of the same color, add the color to the list
         } else if (cardType == 'ship') {
@@ -1009,15 +1179,15 @@ function checkForAdmiralBonus() {
 
             if (playerMoves > 0 && !admiralBonusGiven) {
     
-            let admiralBonus = getPlayerCards().Admiral * 2;
-        
-            for (let i = 0; i < admiralBonus; i++) {
-                players[actingPlayer].coins.push(deck.pop());
-            }
-    
-            admiralBonusGiven = true;
-            $('#admiral-bonus-modal').modal();
-            getAdmiralBonus.innerText = admiralBonus;
+                let admiralBonus = getPlayerCards().Admiral * 2;
+            
+                for (let i = 0; i < admiralBonus; i++) {
+                    players[actingPlayer].coins.push(deck.pop());
+                }
+                displayBoards();
+                admiralBonusGiven = true;
+                showModal('admiral bonus');
+                getAdmiralBonus.innerText = admiralBonus;
             }
         }
     } 
@@ -1028,7 +1198,7 @@ function checkIfDefeatable(card) {
     // If player has enough swords, trigger modal
     if (players[actingPlayer].getSwords() >= card.swords) {
         getDefeatShip.innerHTML = composeCard(card, 'modal');
-        $('#defeat-ship-modal').modal(); // Trigger modal
+        showModal('defeat ship'); // Trigger modal
         return;
     }
 
@@ -1092,7 +1262,7 @@ function calcMovesBonus() {
                 playerMoves++;
                 fiveColorBonusUsed = true;
                 getShipColors.innerHTML = '<em>5</em>';
-                $('#additional-move-modal').modal();
+                showModal('additional move');
                 break;
             } else {
                 break;
@@ -1104,7 +1274,7 @@ function calcMovesBonus() {
                 playerMoves++;
                 fourColorBonusUsed = true;
                 getShipColors.innerHTML = '<em>4</em>';
-                $('#additional-move-modal').modal();
+                showModal('additional move');
                 break;
             } else {
                 break;
@@ -1178,7 +1348,7 @@ function cycleTurn() {
     checkGameOver();
     oneCardDrawn = false;
     getDiscardCount.innerHTML = discardPile.length;
-    $('#new-turn-modal').modal();
+    showModal('new turn');
 
 }
 
@@ -1204,7 +1374,7 @@ function endTurn(cycle = true) {
     // If the actingPlayer is the starting player AND no card has been drawn, trigger modal
     if (players[actingPlayer] === players[turnOf] &&
         !oneCardDrawn) {
-        $('#must-draw-modal').modal();
+        showModal('must draw');
         return;
     }
 
@@ -1221,7 +1391,7 @@ function endTurn(cycle = true) {
         }
 
         if (hasPurchaseableCard) {
-            $('#moves-left-modal').modal();
+            showModal('moves left');
             return;
         }
     }
