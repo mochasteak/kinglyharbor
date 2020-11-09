@@ -35,6 +35,14 @@ let victoryMessageShown = false;
 let oneCardDrawn = false;
 let cardPurchased = false;
 let missingItems = 0;
+let admiralBonus = 0;
+let taxDescription = '';
+let shipColors = '';
+let taxCard = null;
+let finalPlayer = null;
+let finalPlayerPoints = null;
+let finalPlayerName = null;
+let shipToDefeat = null;
 
 // Getters
 const getBoard = document.getElementById('board');
@@ -47,16 +55,9 @@ const getExpeditions = document.getElementById('expeditions');
 const getPlayerCoins = document.getElementById('player-coins');
 const getPlayerCoinImage = document.getElementById('player-coin-image');
 const getPlayerMoves = document.getElementById('player-moves');
-const getShipColors = document.getElementById('ship-colors');
-const getAdmiralBonus = document.getElementById('admiral-bonus');
-const getDefeatShip = document.getElementById('defeat-ship');
-const getTaxModal = document.getElementById('tax-card');
-const getTaxDescription = document.getElementById('tax-description');
-const getActingPlayer = document.getElementById('acting-player');
+const getActingPlayer = document.getElementsByClassName('acting-player');
+const getTurnOfPlayer = document.getElementById('turnof-player');
 const getPlayerTurn = document.getElementsByClassName('player-turn');
-const getFinalPlayer = document.getElementById('final-player');
-const getFinalPlayerPoints = document.getElementById('final-points');
-const getFinalRound = document.getElementById('final-round');
 const getDrawCardButton = document.getElementById('draw-card-button');
 const getModal = document.getElementById('modal');
 
@@ -353,6 +354,8 @@ function displayGameBoard() {
         span.innerText = players[turnOf].name;
     }
 
+    getTurnOfPlayer.innerText = players[turnOf].name;
+
     // Disable the button if deck is disabled or if a card has been drawn
     if(isDeckDisabled || cardPurchased) {
         getDrawCardButton.setAttribute('disabled', true);
@@ -373,7 +376,9 @@ function displayExpeditions() {
 // Display the player's board
 function displayPlayerBoard() {
 
-    getActingPlayer.innerText = players[actingPlayer].name;
+    for (let player of getActingPlayer) {
+        player.innerText = players[actingPlayer].name;
+    }
     getPlayerCoins.innerHTML = players[actingPlayer].coins.length;
 
     // Show/hide coin image depending on num of coins
@@ -467,6 +472,7 @@ function turnFee() {
 
 // Create and trigger a modal
 function showModal(type) {
+    console.log('showModal invoked. type: ', type);
     // Depending on the type, render the modal
 
     // Set up variables
@@ -482,7 +488,7 @@ function showModal(type) {
         case 'tax':
             modalTitle = 'Taxes!';
             modalBody = `You've hit a tax. All players with 12 cards or more will lose half their cards. The player(s)
-            with <em><span id="tax-description"></span></em> get an additional coin.`;
+            with <em>${taxDescription}</em> get an additional coin.`;
             break;
 
         case 'new turn':
@@ -494,7 +500,7 @@ function showModal(type) {
 
         case 'final round':
             modalTitle = `The end is nigh!`;
-            modalBody = `<span id="final-player"></span> has <span id="final-points"></span> points, which has triggered the final round. Play will continue until it is <span id="final-round"></span>'s turn.</p>
+            modalBody = `<span id="final-player">${finalPlayer}</span> has <span id="final-points">${finalPlayerPoints}</span> points, which has triggered the final round. Play will continue until it is <span id="final-round">${finalPlayerName}</span>'s turn.</p>
             <p>Reminder: The person with the most points wins, if there's a tie, the person with the most coins
             left wins.`;
             break;
@@ -506,8 +512,7 @@ function showModal(type) {
 
         case 'additional move':
             modalTitle = `You gained a move!`;
-            modalBody = `You've earned an additional move for being a risk-taker and having <span id="ship-colors"></span>
-            different colored ships on the board!`;
+            modalBody = `You've earned an additional move for being a risk-taker and having <em>${shipColors}</em> different colored ships on the board!`;
             break;
 
         case 'must draw':
@@ -523,7 +528,7 @@ function showModal(type) {
         
         case 'admiral bonus':
             modalTitle = `You got some coins`; 
-            modalBody = `You've earned <span id="admiral-bonus"></span> additional coins from the Admirals in your crew.
+            modalBody = `You've earned <span id="admiral-bonus">${admiralBonus}</span> additional coins from the Admirals in your crew.
             Hoo-arrh!`;
             break;
         
@@ -539,7 +544,7 @@ function showModal(type) {
             break;
         
         case 'not your turn':
-            modalTitle = `Deck is disabled`;
+            modalTitle = `Not your turn`;
             modalBody = `You can only draw cards when it's your turn. (The blue dot next to a player's name indicates whose turn it is.)`;
             break;
 
@@ -578,8 +583,8 @@ function showModal(type) {
                         </button>
                     </div>
                     <div class="modal-body" ${type === 'tax' ? `id="tax-modal-body"` : ''}>
-                        <div id="defeat-ship" class="d-flex justify-content-center">
-                        <div id="tax-card" class="d-flex justify-content-center"></div>
+                        <div id="defeat-ship" class="d-flex justify-content-center">${shipToDefeat !== null ? composeCard(shipToDefeat, 'modal') : ''}</div>
+                        <div id="tax-card" class="d-flex justify-content-center">${type === 'tax' ? composeCard(taxCard, 'modal') : ''}</div>
                         <p>${modalBody}</p>
                     </div>
                     <div class="modal-footer">
@@ -608,7 +613,7 @@ function composeCard(card, board = 'game') {
         let totalCoinHtml = coinHtml.repeat(card.coins);
 
         cardHtml = `
-        <div class="board-card border-${card.color}" id="board-card-${card.id}">
+        <div class="board-card border-${card.color}" ${ board !== 'modal' ? `id="board-card-${card.id}"` : ''}>
             <h3>${card.name}</h3>
             <div class="ship-card-coins justify-content-center">
                 ${totalCoinHtml}
@@ -623,22 +628,61 @@ function composeCard(card, board = 'game') {
 
     if (card.type !== 'tax') {
 
+        let tooltipText = '';
+
+        switch (card.name) {
+            case 'Trader':
+                tooltipText = `Gives an additional coin for ${card.color} ships`;
+                break;
+            case 'Madamoiselle':
+                tooltipText = `Discounts all prices by one coin`;
+                break;
+            case 'Sailor':
+                tooltipText = `Helps defeat ships in the harbor`;
+                break;
+            case 'Pirate':
+                tooltipText = `Helps defeat ships in the harbor`;
+                break;
+            case 'Captain':
+            case 'Priest':
+            case 'Jack of all trades':
+            case 'Settler':
+                tooltipText = `Can be used to purchase expeditions`;
+                break;
+            default:
+                break;
+        }
+
         cardHtml = `
             <div class="board-card border-${card.color}" id="board-card-${card.id}">
-                <h3>${card.name}</h3>
-                <p><i class="${getIcons(card.name)} lead-icon"></i></p>
-                <p><img src="./img/coin.png" width="20px"> ${(card.coins - madamoiselleDiscount(card) >= 0) ? card.coins - madamoiselleDiscount(card) : 0 }</p>
-                <p><img src="./img/shield.png" width="20px"> ${card.points}</p>
-                <p><img src="./img/swords.png" width="20px"> ${card.swords}</p>
+                <h3>${card.name} 
+                    <span class="text-right">
+                        <a href="#" data-toggle="tooltip" data-placement="top" title="${tooltipText}">
+                            <i class="far fa-question-circle"></i>
+                        </a>
+                    </span>
+                </h3>
+                <p>
+                    <i class="${getIcons(card.name)} lead-icon"></i>
+                </p>
+                <p>
+                    <img src="./img/coin.png" width="20px"> ${(card.coins - madamoiselleDiscount(card) >= 0) ? card.coins - madamoiselleDiscount(card) : 0 }
+                </p>
+                <p>
+                    <img src="./img/shield.png" width="20px"> ${card.points}
+                </p>
+                <p>
+                    <img src="./img/swords.png" width="20px"> ${card.swords}
+                </p>
                 ${board === 'game' ? `<button class="btn btn-primary btn-small m-2 card-button" onclick="purchaseCard(${card.id})"  ${checkIfAffordable(card) ? '' : 'disabled'}>${(card.type == 'ship') ? 'Take coins' : 'Purchase' }</button>` : ''}
             </div>`;
 
     } else if (card.type === 'tax') {
 
         if (card.requirements === 'min points') {
-            getTaxDescription.innerText = 'the least points';
+            taxDescription = 'the least points';
         } else {
-            getTaxDescription.innerText = 'the most swords';
+            taxDescription = 'the most swords';
         }
 
         cardHtml = `
@@ -727,6 +771,7 @@ function checkIfAffordable(card) {
 
 // Buying a card
 function purchaseCard(cardId, expedition = false) {
+    console.log(`Card purchased: ${expedition === false ? board[board.findIndex(card => card.id === cardId)].name : expeditions[expeditions.findIndex(card => card.id === cardId)].name}`);
 
     cardPurchased = true;
 
@@ -760,8 +805,6 @@ function purchaseCard(cardId, expedition = false) {
         // Give the player the number of coins
         for (let index = 0; index < expeditionCoinBonus; index++) {
             players[actingPlayer].coins.push(deck.pop());
-            // console.log('Triggering animation');
-            // animateCoins(actingPlayer);
         }
 
         // Move the card to the player
@@ -851,33 +894,33 @@ function purchaseCard(cardId, expedition = false) {
     displayBoards();
     checkOutOfMoves();
 
-    // Animate the coins
-    let coinTimeline = anime.timeline({
-        easing: 'easeOutExpo',
-        duration: 250
-    });
+    // // Animate the coins
+    // let coinTimeline = anime.timeline({
+    //     easing: 'easeOutExpo',
+    //     duration: 250
+    // });
 
-    coinTimeline
-        .add({
-            targets: `#player-${actingPlayer}-coins`,
-            scale: 2,
-            opacity: 0
-        })
-        .add({
-            targets: `#player-${actingPlayer}-coins`,
-            scale: 2,
-            opacity: 0
-        })
-        .add({
-            targets: `#player-${actingPlayer}-coins`,
-            scale: 2,
-            opacity: 0
-        })
-        .add({
-            targets: `#player-${actingPlayer}-coins`,
-            scale: 2,
-            opacity: 0
-        });
+    // coinTimeline
+    //     .add({
+    //         targets: `#player-${actingPlayer}-coins`,
+    //         scale: 2,
+    //         opacity: 0
+    //     })
+    //     .add({
+    //         targets: `#player-${actingPlayer}-coins`,
+    //         scale: 2,
+    //         opacity: 0
+    //     })
+    //     .add({
+    //         targets: `#player-${actingPlayer}-coins`,
+    //         scale: 2,
+    //         opacity: 0
+    //     })
+    //     .add({
+    //         targets: `#player-${actingPlayer}-coins`,
+    //         scale: 2,
+    //         opacity: 0
+    //     });
 }
 
 // Deal a card onto the board
@@ -916,27 +959,15 @@ function dealCard() {
         board.push(deck.pop());
 
         let dealtCard = board[board.length - 1];
+        console.log('card dealt: ' + dealtCard.name);
 
         // Render and animate the added card
         getBoard.innerHTML += composeCard(dealtCard);
-
-        anime({
-            targets: `#board-card-${dealtCard.id}`,
-            translateX: -100,
-            direction: 'reverse',
-            opacity: 0,
-            duration: 500,
-            easing: 'easeInQuad'
-        });
-
-        // displayBoards(); // So players can see the dealt card
         
         oneCardDrawn = true;
         isNewTurn = false;
         calcPlayerSwords();
         updateCardsRemaining();
-
-
 
         if (dealtCard.type === 'expedition') {
             // Move it to expedition array
@@ -948,19 +979,36 @@ function dealCard() {
             collectTaxes(dealtCard);
             discardPile.push(board.pop());
             displayBoards();
+            taxCard = dealtCard;
             showModal('tax');
-            getTaxModal.innerHTML = composeCard(dealtCard, 'modal');
         }
 
         if (dealtCard.type === 'ship') {
-            checkIfDefeatable(board[board.length - 1]);
-            return;
+
+            // If player has enough swords, trigger modal
+            if (players[actingPlayer].getSwords() >= dealtCard.swords) {
+                shipToDefeat = dealtCard;
+                showModal('defeat ship'); // Trigger modal
+
+                // Need to put something here that waits for the result of the modal
+            } else {
+                checkForDuplicates(board);
+            }
         }
 
         checkForAdmiralBonus();
-        displayBoards();
-        checkForDuplicates(board);
+        // displayBoards();
         calcMovesBonus();
+        shipToDefeat = null;
+
+        anime({
+            targets: `#board-card-${dealtCard.id}`,
+            translateX: -50,
+            direction: 'reverse',
+            opacity: 0,
+            duration: 500,
+            easing: 'easeInQuad'
+        });
     }
 }
 
@@ -970,10 +1018,10 @@ function checkVictoryThreshold() {
         if (player.getPoints() >= VICTORY) {
             finalRound = true;
             if (!victoryMessageShown) {
-                getFinalPlayer.innerText = players[actingPlayer].name;
-                getFinalPlayerPoints.innerText = players[actingPlayer].getPoints();
-                getFinalRound.innerText = players[startingPlayer].name;
                 victoryMessageShown = true;
+                finalPlayer = players[actingPlayer].name;
+                finalPlayerPoints = players[actingPlayer].getPoints();
+                finalPlayerName = players[startingPlayer].name;
                 showModal('final round');
             }
         }
@@ -1018,6 +1066,7 @@ function calcWinner() {
 }
 
 function collectTaxes(card) {
+    console.log('collectTaxes invoked');
 
     // First, take away half the coins for any player with 12 or more
     for (let player of players) {
@@ -1097,13 +1146,12 @@ function collectTaxes(card) {
 }
 
 function animateCoins(player) {
-    console.log(`#player-${player}-coins`);
 
     anime({
         targets: `#player-${player}-coins`,
         keyframes: [
-            {scale: 2, opacity: 0, duration: 200},
-            {scale: 1, opacity: 1, duration: 0}
+            {translateY: 100, opacity: 1, duration: 2000},
+            {translateY: -20, opacity: 1, duration: 1500}
         ],
         easing: 'easeOutExpo'
     });
@@ -1126,6 +1174,7 @@ function checkOutOfMoves() {
 }
 
 function twoShips() {
+    console.log('twoShips invoked');
     
     // Give players with a Jester a coin
     for (let player of players) {
@@ -1147,6 +1196,7 @@ function twoShips() {
 
 // Check to see if there are two ships of the same color
 function checkForDuplicates(board) {
+    console.log('checkForDuplicates invoked');
 
     colorsAlreadySeen = [];
 
@@ -1179,7 +1229,7 @@ function checkForAdmiralBonus() {
 
             if (playerMoves > 0 && !admiralBonusGiven) {
     
-                let admiralBonus = getPlayerCards().Admiral * 2;
+                admiralBonus = getPlayerCards().Admiral * 2;
             
                 for (let i = 0; i < admiralBonus; i++) {
                     players[actingPlayer].coins.push(deck.pop());
@@ -1187,33 +1237,21 @@ function checkForAdmiralBonus() {
                 displayBoards();
                 admiralBonusGiven = true;
                 showModal('admiral bonus');
-                getAdmiralBonus.innerText = admiralBonus;
             }
         }
     } 
 }
 
-function checkIfDefeatable(card) {
-
-    // If player has enough swords, trigger modal
-    if (players[actingPlayer].getSwords() >= card.swords) {
-        getDefeatShip.innerHTML = composeCard(card, 'modal');
-        showModal('defeat ship'); // Trigger modal
-        return;
-    }
-
-    checkForDuplicates(board);
-    calcMovesBonus();
-    checkForAdmiralBonus();
-}
 
 function defeatShip(card) {
+    console.log('defeatShip invoked');
     discardPile.push(board.pop());
     getDiscardCount.innerHTML = discardPile.length;
     displayGameBoard();
 }
 
 function declineDefeatOption() {
+    console.log('declineDefeatOption invoked');
     checkForDuplicates(board);
     calcMovesBonus();
 }
@@ -1261,10 +1299,12 @@ function calcMovesBonus() {
             if (!fiveColorBonusUsed) {
                 playerMoves++;
                 fiveColorBonusUsed = true;
-                getShipColors.innerHTML = '<em>5</em>';
+                shipColors = 5;
                 showModal('additional move');
                 break;
+
             } else {
+
                 break;
             }
             break;
@@ -1273,10 +1313,12 @@ function calcMovesBonus() {
             if (!fourColorBonusUsed) {
                 playerMoves++;
                 fourColorBonusUsed = true;
-                getShipColors.innerHTML = '<em>4</em>';
+                shipColors = 4;
                 showModal('additional move');
                 break;
+
             } else {
+                
                 break;
             }
     }
@@ -1291,6 +1333,7 @@ function clearMoves() {
 }
 
 function cycleActingPlayer() {
+    console.log('cycleActingPlayer invoked');
 
     isNewTurn = true;
     missingItems = 0;
@@ -1330,6 +1373,7 @@ function checkTurn() {
 
 // Move the turn to the next player
 function cycleTurn() {
+    console.log('cycleTurn invoked');
 
     if (turnOf === players.length - 1) {
 
@@ -1368,6 +1412,7 @@ function highlightActingPlayer() {
 
 // End a turn - Move the cards from the board to the discard pile
 function endTurn(cycle = true) {
+    console.log('endTurn invoked');
 
     const getButtons = document.getElementsByClassName('card-button');
 
@@ -1405,6 +1450,7 @@ function endTurn(cycle = true) {
     isNewTurn = true;
     playerSwords = 0;
     playerMoves = PLAYER_DEFAULT_MOVES;
+    shipToDefeat = null;
 
     if (cycle) {
         cycleActingPlayer();
