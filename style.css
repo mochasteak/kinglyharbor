@@ -26,6 +26,24 @@ body {
     flex-direction: column;
 }
 
+.card-top {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+}
+
+.board-card-title {
+    text-align: center;
+    flex: 1;
+    margin-right: -34px;
+}
+
+.card-tooltip, .card-tooltip2 {
+    text-align: right;
+    padding: 0 5px 0 5px;
+}
+
 table {
     color: white!important;
     font-size: 1.4rem;

@@ -3,15 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Acme&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/879746a60e.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="./style.css">
+    <title>Brian's Port Royal</title>
 </head>
 <body>
     <div class="container">
-        <p>Players: <span id="players"></span></p>
-        <p>PlayerNames: <span id="playerNames"></span></p>
-        <p>Cards: <span id="cards"></span></p>
-        <p>Game board: <span id="gameBoard"></span></p>
-        <p>Player board: <span id="playerBoard"></span></p>
+
+        <div class="board-card border-${card.color}" id="board-card-${card.id}">
+            <div class="card-top">
+                <div class="board-card-title">
+                    <h3>Admiral</h3>
+                </div>
+                <div class="card-tooltip2">
+                    <i data-tippy-content="THis is the tooltip text" class="far fa-question-circle"></i>
+                </div>
+            </div>
+            
+            <p><i class="fas fa-binoculars lead-icon"></i></p>
+            <p><img src="./img/coin.png" width="20px"> 4</p>
+            <p><img src="./img/shield.png" width="20px"> 2</p>
+            <p><img src="./img/swords.png" width="20px"> 1</p>
+
+            <button class="btn btn-primary btn-small m-2 card-button">Purchase</button>
+        </div>
+
+
     </div>
     <script src="./lodash.js"></script>
     <script src="play.js"></script>

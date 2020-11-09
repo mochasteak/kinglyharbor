@@ -632,22 +632,29 @@ function composeCard(card, board = 'game') {
 
         switch (card.name) {
             case 'Trader':
-                tooltipText = `Gives an additional coin for ${card.color} ships`;
+                tooltipText = `Gives an additional coin for ${card.color} ships you take from the board`;
                 break;
             case 'Madamoiselle':
                 tooltipText = `Discounts all prices by one coin`;
                 break;
             case 'Sailor':
-                tooltipText = `Helps defeat ships in the harbor`;
-                break;
             case 'Pirate':
-                tooltipText = `Helps defeat ships in the harbor`;
+                tooltipText = `Their swords help you defeat ships in the harbor`;
                 break;
             case 'Captain':
             case 'Priest':
-            case 'Jack of all trades':
+            case 'Jack of all Trades':
             case 'Settler':
                 tooltipText = `Can be used to purchase expeditions`;
+                break;
+            case 'Governor':
+                tooltipText = `Grants you an additional move each turn`;
+                break;
+            case 'Admiral':
+                tooltipText = `Gives you 2 coins if there are 5 cards on the board when it is your turn to act`;
+                break;
+            case 'Jester':
+                tooltipText = `Gives you one coin any time there are two ships of the same color on the board`;
                 break;
             default:
                 break;
@@ -655,13 +662,15 @@ function composeCard(card, board = 'game') {
 
         cardHtml = `
             <div class="board-card border-${card.color}" id="board-card-${card.id}">
-                <h3>${card.name} 
-                    <span class="text-right">
-                        <a href="#" data-toggle="tooltip" data-placement="top" title="${tooltipText}">
-                            <i class="far fa-question-circle"></i>
-                        </a>
-                    </span>
-                </h3>
+            <div class="card-top">
+                <div class="board-card-title">
+                    <h3>${card.name}</h3>
+                </div>
+                <div class="card-tooltip">
+                    <i data-tippy-content="${tooltipText}" class="far fa-question-circle"></i>
+                </div>
+            </div>
+                
                 <p>
                     <i class="${getIcons(card.name)} lead-icon"></i>
                 </p>
@@ -695,7 +704,6 @@ function composeCard(card, board = 'game') {
     }
 
     return cardHtml;
-
 }
 
 function composeExpeditionCard(card) {
@@ -963,6 +971,7 @@ function dealCard() {
 
         // Render and animate the added card
         getBoard.innerHTML += composeCard(dealtCard);
+        tippy('[data-tippy-content]');
         
         oneCardDrawn = true;
         isNewTurn = false;
