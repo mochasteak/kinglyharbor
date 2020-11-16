@@ -781,8 +781,6 @@ function checkIfAffordable(card) {
 function purchaseCard(cardId, expedition = false) {
     console.log(`Card purchased: ${expedition === false ? board[board.findIndex(card => card.id === cardId)].name : expeditions[expeditions.findIndex(card => card.id === cardId)].name}`);
 
-    cardPurchased = true;
-
     if (expedition) {
 
         // Move the card from expeditions 
@@ -827,6 +825,9 @@ function purchaseCard(cardId, expedition = false) {
 
     // Move the card out of the game board
     let purchasedCard = board.splice(board.findIndex(card => card.id === cardId), 1);
+
+    // Set 'card purchased' flag to true
+    cardPurchased = true;
     
     // Decrement the player's moves
     playerMoves--;
